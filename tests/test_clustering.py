@@ -1,7 +1,8 @@
+# import sys, os
+# sys.path.append(os.path.dirname(os.path.abspath('../')))
 from autocluster import clustering
 import pandas as pd
 import numpy as np
-import pickle
 
 
 clusterers = clustering.clusterers
@@ -76,10 +77,9 @@ def test_evaluate_results():
 def test_optimize_clustering():
     best, evals, labs = clustering.optimize_clustering(test_data)
     #TODO add run through of evaluation metrics
-    print(evals, labs.head(), best.head())
 
 
 # test_cluster_one()
 # test_run_conditions_one_algorithm()
 # test_evaluate_results()
-test_optimize_clustering()
+# test_optimize_clustering()

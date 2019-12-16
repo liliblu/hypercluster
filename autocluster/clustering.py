@@ -7,7 +7,7 @@ from sklearn.metrics import adjusted_rand_score, adjusted_mutual_info_score, hom
     davies_bouldin_score
 from hdbscan import HDBSCAN
 import logging
-from typing import Optional, Iterable, Dict, Union
+from typing import Optional, Iterable, Dict, Union, Any
 from itertools import product
 
 
@@ -169,7 +169,8 @@ def run_conditions_one_algorithm(
 
     label_results = label_results.set_index(list(parameters.columns)).transpose()
     label_results.index = pd.MultiIndex.from_tuples(label_results.index)
-    label_results = label_results.replace(-1, np.nan).dropna(how='all', axis=1)
+    label_results = label_results[label_results.columns[~(label_results==-1).all()]]
+
     if label_results.shape[1] == 0:
         return None
     return label_results
@@ -190,17 +191,26 @@ def evaluate_results(
     if method in need_ground_truth:
         if gold_standard is None:
             raise ValueError('Chosen evaluation metric %s requires gold standard set.' % method)
-        for col in label_df.columns:
-            evaluation_results[col] = evaluations[method](gold_standard, label_df[col], **metric_kwargs)
-
     elif method in inherent_metric:
         if data is None:
             raise ValueError('Chosen evaluation metric %s requires data input.' % method)
-        for col in label_df.columns:
-            evaluation_results[col] = evaluations[method](data, label_df[col], **metric_kwargs)
-
     else:
         raise ValueError('Evaluation metric %s not valid' % method)
+
+    for col in label_df.columns:
+        if method in need_ground_truth:
+            clustered = (gold_standard != -1) & (label_df[col] != -1)
+            compare_to = gold_standard[clustered]
+        elif method in inherent_metric:
+            clustered = (label_df[col] != -1)
+            compare_to = data.loc[clustered]
+
+        if len(label_df[col][clustered].value_counts()) <= 2:
+            logging.warning('Condition %s does not have at least two clusters, skipping' %col)
+            continue
+        evaluation_results[col] = evaluations[method](
+            compare_to, label_df[col][clustered], **metric_kwargs
+        )
 
     return evaluation_results
 
@@ -266,7 +276,7 @@ def optimize_clustering(
         })
 
     top_choice = min_or_max[evaluation_method](clustering_evaluations, key=lambda k: clustering_evaluations[k])
-    best_labels = clustering_labels[top_choice[0]][top_choice[1:]]
+    best_labels = clustering_labels[top_choice[0]][top_choice[1]]
 
     return best_labels, clustering_evaluations, clustering_labels
 
