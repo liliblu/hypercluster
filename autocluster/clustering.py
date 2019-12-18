@@ -90,7 +90,7 @@ def cluster(clusterer_name, data, params: dict = {}):
 
 
 def run_conditions_one_algorithm(
-        data: DataFrame,
+        data: Optional[DataFrame] = None,
         clusterer_name: Optional[str] = 'hdbscan',
         params: Optional[dict] = None,
         random_search: bool = True,
@@ -104,6 +104,8 @@ def run_conditions_one_algorithm(
         params = variables_to_optimize[clusterer_name]
     if clus_kwargs is None:
         clus_kwargs = {}
+    if data is None and return_parameters is False:
+        raise ValueError('If return_parameters is False, must provide dataset')
 
     clus_kwargs.update(params)
     conditions = 1

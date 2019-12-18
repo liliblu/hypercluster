@@ -1,5 +1,3 @@
-# import sys, os
-# sys.path.append(os.path.dirname(os.path.abspath('../')))
 from autocluster import clustering
 import pandas as pd
 import numpy as np
