@@ -3,7 +3,6 @@ from autocluster import clustering
 import os
 import yaml
 import subprocess
-from datetime import datetime
 
 configfile: 'config.yml'
 
@@ -14,14 +13,12 @@ read_csv_kwargs = config['read_csv_kwargs']
 clustering_addtl_kwargs = config['clustering_addtl_kwargs']
 generate_parameters_addtl_kwargs = config['generate_parameters_addtl_kwargs']
 
-# now = datetime.now()
-now = 'test'
-intermediates_folder = 'clustering_intermediates.%s' % now
-clustering_results = 'clustering.%s' % now
-addtl_files_folder = 'additional_files.%s' % now
 
-# subprocess.run(['mkdir', '-p', clustering_results])
-# subprocess.run(['mkdir', '-p', intermediates_folder])
+intermediates_folder = config['intermediates_folder']
+clustering_results = config['clustering_results']
+addtl_files_folder = config['addtl_files_folder']
+
+subprocess.run(['mkdir', '-p', clustering_results])
 
 def concat_dfs(df_list):
     df = pd.DataFrame()
@@ -43,7 +40,7 @@ def generate_parameters(config):
         )
         df['clusterer'] = clusterer
         all_params_to_test.extend(df.to_dict('records'))
-
+    #TODO why is random search not working? getting key not found errors
     final_param_sets = {}
     for param_set in all_params_to_test:
         clusterer = param_set['clusterer']
@@ -124,9 +121,8 @@ rule run_evaluation:
 rule collect_dfs:
     input:
         files = expand(
-            '%s/{params_label}_{targets}.txt' % intermediates_folder,
+            '%s/{params_label}_{{targets}}.txt' % intermediates_folder,
             params_label = config['param_sets_labels'],
-            targets=config['targets']
         )
     output:
         '%s/{run_label}_{targets}.csv' % (clustering_results)

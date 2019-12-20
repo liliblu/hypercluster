@@ -1,17 +1,17 @@
-targets:
-  - 'labels'
-  - 'evaluations'
+intermediates_folder: 'clustering_intermediates'
+clustering_results: 'clustering'
+addtl_files_folder: 'additional_files'
+
 input_data_file: 'test_input.txt'
-param_labels: []
+
 run_label: 'test'
-read_csv_kwargs: {}
+read_csv_kwargs: {'index_col':0}
 evaluations: ['silhouette', 'calinskiharabasz', 'daviesbouldin']
 eval_kwargs: {}
 clustering_addtl_kwargs: {}
 generate_parameters_addtl_kwargs: {'random_search':false}
 clusterer_kwargs: {}
-param_sets: {}
-param_sets_labels: []
+
 optimization_parameters:
   affinitypropagation:
     damping:
@@ -26,14 +26,11 @@ optimization_parameters:
     - 12
   kmeans:
     n_clusters: &id001
-    - 28
-    - 29
-    - 30
-    - 31
-    - 32
-    - 33
-    - 34
-    - 35
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
   minibatchkmeans:
     n_clusters: *id001
   optics:
