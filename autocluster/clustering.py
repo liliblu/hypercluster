@@ -89,7 +89,7 @@ def cluster(clusterer_name, data, params: dict = {}):
     return clusterer.fit(data)
 
 
-class MetaClusterer:
+class AutoClusterer:
     def __init__(
             self,
             clusterer_name: Optional[str] = 'hdbscan',
@@ -106,8 +106,8 @@ class MetaClusterer:
         self.param_weights = param_weights
         self.clus_kwargs = clus_kwargs
 
-        if self.params is None:
-            self.params = variables_to_optimize[clusterer_name]
+        if self.params_to_optimize is None:
+            self.params_to_optimize = variables_to_optimize[clusterer_name]
         if self.clus_kwargs is None:
             self.clus_kwargs = {}
 
@@ -119,7 +119,7 @@ class MetaClusterer:
         self.labels_ = None
 
     def generate_param_sets(self):
-        self.clus_kwargs.update(self.params)
+        self.clus_kwargs.update(self.params_to_optimize)
         conditions = 1
         vars_to_optimize = {}
         static_kwargs = {}

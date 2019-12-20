@@ -34,9 +34,12 @@ def generate_parameters(config):
     all_params_to_test = []
     for clusterer, params in parameters.items():
         clus_kwargs = clusterer_kwargs.get(clusterer, {})
-        df = clustering.run_conditions_one_algorithm(
-            return_parameters=True, params=params, clus_kwargs=clus_kwargs, **kwargs
-        )
+        df = clustering.AutoClusterer(
+            clusterer_name=clusterer,
+            params_to_optimize=params,
+            clus_kwargs=clus_kwargs,
+            **kwargs
+        ).param_sets
         df['clusterer'] = clusterer
         all_params_to_test.extend(df.to_dict('records'))
     #TODO why is random search not working? getting key not found errors
@@ -52,6 +55,7 @@ def generate_parameters(config):
 
     with open('params_to_test.yml', 'w') as fh:
         yaml.dump(final_param_sets, fh)
+
 
 generate_parameters(config)
 
