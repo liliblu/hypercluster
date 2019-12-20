@@ -1,8 +1,10 @@
 intermediates_folder: 'clustering_intermediates'
 clustering_results: 'clustering'
-addtl_files_folder: 'additional_files'
+gold_standard_file: 'gold_standard_file.txt'
 
-input_data_file: 'test_input.txt'
+input_data_folder: '.'
+input_data_file: ['test_input']
+targets: ['labels', 'evaluations']
 
 run_label: 'test'
 read_csv_kwargs: {'index_col':0}

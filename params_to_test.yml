@@ -1,0 +1,63 @@
+affinitypropagation.damping0.8:
+  clusterer: affinitypropagation
+  damping: 0.8
+affinitypropagation.damping0.85:
+  clusterer: affinitypropagation
+  damping: 0.85
+affinitypropagation.damping0.9:
+  clusterer: affinitypropagation
+  damping: 0.9
+hdbscan.min_cluster_size10:
+  clusterer: hdbscan
+  min_cluster_size: 10
+hdbscan.min_cluster_size12:
+  clusterer: hdbscan
+  min_cluster_size: 12
+hdbscan.min_cluster_size6:
+  clusterer: hdbscan
+  min_cluster_size: 6
+hdbscan.min_cluster_size8:
+  clusterer: hdbscan
+  min_cluster_size: 8
+kmeans.n_clusters4:
+  clusterer: kmeans
+  n_clusters: 4
+kmeans.n_clusters5:
+  clusterer: kmeans
+  n_clusters: 5
+kmeans.n_clusters6:
+  clusterer: kmeans
+  n_clusters: 6
+kmeans.n_clusters7:
+  clusterer: kmeans
+  n_clusters: 7
+kmeans.n_clusters8:
+  clusterer: kmeans
+  n_clusters: 8
+minibatchkmeans.n_clusters4:
+  clusterer: minibatchkmeans
+  n_clusters: 4
+minibatchkmeans.n_clusters5:
+  clusterer: minibatchkmeans
+  n_clusters: 5
+minibatchkmeans.n_clusters6:
+  clusterer: minibatchkmeans
+  n_clusters: 6
+minibatchkmeans.n_clusters7:
+  clusterer: minibatchkmeans
+  n_clusters: 7
+minibatchkmeans.n_clusters8:
+  clusterer: minibatchkmeans
+  n_clusters: 8
+optics.min_samples10:
+  clusterer: optics
+  min_samples: 10
+optics.min_samples12:
+  clusterer: optics
+  min_samples: 12
+optics.min_samples6:
+  clusterer: optics
+  min_samples: 6
+optics.min_samples8:
+  clusterer: optics
+  min_samples: 8

@@ -89,93 +89,99 @@ def cluster(clusterer_name, data, params: dict = {}):
     return clusterer.fit(data)
 
 
-def run_conditions_one_algorithm(
-        data: Optional[DataFrame] = None,
-        clusterer_name: Optional[str] = 'hdbscan',
-        params: Optional[dict] = None,
-        random_search: bool = True,
-        random_search_fraction: float = 0.5,
-        param_weights: dict = {},
-        clus_kwargs: Optional[dict] = None,
-        return_parameters: bool = False
-) -> Optional[DataFrame]:
-    #TODO make sure none of the parameters that can be fed into clusterers are iterables
-    if params is None:
-        params = variables_to_optimize[clusterer_name]
-    if clus_kwargs is None:
-        clus_kwargs = {}
-    if data is None and return_parameters is False:
-        raise ValueError('If return_parameters is False, must provide dataset')
+class MetaClusterer:
+    def __init__(
+            self,
+            clusterer_name: Optional[str] = 'hdbscan',
+            params_to_optimize: Optional[dict] = None,
+            random_search: bool = True,
+            random_search_fraction: float = 0.5,
+            param_weights: dict = {},
+            clus_kwargs: Optional[dict] = None
+    ):
+        self.clusterer_name = clusterer_name
+        self.params_to_optimize = params_to_optimize
+        self.random_search = random_search
+        self.random_search_fraction = random_search_fraction
+        self.param_weights = param_weights
+        self.clus_kwargs = clus_kwargs
 
-    clus_kwargs.update(params)
-    conditions = 1
-    vars_to_optimize = {}
-    static_vars = {}
-    for k, v in clus_kwargs.items():
-        if len(v) > 1:
-            vars_to_optimize[k] = v
-            conditions *= len(v)
-        else:
-            static_vars[k] = v
-    if conditions == 1:
-        logging.error(
-            'Clusterer %s was only given one set of parameters, nothing to optimize.'
-            % clusterer_name
-        )
-        return None
+        if self.params is None:
+            self.params = variables_to_optimize[clusterer_name]
+        if self.clus_kwargs is None:
+            self.clus_kwargs = {}
 
-    parameters = pd.DataFrame(columns=list(vars_to_optimize.keys()))
+        self.labels_ = None
+        self.static_kwargs = None
+        self.total_possible_conditions = None
+        self.param_sets = None
+        self.generate_param_sets()
+        self.labels_ = None
 
-    for row in iter(product(*vars_to_optimize.values())):
-        parameters = parameters.append(
-            dict(zip(vars_to_optimize.keys(), row)), ignore_index=True
-        )
-    if random_search:
-        will_search = int(conditions * random_search_fraction)
-        # calculates probability of getting a particular set of parameters, given the probs of
-        # all the individual params. If a prob isn't set, give uniform probability to each
-        # parameter.
-        if param_weights:
-            weights = parameters.apply(
-                lambda row: np.prod(
-                    [param_weights.get(
-                        i, len(vars_to_optimize[i])*[1/len(vars_to_optimize[i])]
-                    )[vars_to_optimize[i].index(val)]
-                     for var_lab, val in row.to_dict().items()]
-                )
+    def generate_param_sets(self):
+        self.clus_kwargs.update(self.params)
+        conditions = 1
+        vars_to_optimize = {}
+        static_kwargs = {}
+        for k, v in self.clus_kwargs.items():
+            if len(v) > 1:
+                vars_to_optimize[k] = v
+                conditions *= len(v)
+            else:
+                static_kwargs[k] = v
+        if conditions == 1:
+            logging.error(
+                'Clusterer %s was only given one set of parameters, nothing to optimize.'
+                % clusterer_name
             )
-        else:
-            weights = None
-        parameters = parameters.sample(will_search, weights=weights)
+            self.param_sets = None
+        self.static_kwargs = static_kwargs
+        self.total_possible_conditions = conditions
 
-    logging.info(
-        'For clusterer %s, testing %s out of %s possible conditions'
-        % (clusterer_name, len(parameters), conditions)
-    )
+        parameters = pd.DataFrame(columns=list(vars_to_optimize.keys()))
+        for row in iter(product(*vars_to_optimize.values())):
+            parameters = parameters.append(
+                dict(zip(vars_to_optimize.keys(), row)), ignore_index=True
+            )
+        if self.random_search:
+            will_search = int(conditions * self.random_search_fraction)
+            # calculates probability of getting a particular set of parameters, given the probs of
+            # all the individual params. If a prob isn't set, give uniform probability to each
+            # parameter.
+            if self.param_weights:
+                weights = parameters.apply(
+                    lambda row: np.prod(
+                        [self.param_weights.get(
+                            i, len(vars_to_optimize[i]) * [1 / len(vars_to_optimize[i])]
+                        )[vars_to_optimize[i].index(val)]
+                         for var_lab, val in row.to_dict().items()]
+                    )
+                )
+            else:
+                weights = None
+            parameters = parameters.sample(will_search, weights=weights)
 
-    if return_parameters:
-        return parameters
+        logging.info(
+            'For clusterer %s, testing %s out of %s possible conditions'
+            % (self.clusterer_name, len(parameters), conditions)
+        )
+        self.param_sets = parameters
 
-    label_results = pd.DataFrame(columns=parameters.columns.union(data.index))
-    for i, row in parameters.iterrows():
-        single_params = row.to_dict()
-        #TODO why did kmeans n_clusters==30 show up twice???
-        single_params.update(static_vars)
-        labels = cluster(clusterer_name, data, single_params).labels_
+    def fit(self, data: DataFrame):
+        label_results = pd.DataFrame(columns=self.param_sets.columns.union(data.index))
+        for i, row in self.param_sets.iterrows():
+            single_params = row.to_dict()
+            single_params.update(self.static_kwargs)
+            labels = cluster(self.clusterer_name, data, single_params).labels_
 
-        label_row = dict(zip(data.index, labels))
-        label_row.update(single_params)
-        label_results = label_results.append(label_row, ignore_index=True)
+            label_row = dict(zip(data.index, labels))
+            label_row.update(single_params)
+            label_results = label_results.append(label_row, ignore_index=True)
+            logging.info('%s - %s of conditions done' % (i, (i / len(parameters))))
 
-        logging.info('%s - %s of conditions done' % (i, (i / len(parameters))))
+        label_results = label_results.set_index(list(self.param_sets.columns)).transpose()
+        self.labels_ = label_results
 
-    label_results = label_results.set_index(list(parameters.columns)).transpose()
-    label_results.index = pd.MultiIndex.from_tuples(label_results.index)
-    label_results = label_results[label_results.columns[~(label_results==-1).all()]]
-
-    if label_results.shape[1] == 0:
-        return None
-    return label_results
 
 #TODO write a fn that evaluates the above fn too
 
