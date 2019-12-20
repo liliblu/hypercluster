@@ -1,62 +1,31 @@
+targets:
+  - 'labels'
+  - 'evaluations'
 input_data_file: 'test_input.txt'
 param_labels: []
 run_label: 'test'
 read_csv_kwargs: {}
-evaluations_to_calculate: []
+evaluations: ['silhouette', 'calinskiharabasz', 'daviesbouldin']
+eval_kwargs: {}
 clustering_addtl_kwargs: {}
-generate_parameters_addtl_kwargs: {}
+generate_parameters_addtl_kwargs: {'random_search':false}
 clusterer_kwargs: {}
 param_sets: {}
 param_sets_labels: []
 optimization_parameters:
   affinitypropagation:
     damping:
-    - 0.55
-    - 0.6
-    - 0.65
-    - 0.7
-    - 0.75
     - 0.8
     - 0.85
     - 0.9
   hdbscan:
     min_cluster_size: &id002
-    - 2
-    - 4
     - 6
     - 8
     - 10
     - 12
-    - 14
-    - 16
   kmeans:
     n_clusters: &id001
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
-    - 7
-    - 8
-    - 9
-    - 10
-    - 11
-    - 12
-    - 13
-    - 14
-    - 15
-    - 16
-    - 17
-    - 18
-    - 19
-    - 20
-    - 21
-    - 22
-    - 23
-    - 24
-    - 25
-    - 26
-    - 27
     - 28
     - 29
     - 30
@@ -65,11 +34,6 @@ optimization_parameters:
     - 33
     - 34
     - 35
-    - 36
-    - 37
-    - 38
-    - 39
-    - 40
   minibatchkmeans:
     n_clusters: *id001
   optics:

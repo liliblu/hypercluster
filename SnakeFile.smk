@@ -1,6 +1,6 @@
 import pandas as pd
 from autocluster import clustering
-from autocluster.clustering import (variables_to_optimize, evaluations)
+import os
 import yaml
 import subprocess
 from datetime import datetime
@@ -11,7 +11,6 @@ input_data = config['input_data_file']
 run_label = config['run_label']
 optimization_parameters = config['optimization_parameters']
 read_csv_kwargs = config['read_csv_kwargs']
-evaluations = config['evaluations_to_calculate']
 clustering_addtl_kwargs = config['clustering_addtl_kwargs']
 generate_parameters_addtl_kwargs = config['generate_parameters_addtl_kwargs']
 
@@ -19,20 +18,18 @@ generate_parameters_addtl_kwargs = config['generate_parameters_addtl_kwargs']
 now = 'test'
 intermediates_folder = 'clustering_intermediates.%s' % now
 clustering_results = 'clustering.%s' % now
+addtl_files_folder = 'additional_files.%s' % now
 
-subprocess.run(['mkdir', '-p', clustering_results])
+# subprocess.run(['mkdir', '-p', clustering_results])
+# subprocess.run(['mkdir', '-p', intermediates_folder])
 
 def concat_dfs(df_list):
     df = pd.DataFrame()
     for fil in df_list:
         temp = pd.read_csv(fil, index_col=0)
-        df = pd.concat(df, temp, join='outer', axis=1)
+        df = pd.concat([df, temp], join='outer', axis=1)
     return df
 
-
-def update_config(config, another_object, label):
-    config[label] = another_object
-    return config
 
 def generate_parameters(config):
     kwargs = config['generate_parameters_addtl_kwargs']
@@ -54,80 +51,90 @@ def generate_parameters(config):
             '%s%s' % (k, v) for k, v in param_set.items() if k != 'clusterer'
         ])
         final_param_sets.update({lab:param_set})
-    config = update_config(config, final_param_sets, 'param_sets')
-    config = update_config(config, final_param_sets.keys(), 'param_sets_labels')
+    config['param_sets'] = final_param_sets
+    config['param_sets_labels'] = list(final_param_sets.keys())
+
     with open('%s/params_to_test.yml' % clustering_results, 'w') as fh:
         yaml.dump(final_param_sets, fh)
 
 generate_parameters(config)
 
+
 rule all:
     input:
-        # '{clustering_results}/{run_label}_labels.csv'
-        '%s/%s_labels.csv' % (clustering_results, run_label)
+        '%s/%s_labels.csv' % (clustering_results, run_label),
+         '%s/%s_evaluations.csv' % (clustering_results, run_label)
 
 
 rule run_clusterer:
     input:
-        '%s/params_to_test.yml' % clustering_results,
         infile = input_data,
     output:
-        '%s/{params_label}_labels.txt' % intermediates_folder
+        "%s/{labs}_labels.txt" % intermediates_folder
     params:
-        kwargs = config['param_sets'],
+        kwargs = lambda wildcards: config["param_sets"][wildcards.labs],
         readkwargs = read_csv_kwargs,
         cluskwargs = clustering_addtl_kwargs
     run:
-        df = pd.read_csv({input.infile}, **{params.readkwargs})
+        df = pd.read_csv(input.infile, **params.readkwargs)
 
-        params_label = {input.kwargs}.keys()[0]
-        params = {input.kwargs}.values()
+        params_label = wildcards.labs
+        params = params.kwargs
         clusterer = params.pop('clusterer')
 
-        cls = clustering.cluster(clusterer, df, **params)
+        cls = clustering.cluster(clusterer, df, params)
+
         labs = pd.DataFrame(cls.labels_, index=df.index, columns=[params_label])
-        labs.to_csv('{intermediates_folder}/{params_label}_labels.txt')
+        labs.to_csv('%s/%s_labels.txt'% (intermediates_folder, params_label))
 
 
-rule collect_labels:
+rule run_evaluation:
     input:
-        expand(
-            "%s/{labs}_labels.txt" % intermediates_folder,
-            labs=config['param_sets_labels']
+        "%s/{labs}_labels.txt" % intermediates_folder
+    output:
+        "%s/{labs}_evaluations.txt" % intermediates_folder
+    params:
+        gold_standard_file = "%s/gold_standard.txt" % addtl_files_folder,
+        input_data = input_data,
+        readkwargs = read_csv_kwargs,
+        evals = config["evaluations"],
+        evalkwargs = config["eval_kwargs"]
+    run:
+        test_labels = pd.read_csv(input[0], index_col=0)
+        if os.path.exists(params.gold_standard_file):
+            gold_standard = pd.read_csv(params.gold_standard_file, **params.readkwargs)
+        else:
+            gold_standard = None
+        data = pd.read_csv(params.input_data, **params.readkwargs)
+        res = pd.DataFrame({'methods':params.evals})
+        print(res)
+        res[wildcards.labs] = res.apply(
+            lambda row: clustering.evaluate_results(
+                test_labels,
+                method=row['methods'],
+                data=data,
+                gold_standard=gold_standard,
+                metric_kwargs=params.evalkwargs.get(row['methods'], {})
+            ), axis=1
+        )
+        res = res.set_index('methods')
+        res.to_csv('%s/%s_evaluations.txt'% (intermediates_folder, wildcards.labs))
+
+
+rule collect_dfs:
+    input:
+        files = expand(
+            '%s/{params_label}_{targets}.txt' % intermediates_folder,
+            params_label = config['param_sets_labels'],
+            targets=config['targets']
         )
     output:
-        '%s/%s_labels.csv' % (clustering_results, run_label)
+        '%s/{run_label}_{targets}.csv' % (clustering_results)
     run:
-        files = expand(
-            '{params_label}_labels.txt',
-            input_data=inputs,
-            params_labels=config['param_labels']
-        )
-        df = concat_dfs(files)
-        df.to_csv('%s/%s_labels.csv' % (clustering_results, run_label))
+        df = concat_dfs(input.files)
+        df.to_csv('%s/%s_%s.csv' % (clustering_results, run_label, wildcards.targets))
 
 
-# rule collect_evaluations:
-#     input:
-#         expand(
-#             '{input_data}_{params_label}_evaluations.txt',
-#             input_data=inputs,
-#             params_labels=param_labels
-#         ),
-#         '{run_label}'
-#     output:
-#         "{clustering_results}/{run_label}_evaluations.csv"
-#     run:
-#         files = expand(
-#             '{input_data}_{params_label}_evaluations.txt',
-#             input_data=inputs,
-#             params_labels=param_labels
-#         )
-#         df = concat_dfs(files)
-#         df.to_csv('{run_label}_evaluations.csv')
-
-
-#TODO how to remove intermediate files?
-#TODO how to toggle removing intermediates?
-
+#TODO Snakemake provides experimental support for dynamic files. Dynamic files can be used whenever
+# one has a rule, for which the number of output files is unknown before the rule was executed. This is useful for example with certain clustering algorithms:
 #snakemake -pn -s SnakeFile.smk
