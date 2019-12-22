@@ -11,15 +11,18 @@ Welcome to autocluster's documentation!
    :caption: Contents:
 
 
-Autocluster
-================================
-.. automodule:: autocluster
-   :members:
-
-
 Indices and tables
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+autocluster.clustering module
+-------------------------
+
+.. automodule:: autocluster.clustering
+   :members:
+   :undoc-members:
+   :show-inheritance:
