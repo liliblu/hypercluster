@@ -24,7 +24,8 @@ setuptools.setup(
         "scipy >= 1.2.1",
         # "matplotlib >= 3.1.0",
         # "seaborn >= 0.9.0",
-        "scikit-learn >= 0.22.0"
+        "scikit-learn >= 0.22.0",
+        "hdbscan >= 0.8.24"
     ],
     packages=setuptools.find_packages(
         exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
