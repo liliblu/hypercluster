@@ -1,3 +1,18 @@
+affinitypropagation.damping0.55:
+  clusterer: affinitypropagation
+  damping: 0.55
+affinitypropagation.damping0.6:
+  clusterer: affinitypropagation
+  damping: 0.6
+affinitypropagation.damping0.65:
+  clusterer: affinitypropagation
+  damping: 0.65
+affinitypropagation.damping0.7:
+  clusterer: affinitypropagation
+  damping: 0.7
+affinitypropagation.damping0.75:
+  clusterer: affinitypropagation
+  damping: 0.75
 affinitypropagation.damping0.8:
   clusterer: affinitypropagation
   damping: 0.8
@@ -10,18 +25,150 @@ affinitypropagation.damping0.9:
 hdbscan.min_cluster_size10:
   clusterer: hdbscan
   min_cluster_size: 10
+hdbscan.min_cluster_size11:
+  clusterer: hdbscan
+  min_cluster_size: 11
 hdbscan.min_cluster_size12:
   clusterer: hdbscan
   min_cluster_size: 12
+hdbscan.min_cluster_size13:
+  clusterer: hdbscan
+  min_cluster_size: 13
+hdbscan.min_cluster_size14:
+  clusterer: hdbscan
+  min_cluster_size: 14
+hdbscan.min_cluster_size15:
+  clusterer: hdbscan
+  min_cluster_size: 15
+hdbscan.min_cluster_size16:
+  clusterer: hdbscan
+  min_cluster_size: 16
+hdbscan.min_cluster_size2:
+  clusterer: hdbscan
+  min_cluster_size: 2
+hdbscan.min_cluster_size3:
+  clusterer: hdbscan
+  min_cluster_size: 3
+hdbscan.min_cluster_size4:
+  clusterer: hdbscan
+  min_cluster_size: 4
+hdbscan.min_cluster_size5:
+  clusterer: hdbscan
+  min_cluster_size: 5
 hdbscan.min_cluster_size6:
   clusterer: hdbscan
   min_cluster_size: 6
+hdbscan.min_cluster_size7:
+  clusterer: hdbscan
+  min_cluster_size: 7
 hdbscan.min_cluster_size8:
   clusterer: hdbscan
   min_cluster_size: 8
+hdbscan.min_cluster_size9:
+  clusterer: hdbscan
+  min_cluster_size: 9
+kmeans.n_clusters10:
+  clusterer: kmeans
+  n_clusters: 10
+kmeans.n_clusters11:
+  clusterer: kmeans
+  n_clusters: 11
+kmeans.n_clusters12:
+  clusterer: kmeans
+  n_clusters: 12
+kmeans.n_clusters13:
+  clusterer: kmeans
+  n_clusters: 13
+kmeans.n_clusters14:
+  clusterer: kmeans
+  n_clusters: 14
+kmeans.n_clusters15:
+  clusterer: kmeans
+  n_clusters: 15
+kmeans.n_clusters16:
+  clusterer: kmeans
+  n_clusters: 16
+kmeans.n_clusters17:
+  clusterer: kmeans
+  n_clusters: 17
+kmeans.n_clusters18:
+  clusterer: kmeans
+  n_clusters: 18
+kmeans.n_clusters19:
+  clusterer: kmeans
+  n_clusters: 19
+kmeans.n_clusters2:
+  clusterer: kmeans
+  n_clusters: 2
+kmeans.n_clusters20:
+  clusterer: kmeans
+  n_clusters: 20
+kmeans.n_clusters21:
+  clusterer: kmeans
+  n_clusters: 21
+kmeans.n_clusters22:
+  clusterer: kmeans
+  n_clusters: 22
+kmeans.n_clusters23:
+  clusterer: kmeans
+  n_clusters: 23
+kmeans.n_clusters24:
+  clusterer: kmeans
+  n_clusters: 24
+kmeans.n_clusters25:
+  clusterer: kmeans
+  n_clusters: 25
+kmeans.n_clusters26:
+  clusterer: kmeans
+  n_clusters: 26
+kmeans.n_clusters27:
+  clusterer: kmeans
+  n_clusters: 27
+kmeans.n_clusters28:
+  clusterer: kmeans
+  n_clusters: 28
+kmeans.n_clusters29:
+  clusterer: kmeans
+  n_clusters: 29
+kmeans.n_clusters3:
+  clusterer: kmeans
+  n_clusters: 3
+kmeans.n_clusters30:
+  clusterer: kmeans
+  n_clusters: 30
+kmeans.n_clusters31:
+  clusterer: kmeans
+  n_clusters: 31
+kmeans.n_clusters32:
+  clusterer: kmeans
+  n_clusters: 32
+kmeans.n_clusters33:
+  clusterer: kmeans
+  n_clusters: 33
+kmeans.n_clusters34:
+  clusterer: kmeans
+  n_clusters: 34
+kmeans.n_clusters35:
+  clusterer: kmeans
+  n_clusters: 35
+kmeans.n_clusters36:
+  clusterer: kmeans
+  n_clusters: 36
+kmeans.n_clusters37:
+  clusterer: kmeans
+  n_clusters: 37
+kmeans.n_clusters38:
+  clusterer: kmeans
+  n_clusters: 38
+kmeans.n_clusters39:
+  clusterer: kmeans
+  n_clusters: 39
 kmeans.n_clusters4:
   clusterer: kmeans
   n_clusters: 4
+kmeans.n_clusters40:
+  clusterer: kmeans
+  n_clusters: 40
 kmeans.n_clusters5:
   clusterer: kmeans
   n_clusters: 5
@@ -34,9 +181,111 @@ kmeans.n_clusters7:
 kmeans.n_clusters8:
   clusterer: kmeans
   n_clusters: 8
+kmeans.n_clusters9:
+  clusterer: kmeans
+  n_clusters: 9
+minibatchkmeans.n_clusters10:
+  clusterer: minibatchkmeans
+  n_clusters: 10
+minibatchkmeans.n_clusters11:
+  clusterer: minibatchkmeans
+  n_clusters: 11
+minibatchkmeans.n_clusters12:
+  clusterer: minibatchkmeans
+  n_clusters: 12
+minibatchkmeans.n_clusters13:
+  clusterer: minibatchkmeans
+  n_clusters: 13
+minibatchkmeans.n_clusters14:
+  clusterer: minibatchkmeans
+  n_clusters: 14
+minibatchkmeans.n_clusters15:
+  clusterer: minibatchkmeans
+  n_clusters: 15
+minibatchkmeans.n_clusters16:
+  clusterer: minibatchkmeans
+  n_clusters: 16
+minibatchkmeans.n_clusters17:
+  clusterer: minibatchkmeans
+  n_clusters: 17
+minibatchkmeans.n_clusters18:
+  clusterer: minibatchkmeans
+  n_clusters: 18
+minibatchkmeans.n_clusters19:
+  clusterer: minibatchkmeans
+  n_clusters: 19
+minibatchkmeans.n_clusters2:
+  clusterer: minibatchkmeans
+  n_clusters: 2
+minibatchkmeans.n_clusters20:
+  clusterer: minibatchkmeans
+  n_clusters: 20
+minibatchkmeans.n_clusters21:
+  clusterer: minibatchkmeans
+  n_clusters: 21
+minibatchkmeans.n_clusters22:
+  clusterer: minibatchkmeans
+  n_clusters: 22
+minibatchkmeans.n_clusters23:
+  clusterer: minibatchkmeans
+  n_clusters: 23
+minibatchkmeans.n_clusters24:
+  clusterer: minibatchkmeans
+  n_clusters: 24
+minibatchkmeans.n_clusters25:
+  clusterer: minibatchkmeans
+  n_clusters: 25
+minibatchkmeans.n_clusters26:
+  clusterer: minibatchkmeans
+  n_clusters: 26
+minibatchkmeans.n_clusters27:
+  clusterer: minibatchkmeans
+  n_clusters: 27
+minibatchkmeans.n_clusters28:
+  clusterer: minibatchkmeans
+  n_clusters: 28
+minibatchkmeans.n_clusters29:
+  clusterer: minibatchkmeans
+  n_clusters: 29
+minibatchkmeans.n_clusters3:
+  clusterer: minibatchkmeans
+  n_clusters: 3
+minibatchkmeans.n_clusters30:
+  clusterer: minibatchkmeans
+  n_clusters: 30
+minibatchkmeans.n_clusters31:
+  clusterer: minibatchkmeans
+  n_clusters: 31
+minibatchkmeans.n_clusters32:
+  clusterer: minibatchkmeans
+  n_clusters: 32
+minibatchkmeans.n_clusters33:
+  clusterer: minibatchkmeans
+  n_clusters: 33
+minibatchkmeans.n_clusters34:
+  clusterer: minibatchkmeans
+  n_clusters: 34
+minibatchkmeans.n_clusters35:
+  clusterer: minibatchkmeans
+  n_clusters: 35
+minibatchkmeans.n_clusters36:
+  clusterer: minibatchkmeans
+  n_clusters: 36
+minibatchkmeans.n_clusters37:
+  clusterer: minibatchkmeans
+  n_clusters: 37
+minibatchkmeans.n_clusters38:
+  clusterer: minibatchkmeans
+  n_clusters: 38
+minibatchkmeans.n_clusters39:
+  clusterer: minibatchkmeans
+  n_clusters: 39
 minibatchkmeans.n_clusters4:
   clusterer: minibatchkmeans
   n_clusters: 4
+minibatchkmeans.n_clusters40:
+  clusterer: minibatchkmeans
+  n_clusters: 40
 minibatchkmeans.n_clusters5:
   clusterer: minibatchkmeans
   n_clusters: 5
@@ -49,15 +298,51 @@ minibatchkmeans.n_clusters7:
 minibatchkmeans.n_clusters8:
   clusterer: minibatchkmeans
   n_clusters: 8
+minibatchkmeans.n_clusters9:
+  clusterer: minibatchkmeans
+  n_clusters: 9
 optics.min_samples10:
   clusterer: optics
   min_samples: 10
+optics.min_samples11:
+  clusterer: optics
+  min_samples: 11
 optics.min_samples12:
   clusterer: optics
   min_samples: 12
+optics.min_samples13:
+  clusterer: optics
+  min_samples: 13
+optics.min_samples14:
+  clusterer: optics
+  min_samples: 14
+optics.min_samples15:
+  clusterer: optics
+  min_samples: 15
+optics.min_samples16:
+  clusterer: optics
+  min_samples: 16
+optics.min_samples2:
+  clusterer: optics
+  min_samples: 2
+optics.min_samples3:
+  clusterer: optics
+  min_samples: 3
+optics.min_samples4:
+  clusterer: optics
+  min_samples: 4
+optics.min_samples5:
+  clusterer: optics
+  min_samples: 5
 optics.min_samples6:
   clusterer: optics
   min_samples: 6
+optics.min_samples7:
+  clusterer: optics
+  min_samples: 7
 optics.min_samples8:
   clusterer: optics
   min_samples: 8
+optics.min_samples9:
+  clusterer: optics
+  min_samples: 9

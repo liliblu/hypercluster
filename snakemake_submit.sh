@@ -10,11 +10,11 @@
 
 module purge
 module add slurm
-conda activate autocluster
-cd /gpfs/home/lmb529/ruggleslabHome/autocluster_testing/autocluster
+source activate autocluster
+cd /gpfs/home/lmb529/ruggleslabHome/autocluster
 mkdir -p logs/slurm/
 
 snakemake -j 999 -p --verbose -s autocluster.smk \
 --keep-going \
 --cluster-config cluster.json \
---cluster "sbatch --mem={cluster.mem} -t {cluster.time} -o {cluster.output}"
+--cluster "sbatch --mem={cluster.mem} -t {cluster.time} -o {cluster.output} -p {cluster.partition}"

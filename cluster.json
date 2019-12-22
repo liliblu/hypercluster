@@ -1,19 +1,28 @@
 {
     "__default__": {
-        "job-name": "snakemaketest",
+        "job-name": "snakemake",
         "time": "4-23:59:59",
         "mem": 8G,
-        "partition": "cpu_medium",
-        "cpus-per-task": 8,
+        "partition": "fn_medium",
+        "cpus-per-task": 1,
         "output": "logs/slurm/%j.out",
         "error": "logs/slurm/%j.err"
     },
     "run_clusterer": {
         "job-name": "snakemakerunclusterer",
         "time": "4-23:59:59",
-        "mem": 48G,
+        "mem": 32G,
         "partition": "fn_medium",
-        "cpus-per-task": 6,
+        "cpus-per-task": 4,
+        "output": "logs/slurm/%j.out",
+        "error": "logs/slurm/%j.err"
+    },
+    "run_evaluation": {
+        "job-name": "snakeevaluate",
+        "time": "4-23:59:59",
+        "mem": 16G,
+        "partition": "fn_medium",
+        "cpus-per-task": 2,
         "output": "logs/slurm/%j.out",
         "error": "logs/slurm/%j.err"
     }

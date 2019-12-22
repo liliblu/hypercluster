@@ -19,10 +19,10 @@ clustering_results = config['clustering_results']
 gold_standard_file = config['gold_standard_file']
 
 
-def concat_dfs(df_list):
+def concat_dfs(df_list, **read_csv_kwargs):
     df = pd.DataFrame()
     for fil in df_list:
-        temp = pd.read_csv(fil, index_col=0)
+        temp = pd.read_csv(fil, **read_csv_kwargs)
         df = pd.concat([df, temp], join='outer', axis=1)
     return df
 
@@ -67,11 +67,11 @@ rule all:
             input_file=input_files,
             targets=config['targets']
         )
-
+        # 'brca-combined-v4.0-phosphoproteome-ratio-norm-unfiltered-dedup-prot-normed-top10000std/%s/%s.csv' % (intermediates_folder, 'minibatchkmeans.n_clusters37_evaluations')
 
 rule run_clusterer:
     input:
-        infile = '%s/{input_file}.txt' % input_data_folder,
+        infile = '%s/{input_file}.csv' % input_data_folder,
     output:
         "{input_file}/%s/{labs}_labels.csv" % intermediates_folder
     params:
@@ -97,12 +97,12 @@ rule run_evaluation:
         "{input_file}/%s/{labs}_evaluations.csv" % intermediates_folder
     params:
         gold_standard_file = gold_standard_file,
-        input_data = '%s/{input_file}.txt' % input_data_folder,
+        input_data = '%s/{input_file}.csv' % input_data_folder,
         readkwargs = read_csv_kwargs,
         evals = config["evaluations"],
         evalkwargs = config["eval_kwargs"]
     run:
-        test_labels = pd.read_csv(input[0], index_col=0)
+        test_labels = pd.read_csv(input[0], **params.readkwargs)
         if os.path.exists(params.gold_standard_file):
             gold_standard = pd.read_csv(params.gold_standard_file, **params.readkwargs)
         else:
@@ -131,10 +131,12 @@ rule collect_dfs:
             '{{input_file}}/%s/{params_label}_{{targets}}.csv' % intermediates_folder,
             params_label = config['param_sets_labels'],
         )
+    params:
+        readkwargs = config['output_kwargs']
     output:
         '{input_file}/%s/{input_file}_{targets}.csv' % (clustering_results)
     run:
-        df = concat_dfs(input.files)
+        df = concat_dfs(input.files, **params.readkwargs[wildcards.targets])
         df.to_csv(
             '%s/%s/%s_%s.csv' % (
                 wildcards.input_file, clustering_results,wildcards.input_file, wildcards.targets

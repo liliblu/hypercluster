@@ -287,4 +287,3 @@ def optimize_clustering(
     best_labels = clustering_labels[top_choice[0]][top_choice[1]]
 
     return best_labels, clustering_evaluations, clustering_labels
-
