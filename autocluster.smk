@@ -47,7 +47,7 @@ def generate_parameters(config):
     for param_set in all_params_to_test:
         clusterer = param_set['clusterer']
         lab = '.'.join([clusterer]+[
-            '%s%s' % (k, v) for k, v in param_set.items() if k != 'clusterer'
+            '%s-%s' % (k, v) for k, v in param_set.items() if k != 'clusterer'
         ])
         final_param_sets.update({lab:param_set})
     config['param_sets'] = final_param_sets

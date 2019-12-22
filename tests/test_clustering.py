@@ -55,16 +55,16 @@ def test_cluster_one():
         clustering.cluster(clus_name, test_data, params)
 
 
-def test_run_conditions_one_algorithm():
+def test_autoclusterer():
     for clus_name in clusterers.keys():
-        clustering.run_conditions_one_algorithm(test_data, clus_name)
+        clustering.AutoClusterer(clus_name).fit(test_data)
     for clus_name in clusterers.keys():
-        clustering.run_conditions_one_algorithm(test_data, clus_name, random_search=False)
+        clustering.AutoClusterer(clus_name, random_search=False).fit(test_data)
 
 # TODO add test for parameter weights
 
 def test_evaluate_results():
-    labs = clustering.run_conditions_one_algorithm(test_data, 'kmeans')
+    labs = clustering.AutoClusterer('kmeans').fit(test_data).labels_
     for metric in inherent_metric:
         clustering.evaluate_results(labs, metric, data=test_data)
 

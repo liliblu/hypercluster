@@ -12,12 +12,12 @@ from itertools import product
 
 
 clusterers = {
-    'hdbscan':HDBSCAN,
-    'kmeans':KMeans,
-    'minibatchkmeans':MiniBatchKMeans,
-    'affinitypropagation':AffinityPropagation,
-    'meanshift':MeanShift,
-    'optics':OPTICS,
+    'hdbscan': HDBSCAN,
+    'kmeans': KMeans,
+    'minibatchkmeans': MiniBatchKMeans,
+    'affinitypropagation': AffinityPropagation,
+    'meanshift': MeanShift,
+    'optics': OPTICS,
 }
 
 
@@ -84,6 +84,15 @@ min_or_max = {
 }
 
 
+def calculate_row_weights(row, param_weights, vars_to_optimize):
+    weights = []
+    for var_lab, val in row.to_dict().items():
+        weights.append(
+            param_weights.get(var_lab, {}).get(val, (1/len(vars_to_optimize[var_lab])))
+        )
+    return np.prod(weights)
+
+
 def cluster(clusterer_name, data, params: dict = {}):
     clusterer = clusterers[clusterer_name](**params)
     return clusterer.fit(data)
@@ -119,22 +128,26 @@ class AutoClusterer:
         self.labels_ = None
 
     def generate_param_sets(self):
-        self.clus_kwargs.update(self.params_to_optimize)
+        total_kwargs = self.clus_kwargs
+        total_kwargs.update(self.params_to_optimize)
+
         conditions = 1
         vars_to_optimize = {}
         static_kwargs = {}
-        for k, v in self.clus_kwargs.items():
-            if len(v) > 1:
-                vars_to_optimize[k] = v
-                conditions *= len(v)
+        for parameter_name, possible_values in self.clus_kwargs.items():
+            if len(possible_values) > 1:
+                vars_to_optimize[parameter_name] = possible_values
+                conditions *= len(possible_values)
             else:
-                static_kwargs[k] = v
+                static_kwargs[parameter_name] = possible_values
         if conditions == 1:
             logging.error(
                 'Clusterer %s was only given one set of parameters, nothing to optimize.'
-                % clusterer_name
+                % self.clusterer_name
             )
             self.param_sets = None
+            return self
+
         self.static_kwargs = static_kwargs
         self.total_possible_conditions = conditions
 
@@ -150,12 +163,8 @@ class AutoClusterer:
             # parameter.
             if self.param_weights:
                 weights = parameters.apply(
-                    lambda row: np.prod(
-                        [self.param_weights.get(
-                            i, len(vars_to_optimize[i]) * [1 / len(vars_to_optimize[i])]
-                        )[vars_to_optimize[i].index(val)]
-                         for var_lab, val in row.to_dict().items()]
-                    )
+                    lambda row: calculate_row_weights(row, self.param_weights, vars_to_optimize),
+                    axis=1
                 )
             else:
                 weights = None
@@ -166,8 +175,13 @@ class AutoClusterer:
             % (self.clusterer_name, len(parameters), conditions)
         )
         self.param_sets = parameters
+        return self
 
     def fit(self, data: DataFrame):
+        if self.param_sets is None:
+            logging.error('No parameters to optimize for %s, cannot fit' % self.clusterer_name)
+            return self
+
         label_results = pd.DataFrame(columns=self.param_sets.columns.union(data.index))
         for i, row in self.param_sets.iterrows():
             single_params = row.to_dict()
@@ -177,13 +191,12 @@ class AutoClusterer:
             label_row = dict(zip(data.index, labels))
             label_row.update(single_params)
             label_results = label_results.append(label_row, ignore_index=True)
-            logging.info('%s - %s of conditions done' % (i, (i / len(parameters))))
+            logging.info('%s - %s of conditions done' % (i, (i / self.total_possible_conditions)))
 
         label_results = label_results.set_index(list(self.param_sets.columns)).transpose()
         self.labels_ = label_results
+        return self
 
-
-#TODO write a fn that evaluates the above fn too
 
 def evaluate_results(
         label_df: DataFrame,
@@ -255,20 +268,17 @@ def optimize_clustering(
             logging.error('Algorithm %s not available, skipping. '% clusterer_name)
             continue
 
-        label_df = run_conditions_one_algorithm(
-            data,
+        label_df = AutoClusterer(
             clusterer_name=clusterer_name,
-            params=algorithm_parameters.get(clusterer_name, None),
+            params_to_optimize=algorithm_parameters.get(clusterer_name, None),
             random_search=random_search,
             random_search_fraction=random_search_fraction,
             param_weights=algorithm_param_weights.get(clusterer_name, None),
             clus_kwargs=algorithm_clus_kwargs.get(clusterer_name, {})
-        )
+        ).fit(data).labels_
         if label_df is None:
-            logging.warning(
-                'Clusterer %s had no labeling results, skipping evaluation' % clusterer_name
-                )
             continue
+
         clustering_labels[clusterer_name] = label_df
 
         evaluation_results = evaluate_results(
@@ -280,10 +290,14 @@ def optimize_clustering(
         )
 
         clustering_evaluations.update({
-            tuple([clusterer_name, params_key]): value for params_key, value in evaluation_results.items()
+            (clusterer_name, params_key): value for params_key, value in
+            evaluation_results.items()
         })
 
-    top_choice = min_or_max[evaluation_method](clustering_evaluations, key=lambda k: clustering_evaluations[k])
+    top_choice = min_or_max[evaluation_method](
+        clustering_evaluations,
+        key=lambda k: clustering_evaluations[k]
+    )
     best_labels = clustering_labels[top_choice[0]][top_choice[1]]
 
     return best_labels, clustering_evaluations, clustering_labels
