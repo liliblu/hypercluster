@@ -295,7 +295,7 @@ def optimize_clustering(
             continue
 
         clustering_labels[clusterer_name] = label_df
-
+        #TODO allow more evaluations, change output into a df like the smk
         evaluation_results = evaluate_results(
             label_df,
             method=evaluation_method,
