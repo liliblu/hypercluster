@@ -16,10 +16,8 @@ def calculate_row_weights(
 
     Args:
         row:  Series of parameters, with parameter names as index.
-        param_weights: Dictionary of str: dictionaries. Ex format - {'parameter_name':{
-        'param_option_1':0.5, 'param_option_2':0.5}}.
-        vars_to_optimize: Dictionary with possibilities for different parameters. Ex format - {
-        'parameter_name':[1, 2, 3, 4, 5]}.
+        param_weights: Dictionary of str: dictionaries. Ex format - {'parameter_name':{'param_option_1':0.5, 'param_option_2':0.5}}.
+        vars_to_optimize: Dictionary with possibilities for different parameters. Ex format - {'parameter_name':[1, 2, 3, 4, 5]}.
 
     Returns:
         Float representing the probability of seeing that combination of parameters,
@@ -39,8 +37,7 @@ def cluster(clusterer_name: str, data: DataFrame, params: dict = {}):
     Runs a given clusterer with a given set of parameters.
 
     Args:
-        clusterer_name: String name of clusterer, for options see
-        autocluster.categories.clusterers.
+        clusterer_name: String name of clusterer, for options see autocluster.categories.clusterers.
         data: Dataframe with elements to cluster as index and examples as columns.  
         params: Dictionary of parameter names and values to feed into clusterer. Default {}.  
 
@@ -54,7 +51,21 @@ def cluster(clusterer_name: str, data: DataFrame, params: dict = {}):
 class AutoClusterer:
     """
     Main autocluster object.
-    """
+    Args:
+            clusterer_name: String name of clustererm for options see
+        autocluster.categories.clusterers..
+            params_to_optimize: Dictionary with possibilities for different parameters. Ex format - {
+        'parameter_name':[1, 2, 3, 4, 5]}. If None, will optimize default selection, given in
+        autocluster.categories.variables_to_optimize. Default None.
+            random_search: Whether to search a random selection of possible parameters or all
+        possibilites. Default True.
+            random_search_fraction: If random_search is True, what fraction of the possible
+            parameters to search. Default 0.5.
+            param_weights: Dictionary of str: dictionaries. Ex format - {'parameter_name':{
+        'param_option_1':0.5, 'param_option_2':0.5}}.
+            clus_kwargs: Additional kwargs to pass into given clusterer, but not to be optimized.
+        Default None.
+        """
     def __init__(
             self,
             clusterer_name: Optional[str] = 'hdbscan',
@@ -64,23 +75,6 @@ class AutoClusterer:
             param_weights: dict = {},
             clus_kwargs: Optional[dict] = None
     ):
-        """
-
-        Args:
-            clusterer_name: String name of clustererm for options see
-        autocluster.categories.clusterers..
-            params_to_optimize: Dictionary with possibilities for different parameters. Ex format - {
-        'parameter_name':[1, 2, 3, 4, 5]}. If None, will optimize default selection, given in
-        autocluster.categories.variables_to_optimize. Default None.  
-            random_search: Whether to search a random selection of possible parameters or all
-        possibilites. Default True.  
-            random_search_fraction: If random_search is True, what fraction of the possible
-            parameters to search. Default 0.5.  
-            param_weights: Dictionary of str: dictionaries. Ex format - {'parameter_name':{
-        'param_option_1':0.5, 'param_option_2':0.5}}.  
-            clus_kwargs: Additional kwargs to pass into given clusterer, but not to be optimized.
-        Default None.  
-        """
         self.clusterer_name = clusterer_name
         self.params_to_optimize = params_to_optimize
         self.random_search = random_search
@@ -197,10 +191,9 @@ def evaluate_results(
     Uses a given metric to evaluate clustering results.  
     Args:
         label_df: Dataframe with elements to cluster as index and different labelings as columns
-        method: Str of name of evaluation to use. For options see
-        autocluster.categories.evaluations. Default is silhouette.
+        method: Str of name of evaluation to use. For options see autocluster.categories.evaluations. Default is silhouette.
         data: If using an inherent metric, must provide Dataframe of original data used to
-        cluster. For options see autocluster.categories.inherent_metric. .
+        cluster. For options see autocluster.categories.inherent_metric.
         gold_standard: If using a metric that compares to ground truth, must provide a set of
         gold standard labels. For options see autocluster.categories.need_ground_truth.
         metric_kwargs: Additional kwargs to use in evaluation.
@@ -257,25 +250,18 @@ def optimize_clustering(
     Args:
         data: Dataframe with elements to cluster as index and examples as columns.
         algorithm_names: Which clusterers to try. Default is all. For options see
-        autocluster.categories.clusterers. Can also put 'slow', 'fast' or 'fastest' for subset
-        of clusterers. See autocluster.categories.speeds.
-        algorithm_parameters: Dictionary of str:dict, with parameters to optimize for each
-        clusterer. Ex. structure:: {'clusterer1':{'param1':['opt1', 'opt2', 'opt3']}}.
-        random_search: Whether to search a random selection of possible parameters or all
-        possibilities. Default True.
-        random_search_fraction: If random_search is True, what fraction of the possible
-        parameters to search, applied to all clusterers. Default 0.5.
-        algorithm_param_weights: Dictionary of str: dictionaries. Ex format - {'clusterer_name': {
-        'parameter_name':{'param_option_1':0.5, 'param_option_2':0.5}}}.
+        autocluster.categories.clusterers. Can also put 'slow', 'fast' or 'fastest' for subset of clusterers. See autocluster.categories.speeds.
+        algorithm_parameters: Dictionary of str:dict, with parameters to optimize for each clusterer. Ex. structure:: {'clusterer1':{'param1':['opt1', 'opt2', 'opt3']}}.
+        random_search: Whether to search a random selection of possible parameters or all possibilities. Default True.
+        random_search_fraction: If random_search is True, what fraction of the possible parameters to search, applied to all clusterers. Default 0.5.
+        algorithm_param_weights: Dictionary of str: dictionaries. Ex format - {'clusterer_name': {'parameter_name':{'param_option_1':0.5, 'param_option_2':0.5}}}.
         algorithm_clus_kwargs: Dictionary of additional kwargs per clusterer.
-        evaluation_method: Str name of evaluation metric to use. For options see
-        autocluster.categories.evaluations. Default silhouette.
-        gold_standard: If using a evaluation needs ground truth, must provide ground truth labels.
-        For options see autocluster.categories.need_ground_truth.
+        evaluation_method: Str name of evaluation metric to use. For options see autocluster.categories.evaluations. Default silhouette.
+        gold_standard: If using a evaluation needs ground truth, must provide ground truth labels. For options see autocluster.categories.need_ground_truth.
         metric_kwargs: Additional evaluation metric kwargs.  
 
     Returns:
-        Best labels, dictionary of clustering evalutations, dictionary of all clustering labels
+        Best labels, dictionary of clustering evaluations, dictionary of all clustering labels
     """
 
     if algorithm_param_weights is None:
