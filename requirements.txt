@@ -6,3 +6,4 @@ sphinx==2.0.0
 sphinx-argparse==0.2.5
 sphinx-autodoc-typehints==1.7.0
 hdbscan>=0.8.24
+snakemake>=5.8.2

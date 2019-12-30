@@ -13,7 +13,7 @@ clusterers = {
     'meanshift': MeanShift,
     'optics': OPTICS,
 }
-
+#TODO add all other clusterers
 slow = ['affinitypropagation', 'meanshift']
 fast = ['kmeans', 'optics', 'hdbscan']
 fastest = ['minibatchkmeans']
@@ -22,6 +22,7 @@ speeds = {
     'fast':fast,
     'fastest':fastest
 }
+#TODO change speed to categories, and have partitioning vs clustering in there too.
 
 min_cluster_size = [i for i in range(2, 17, 2)]
 n_clusters = [i for i in range(2, 41)]
@@ -32,7 +33,7 @@ variables_to_optimize = {
     'kmeans':dict(n_clusters=n_clusters),
     'minibatchkmeans':dict(n_clusters=n_clusters),
     'affinitypropagation':dict(damping=damping),
-    'meanshift':dict(cluster_all=[False]),
+    'meanshift':dict(cluster_all=[False]), #TODO add something to optimize here
     'optics':dict(min_samples=min_cluster_size),
 }
 
@@ -46,7 +47,7 @@ evaluations = {
     'calinskiharabasz':calinski_harabasz_score,
     'daviesbouldin': davies_bouldin_score,
 }
-
+#TODO add all other evaluations
 need_ground_truth = [
     'adjrand',
     'adjmutualinfo',

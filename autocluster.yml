@@ -1,4 +1,4 @@
-name: autocluster
+name: hypercluster
 channels:
   - conda-forge
   - auto
@@ -152,4 +152,4 @@ dependencies:
   - zipp=0.6.0
   - zlib=1.2.11
   - zstd=1.4.4
-prefix: /Users/lili/anaconda3/envs/autocluster
+prefix: /Users/lili/anaconda3/envs/hypercluster

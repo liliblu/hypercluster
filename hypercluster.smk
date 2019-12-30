@@ -1,5 +1,5 @@
 import pandas as pd, numpy as np
-from autocluster import clustering
+from hypercluster import clustering
 import os
 import yaml
 import subprocess

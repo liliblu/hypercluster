@@ -50,7 +50,7 @@ def cluster(clusterer_name: str, data: DataFrame, params: dict = {}):
 
 class AutoClusterer:
     """
-    Main autocluster object.
+    Main hypercluster object.
     """
     def __init__(
             self,
@@ -67,7 +67,7 @@ class AutoClusterer:
             clusterer_name: String name of clusterer must be one of: %s.  
             params_to_optimize: Dictionary with possibilities for different parameters. Ex format - {
         'parameter_name':[1, 2, 3, 4, 5]}. If None, will optimize default selection, given in
-        autocluster.categories.variables_to_optimize. Default None.  
+        hypercluster.categories.variables_to_optimize. Default None.  
             random_search: Whether to search a random selection of possible parameters or all
         possibilites. Default True.  
             random_search_fraction: If random_search is True, what fraction of the possible
@@ -253,7 +253,7 @@ def optimize_clustering(
         data: Dataframe with elements to cluster as index and examples as columns.
         algorithm_names: Which clusterers to try. Default is all. Can be list consisting of any
         in %s. Can also put 'slow', 'fast' or 'fastest' for subset of clusterers. See
-        autocluster.categories.speeds.  
+        hypercluster.categories.speeds.  
         algorithm_parameters: Dictionary of str:dict, with parameters to optimize for each
         clusterer. Ex. structure:: {'clusterer1':{'param1':['opt1', 'opt2', 'opt3']}}
         random_search: Whether to search a random selection of possible parameters or all

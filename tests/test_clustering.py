@@ -1,4 +1,4 @@
-from autocluster import clustering
+from hypercluster import clustering
 import pandas as pd
 import numpy as np
 
