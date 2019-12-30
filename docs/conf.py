@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('../.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Autocluster'
+project = 'Hypercluster'
 copyright = '2019, Ruggleslab'
 author = 'Ruggleslab'
 
