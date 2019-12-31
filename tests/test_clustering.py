@@ -81,12 +81,11 @@ def test_passing_kwargs_for_a_clusterer():
 
 def test_evaluate_results():
     labs = clustering.AutoClusterer('KMeans').fit(test_data).labels_
-    for metric in inherent_metric:
-        clustering.evaluate_results(labs, metric, data=test_data)
-
-    for metric in need_ground_truth:
-        clustering.evaluate_results(labs, metric, gold_standard=test_ground_truth)
+    for metric in inherent_metrics + need_ground_truth:
+        clustering.evaluate_results(
+            labs[labs.columns[0]], metric, data=test_data, gold_standard=test_ground_truth
+        )
 
 
 def test_optimize_clustering():
-    best, evals, labs = clustering.optimize_clustering(test_data)
+    clustering.optimize_clustering(test_data)

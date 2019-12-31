@@ -1,8 +1,9 @@
-import pandas as pd, numpy as np
+import pandas as pd
 from hypercluster import clustering
+from hypercluster.constants import param_delim, val_delim
 import os
 import yaml
-import subprocess
+
 
 configfile: 'config.yml'
 
@@ -46,8 +47,8 @@ def generate_parameters(config):
     final_param_sets = {}
     for param_set in all_params_to_test:
         clusterer = param_set['clusterer']
-        lab = '.'.join([clusterer]+[
-            '%s-%s' % (k, v) for k, v in param_set.items() if k != 'clusterer'
+        lab = param_delim.join([clusterer]+[
+            '%s%s%s' % (k, val_delim, v) for k, v in param_set.items() if k != 'clusterer'
         ])
         final_param_sets.update({lab:param_set})
     config['param_sets'] = final_param_sets
@@ -80,12 +81,12 @@ generate_parameters(config)
 rule all:
     input:
         expand(
-            '{input_file}/%s/{input_file}_{targets}.csv' % clustering_results,
+            '{input_file}/%s/{input_file}_{targets}.txt' % clustering_results,
             input_file=input_files,
             targets=config['targets']
         ),
         expand(
-            "{input_file}/%s/{labs}_labels.csv" % intermediates_folder,
+            "{input_file}/%s/{labs}_labels.txt" % intermediates_folder,
             input_file=input_files,
             labs=config["param_sets"]
          )
@@ -95,7 +96,7 @@ rule run_clusterer:
     input:
         infile = handle_ext
     output:
-        "{input_file}/%s/{labs}_labels.csv" % intermediates_folder
+        "{input_file}/%s/{labs}_labels.txt" % intermediates_folder
     params:
         kwargs = lambda wildcards: config["param_sets"][wildcards.labs],
         readkwargs = read_csv_kwargs,
@@ -108,19 +109,23 @@ rule run_clusterer:
 
         labs = pd.DataFrame(cls.labels_, index=df.index, columns=[wildcards.labs])
         labs.to_csv(
-            '%s/%s/%s_labels.csv'% (wildcards.input_file, intermediates_folder, wildcards.labs)
+            '%s/%s/%s_labels.txt'% (wildcards.input_file, intermediates_folder, wildcards.labs),
+            sep = read_csv_kwargs.get('sep', ',')
         )
 
 
 rule run_evaluation:
     input:
-        "{input_file}/%s/{labs}_labels.csv" % intermediates_folder
+        "{input_file}/%s/{labs}_labels.txt" % intermediates_folder
     output:
-        "{input_file}/%s/{labs}_evaluations.csv" % intermediates_folder
+        "{input_file}/%s/{labs}_evaluations.txt" % intermediates_folder
     params:
         gold_standard_file = gold_standard_file,
         input_data = handle_ext,
-        readkwargs = read_csv_kwargs,
+        readkwargs = {
+            'index_col':read_csv_kwargs.get('index_col', 0),
+            'sep':read_csv_kwargs.get('sep', ',')
+        },
         evals = config["evaluations"],
         evalkwargs = config["eval_kwargs"]
     run:
@@ -134,35 +139,38 @@ rule run_evaluation:
 
         res[wildcards.labs] = res.apply(
             lambda row: clustering.evaluate_results(
-                test_labels,
+                test_labels[test_labels.columns[0]],
                 method=row['methods'],
                 data=data,
                 gold_standard=gold_standard,
-                metric_kwargs=params.evalkwargs.get(row['methods'], {})
-            ).get(wildcards.labs, np.nan), axis=1
+                metric_kwargs=params.evalkwargs.get(row['methods'], None)
+            ), axis=1
         )
         res = res.set_index('methods')
         res.to_csv(
-            '%s/%s/%s_evaluations.csv'% (wildcards.input_file, intermediates_folder, wildcards.labs)
+            '%s/%s/%s_evaluations.txt'% (wildcards.input_file, intermediates_folder,
+                                         wildcards.labs),
+            sep=params.readkwargs['sep']
         )
 
 
 rule collect_dfs:
     input:
         files = expand(
-            '{{input_file}}/%s/{params_label}_{{targets}}.csv' % intermediates_folder,
+            '{{input_file}}/%s/{params_label}_{{targets}}.txt' % intermediates_folder,
             params_label = config['param_sets_labels'],
         )
     params:
-        readkwargs = config['output_kwargs']
+        readkwargs = read_csv_kwargs,
+        outputkwargs = config['output_kwargs']
     output:
-        '{input_file}/%s/{input_file}_{targets}.csv' % (clustering_results)
+        '{input_file}/%s/{input_file}_{targets}.txt' % (clustering_results)
     run:
-        df = concat_dfs(input.files, params.readkwargs[wildcards.targets])
+        df = concat_dfs(input.files, params.outputkwargs[wildcards.targets])
         df.to_csv(
-            '%s/%s/%s_%s.csv' % (
+            '%s/%s/%s_%s.txt' % (
                 wildcards.input_file, clustering_results,wildcards.input_file, wildcards.targets
-            )
+            ), sep = params.readkwargs.get('sep', ',')
         )
 
 #TODO add pairwise comparison bn results

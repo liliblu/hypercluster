@@ -31,9 +31,9 @@ def calculate_row_weights(
     weights = []
     for var_lab, val in row.to_dict().items():
         weights.append(
-            param_weights.get(var_lab, {}).get(val, (1/len(vars_to_optimize[var_lab])))
+            param_weights.get(var_lab, {}).get(val, (1 / len(vars_to_optimize[var_lab])))
         )
-    #TODO if probs are given to some options and not other, split the remaining probability,
+    # TODO if probs are given to some options and not other, split the remaining probability,
     # don't just give equal prob.
     return np.prod(weights)
 
@@ -72,6 +72,7 @@ class AutoClusterer:
             clus_kwargs: Additional kwargs to pass into given clusterer, but not to be optimized.
         Default None.
         """
+
     def __init__(
             self,
             clusterer_name: Optional[str] = 'hdbscan',
@@ -114,7 +115,7 @@ class AutoClusterer:
                 static_kwargs[parameter_name] = possible_values
             elif len(possible_values) > 1:
                 vars_to_optimize[parameter_name] = possible_values
-                conditions *= conditions*len(possible_values)
+                conditions *= conditions * len(possible_values)
             else:
                 logging.error(
                     'Parameter %s was given no possibilities. Will continue with default parameter.'
@@ -167,7 +168,7 @@ class AutoClusterer:
             self with self.labels_ assigned
         """
 
-        if self.param_sets.shape == (0,0):
+        if self.param_sets.shape == (0, 0):
             labels_results = pd.DataFrame(
                 cluster(self.clusterer_name, data).labels_,
                 columns=['default_parameters'],
@@ -191,7 +192,7 @@ class AutoClusterer:
 
 
 def evaluate_results(
-        label_df: DataFrame,
+        labels: Iterable,
         method: str = 'silhouette_score',
         data: Optional[DataFrame] = None,
         gold_standard: Optional[Iterable] = None,
@@ -200,7 +201,7 @@ def evaluate_results(
     """
     Uses a given metric to evaluate clustering results.  
     Args:
-        label_df: Dataframe with elements to cluster as index and different labelings as columns
+        labels: Series of labels
         method: Str of name of evaluation to use. For options see hypercluster.categories.evaluations. Default is silhouette.
         data: If using an inherent metric, must provide Dataframe of original data used to
         cluster. For options see hypercluster.constants.inherent_metric.
@@ -215,31 +216,25 @@ def evaluate_results(
     if metric_kwargs is None:
         metric_kwargs = {}
 
-    evaluation_results = {}
     if method in need_ground_truth:
         if gold_standard is None:
             raise ValueError('Chosen evaluation metric %s requires gold standard set.' % method)
-    elif method in inherent_metric:
+        clustered = (gold_standard != -1) & (labels != -1)
+        compare_to = gold_standard[clustered]
+
+    elif method in inherent_metrics:
         if data is None:
             raise ValueError('Chosen evaluation metric %s requires data input.' % method)
+        clustered = (labels != -1)
+        compare_to = data.loc[clustered]
     else:
         raise ValueError('Evaluation metric %s not valid' % method)
-        #TODO need to fix to check for other things. Add eval characteristics.
-    for col in label_df.columns:
-        if method in need_ground_truth:
-            clustered = (gold_standard != -1) & (label_df[col] != -1)
-            compare_to = gold_standard[clustered]
-        elif method in inherent_metric:
-            clustered = (label_df[col] != -1)
-            compare_to = data.loc[clustered]
 
-        if len(label_df[col][clustered].value_counts()) <= 2:
-            logging.warning('Condition %s does not have at least two clusters, skipping' %col)
-            continue
-        evaluation_results[col] = eval(method)(
-            compare_to, label_df[col][clustered], **metric_kwargs
-        )
-    return evaluation_results
+    if len(labels[clustered].value_counts()) < 2:
+        logging.error('Condition %s does not have at least two clusters, skipping' % labels.name)
+        return np.nan
+
+    return eval(method)(compare_to, labels[clustered], **metric_kwargs)
 
 
 def optimize_clustering(
@@ -250,7 +245,7 @@ def optimize_clustering(
         random_search_fraction: float = 0.5,
         algorithm_param_weights: Optional[dict] = None,
         algorithm_clus_kwargs: Optional[dict] = None,
-        evaluation_method: Optional[str] = 'silhouette_score',
+        evaluation_methods: Optional[list] = None,
         gold_standard: Optional[Iterable] = None,
         metric_kwargs: Optional[dict] = None,
 ) -> tuple:
@@ -265,7 +260,8 @@ def optimize_clustering(
         random_search_fraction: If random_search is True, what fraction of the possible parameters to search, applied to all clusterers. Default 0.5.
         algorithm_param_weights: Dictionary of str: dictionaries. Ex format - {'clusterer_name': {'parameter_name':{'param_option_1':0.5, 'param_option_2':0.5}}}.
         algorithm_clus_kwargs: Dictionary of additional kwargs per clusterer.
-        evaluation_method: Str name of evaluation metric to use. For options see hypercluster.categories.evaluations. Default silhouette.
+        evaluation_methods: Str name of evaluation metric to use. For options see
+        hypercluster.categories.evaluations. Default silhouette.
         gold_standard: If using a evaluation needs ground truth, must provide ground truth labels. For options see hypercluster.constants.need_ground_truth.
         metric_kwargs: Additional evaluation metric kwargs.  
 
@@ -281,12 +277,14 @@ def optimize_clustering(
         algorithm_parameters = {}
     if metric_kwargs is None:
         metric_kwargs = {}
+    if evaluation_methods is None:
+        evaluation_methods = inherent_metrics
 
     if algorithm_names in list(categories.keys()):
         algorithm_names = categories[algorithm_names]
 
     clustering_labels = {}
-    clustering_evaluations = {}
+    clustering_labels_df = pd.DataFrame()
     for clusterer_name in algorithm_names:
         label_df = AutoClusterer(
             clusterer_name=clusterer_name,
@@ -294,29 +292,35 @@ def optimize_clustering(
             random_search=random_search,
             random_search_fraction=random_search_fraction,
             param_weights=algorithm_param_weights.get(clusterer_name, None),
-            clus_kwargs=algorithm_clus_kwargs.get(clusterer_name, {})
+            clus_kwargs=algorithm_clus_kwargs.get(clusterer_name, None)
         ).fit(data).labels_
-        print(label_df)
-
+        label_df.index = pd.MultiIndex.from_tuples(label_df.index)
         clustering_labels[clusterer_name] = label_df
-        #TODO allow more evaluations, change output into a df like the smk
-        evaluation_results = evaluate_results(
-            label_df,
-            method=evaluation_method,
-            data=data,
-            gold_standard=gold_standard,
-            metric_kwargs=metric_kwargs
+
+        # Put all parameter labels into 1 for a big df
+        label_df = label_df.transpose()
+        cols_for_labels = label_df.index.to_frame()
+
+        inds = cols_for_labels.apply(
+            lambda row: param_delim.join(
+                [clusterer_name] + ['%s%s%s' % (k, val_delim, v) for k, v in row.to_dict().items()]
+            ), axis=1
         )
 
-        clustering_evaluations.update({
-            (clusterer_name, params_key): value for params_key, value in
-            evaluation_results.items()
-        })
+        label_df.index = inds
+        label_df = label_df.transpose()
+        clustering_labels_df = pd.concat([clustering_labels_df, label_df], join='outer', axis=1)
 
-    top_choice = min_or_max[evaluation_method](
-        clustering_evaluations,
-        key=lambda k: clustering_evaluations[k]
-    )
-    best_labels = clustering_labels[top_choice[0]][top_choice[1]]
+    evaluation_results_df = pd.DataFrame({'methods': evaluation_methods})
+    for col in clustering_labels_df.columns:
+        evaluation_results_df[col] = evaluation_results_df.apply(
+            lambda row: evaluate_results(
+                clustering_labels_df[col],
+                method=row['methods'],
+                data=data,
+                gold_standard=gold_standard,
+                metric_kwargs=metric_kwargs.get(row['methods'], None)
+            ), axis=1
+        )
 
-    return best_labels, clustering_evaluations, clustering_labels
+    return evaluation_results_df, clustering_labels_df, clustering_labels

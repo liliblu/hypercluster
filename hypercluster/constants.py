@@ -1,3 +1,5 @@
+param_delim = ';'
+val_delim = '-'
 slow = ['AffinityPropagation', 'MeanShift']
 fast = ['KMeans', 'OPTICS', 'HDBSCAN']
 fastest = ['MiniBatchKMeans']
@@ -36,7 +38,7 @@ need_ground_truth = [
     'v_measure_score'
 ]
 
-inherent_metric = [
+inherent_metrics = [
     'silhouette_score',
     'calinski_harabasz_score',
     'davies_bouldin_score'
