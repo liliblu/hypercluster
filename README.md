@@ -1,10 +1,10 @@
-# Autocluster
+# Hypercluster
 A package for clustering optimization with sklearn. 
 
 Install: 
 ```
-pip install autocluster-sklearn
+pip install hypercluster
 ```
 
-Docs: https://autocluster.readthedocs.io/en/latest/
+Docs: https://hypercluster.readthedocs.io/en/latest/
 
