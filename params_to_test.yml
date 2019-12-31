@@ -1,348 +1,348 @@
-affinitypropagation.damping-0.55:
-  clusterer: affinitypropagation
+AffinityPropagation.damping-0.55:
+  clusterer: AffinityPropagation
   damping: 0.55
-affinitypropagation.damping-0.6:
-  clusterer: affinitypropagation
+AffinityPropagation.damping-0.6:
+  clusterer: AffinityPropagation
   damping: 0.6
-affinitypropagation.damping-0.65:
-  clusterer: affinitypropagation
+AffinityPropagation.damping-0.65:
+  clusterer: AffinityPropagation
   damping: 0.65
-affinitypropagation.damping-0.7:
-  clusterer: affinitypropagation
+AffinityPropagation.damping-0.7:
+  clusterer: AffinityPropagation
   damping: 0.7
-affinitypropagation.damping-0.75:
-  clusterer: affinitypropagation
+AffinityPropagation.damping-0.75:
+  clusterer: AffinityPropagation
   damping: 0.75
-affinitypropagation.damping-0.8:
-  clusterer: affinitypropagation
+AffinityPropagation.damping-0.8:
+  clusterer: AffinityPropagation
   damping: 0.8
-affinitypropagation.damping-0.85:
-  clusterer: affinitypropagation
+AffinityPropagation.damping-0.85:
+  clusterer: AffinityPropagation
   damping: 0.85
-affinitypropagation.damping-0.9:
-  clusterer: affinitypropagation
+AffinityPropagation.damping-0.9:
+  clusterer: AffinityPropagation
   damping: 0.9
-hdbscan.min_cluster_size-10:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-10:
+  clusterer: HDBSCAN
   min_cluster_size: 10
-hdbscan.min_cluster_size-11:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-11:
+  clusterer: HDBSCAN
   min_cluster_size: 11
-hdbscan.min_cluster_size-12:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-12:
+  clusterer: HDBSCAN
   min_cluster_size: 12
-hdbscan.min_cluster_size-13:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-13:
+  clusterer: HDBSCAN
   min_cluster_size: 13
-hdbscan.min_cluster_size-14:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-14:
+  clusterer: HDBSCAN
   min_cluster_size: 14
-hdbscan.min_cluster_size-15:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-15:
+  clusterer: HDBSCAN
   min_cluster_size: 15
-hdbscan.min_cluster_size-16:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-16:
+  clusterer: HDBSCAN
   min_cluster_size: 16
-hdbscan.min_cluster_size-2:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-2:
+  clusterer: HDBSCAN
   min_cluster_size: 2
-hdbscan.min_cluster_size-3:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-3:
+  clusterer: HDBSCAN
   min_cluster_size: 3
-hdbscan.min_cluster_size-4:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-4:
+  clusterer: HDBSCAN
   min_cluster_size: 4
-hdbscan.min_cluster_size-5:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-5:
+  clusterer: HDBSCAN
   min_cluster_size: 5
-hdbscan.min_cluster_size-6:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-6:
+  clusterer: HDBSCAN
   min_cluster_size: 6
-hdbscan.min_cluster_size-7:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-7:
+  clusterer: HDBSCAN
   min_cluster_size: 7
-hdbscan.min_cluster_size-8:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-8:
+  clusterer: HDBSCAN
   min_cluster_size: 8
-hdbscan.min_cluster_size-9:
-  clusterer: hdbscan
+HDBSCAN.min_cluster_size-9:
+  clusterer: HDBSCAN
   min_cluster_size: 9
-kmeans.n_clusters-10:
-  clusterer: kmeans
+KMeans.n_clusters-10:
+  clusterer: KMeans
   n_clusters: 10
-kmeans.n_clusters-11:
-  clusterer: kmeans
+KMeans.n_clusters-11:
+  clusterer: KMeans
   n_clusters: 11
-kmeans.n_clusters-12:
-  clusterer: kmeans
+KMeans.n_clusters-12:
+  clusterer: KMeans
   n_clusters: 12
-kmeans.n_clusters-13:
-  clusterer: kmeans
+KMeans.n_clusters-13:
+  clusterer: KMeans
   n_clusters: 13
-kmeans.n_clusters-14:
-  clusterer: kmeans
+KMeans.n_clusters-14:
+  clusterer: KMeans
   n_clusters: 14
-kmeans.n_clusters-15:
-  clusterer: kmeans
+KMeans.n_clusters-15:
+  clusterer: KMeans
   n_clusters: 15
-kmeans.n_clusters-16:
-  clusterer: kmeans
+KMeans.n_clusters-16:
+  clusterer: KMeans
   n_clusters: 16
-kmeans.n_clusters-17:
-  clusterer: kmeans
+KMeans.n_clusters-17:
+  clusterer: KMeans
   n_clusters: 17
-kmeans.n_clusters-18:
-  clusterer: kmeans
+KMeans.n_clusters-18:
+  clusterer: KMeans
   n_clusters: 18
-kmeans.n_clusters-19:
-  clusterer: kmeans
+KMeans.n_clusters-19:
+  clusterer: KMeans
   n_clusters: 19
-kmeans.n_clusters-2:
-  clusterer: kmeans
+KMeans.n_clusters-2:
+  clusterer: KMeans
   n_clusters: 2
-kmeans.n_clusters-20:
-  clusterer: kmeans
+KMeans.n_clusters-20:
+  clusterer: KMeans
   n_clusters: 20
-kmeans.n_clusters-21:
-  clusterer: kmeans
+KMeans.n_clusters-21:
+  clusterer: KMeans
   n_clusters: 21
-kmeans.n_clusters-22:
-  clusterer: kmeans
+KMeans.n_clusters-22:
+  clusterer: KMeans
   n_clusters: 22
-kmeans.n_clusters-23:
-  clusterer: kmeans
+KMeans.n_clusters-23:
+  clusterer: KMeans
   n_clusters: 23
-kmeans.n_clusters-24:
-  clusterer: kmeans
+KMeans.n_clusters-24:
+  clusterer: KMeans
   n_clusters: 24
-kmeans.n_clusters-25:
-  clusterer: kmeans
+KMeans.n_clusters-25:
+  clusterer: KMeans
   n_clusters: 25
-kmeans.n_clusters-26:
-  clusterer: kmeans
+KMeans.n_clusters-26:
+  clusterer: KMeans
   n_clusters: 26
-kmeans.n_clusters-27:
-  clusterer: kmeans
+KMeans.n_clusters-27:
+  clusterer: KMeans
   n_clusters: 27
-kmeans.n_clusters-28:
-  clusterer: kmeans
+KMeans.n_clusters-28:
+  clusterer: KMeans
   n_clusters: 28
-kmeans.n_clusters-29:
-  clusterer: kmeans
+KMeans.n_clusters-29:
+  clusterer: KMeans
   n_clusters: 29
-kmeans.n_clusters-3:
-  clusterer: kmeans
+KMeans.n_clusters-3:
+  clusterer: KMeans
   n_clusters: 3
-kmeans.n_clusters-30:
-  clusterer: kmeans
+KMeans.n_clusters-30:
+  clusterer: KMeans
   n_clusters: 30
-kmeans.n_clusters-31:
-  clusterer: kmeans
+KMeans.n_clusters-31:
+  clusterer: KMeans
   n_clusters: 31
-kmeans.n_clusters-32:
-  clusterer: kmeans
+KMeans.n_clusters-32:
+  clusterer: KMeans
   n_clusters: 32
-kmeans.n_clusters-33:
-  clusterer: kmeans
+KMeans.n_clusters-33:
+  clusterer: KMeans
   n_clusters: 33
-kmeans.n_clusters-34:
-  clusterer: kmeans
+KMeans.n_clusters-34:
+  clusterer: KMeans
   n_clusters: 34
-kmeans.n_clusters-35:
-  clusterer: kmeans
+KMeans.n_clusters-35:
+  clusterer: KMeans
   n_clusters: 35
-kmeans.n_clusters-36:
-  clusterer: kmeans
+KMeans.n_clusters-36:
+  clusterer: KMeans
   n_clusters: 36
-kmeans.n_clusters-37:
-  clusterer: kmeans
+KMeans.n_clusters-37:
+  clusterer: KMeans
   n_clusters: 37
-kmeans.n_clusters-38:
-  clusterer: kmeans
+KMeans.n_clusters-38:
+  clusterer: KMeans
   n_clusters: 38
-kmeans.n_clusters-39:
-  clusterer: kmeans
+KMeans.n_clusters-39:
+  clusterer: KMeans
   n_clusters: 39
-kmeans.n_clusters-4:
-  clusterer: kmeans
+KMeans.n_clusters-4:
+  clusterer: KMeans
   n_clusters: 4
-kmeans.n_clusters-40:
-  clusterer: kmeans
+KMeans.n_clusters-40:
+  clusterer: KMeans
   n_clusters: 40
-kmeans.n_clusters-5:
-  clusterer: kmeans
+KMeans.n_clusters-5:
+  clusterer: KMeans
   n_clusters: 5
-kmeans.n_clusters-6:
-  clusterer: kmeans
+KMeans.n_clusters-6:
+  clusterer: KMeans
   n_clusters: 6
-kmeans.n_clusters-7:
-  clusterer: kmeans
+KMeans.n_clusters-7:
+  clusterer: KMeans
   n_clusters: 7
-kmeans.n_clusters-8:
-  clusterer: kmeans
+KMeans.n_clusters-8:
+  clusterer: KMeans
   n_clusters: 8
-kmeans.n_clusters-9:
-  clusterer: kmeans
+KMeans.n_clusters-9:
+  clusterer: KMeans
   n_clusters: 9
-minibatchkmeans.n_clusters-10:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-10:
+  clusterer: MiniBatchKMeans
   n_clusters: 10
-minibatchkmeans.n_clusters-11:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-11:
+  clusterer: MiniBatchKMeans
   n_clusters: 11
-minibatchkmeans.n_clusters-12:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-12:
+  clusterer: MiniBatchKMeans
   n_clusters: 12
-minibatchkmeans.n_clusters-13:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-13:
+  clusterer: MiniBatchKMeans
   n_clusters: 13
-minibatchkmeans.n_clusters-14:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-14:
+  clusterer: MiniBatchKMeans
   n_clusters: 14
-minibatchkmeans.n_clusters-15:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-15:
+  clusterer: MiniBatchKMeans
   n_clusters: 15
-minibatchkmeans.n_clusters-16:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-16:
+  clusterer: MiniBatchKMeans
   n_clusters: 16
-minibatchkmeans.n_clusters-17:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-17:
+  clusterer: MiniBatchKMeans
   n_clusters: 17
-minibatchkmeans.n_clusters-18:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-18:
+  clusterer: MiniBatchKMeans
   n_clusters: 18
-minibatchkmeans.n_clusters-19:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-19:
+  clusterer: MiniBatchKMeans
   n_clusters: 19
-minibatchkmeans.n_clusters-2:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-2:
+  clusterer: MiniBatchKMeans
   n_clusters: 2
-minibatchkmeans.n_clusters-20:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-20:
+  clusterer: MiniBatchKMeans
   n_clusters: 20
-minibatchkmeans.n_clusters-21:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-21:
+  clusterer: MiniBatchKMeans
   n_clusters: 21
-minibatchkmeans.n_clusters-22:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-22:
+  clusterer: MiniBatchKMeans
   n_clusters: 22
-minibatchkmeans.n_clusters-23:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-23:
+  clusterer: MiniBatchKMeans
   n_clusters: 23
-minibatchkmeans.n_clusters-24:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-24:
+  clusterer: MiniBatchKMeans
   n_clusters: 24
-minibatchkmeans.n_clusters-25:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-25:
+  clusterer: MiniBatchKMeans
   n_clusters: 25
-minibatchkmeans.n_clusters-26:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-26:
+  clusterer: MiniBatchKMeans
   n_clusters: 26
-minibatchkmeans.n_clusters-27:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-27:
+  clusterer: MiniBatchKMeans
   n_clusters: 27
-minibatchkmeans.n_clusters-28:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-28:
+  clusterer: MiniBatchKMeans
   n_clusters: 28
-minibatchkmeans.n_clusters-29:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-29:
+  clusterer: MiniBatchKMeans
   n_clusters: 29
-minibatchkmeans.n_clusters-3:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-3:
+  clusterer: MiniBatchKMeans
   n_clusters: 3
-minibatchkmeans.n_clusters-30:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-30:
+  clusterer: MiniBatchKMeans
   n_clusters: 30
-minibatchkmeans.n_clusters-31:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-31:
+  clusterer: MiniBatchKMeans
   n_clusters: 31
-minibatchkmeans.n_clusters-32:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-32:
+  clusterer: MiniBatchKMeans
   n_clusters: 32
-minibatchkmeans.n_clusters-33:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-33:
+  clusterer: MiniBatchKMeans
   n_clusters: 33
-minibatchkmeans.n_clusters-34:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-34:
+  clusterer: MiniBatchKMeans
   n_clusters: 34
-minibatchkmeans.n_clusters-35:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-35:
+  clusterer: MiniBatchKMeans
   n_clusters: 35
-minibatchkmeans.n_clusters-36:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-36:
+  clusterer: MiniBatchKMeans
   n_clusters: 36
-minibatchkmeans.n_clusters-37:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-37:
+  clusterer: MiniBatchKMeans
   n_clusters: 37
-minibatchkmeans.n_clusters-38:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-38:
+  clusterer: MiniBatchKMeans
   n_clusters: 38
-minibatchkmeans.n_clusters-39:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-39:
+  clusterer: MiniBatchKMeans
   n_clusters: 39
-minibatchkmeans.n_clusters-4:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-4:
+  clusterer: MiniBatchKMeans
   n_clusters: 4
-minibatchkmeans.n_clusters-40:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-40:
+  clusterer: MiniBatchKMeans
   n_clusters: 40
-minibatchkmeans.n_clusters-5:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-5:
+  clusterer: MiniBatchKMeans
   n_clusters: 5
-minibatchkmeans.n_clusters-6:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-6:
+  clusterer: MiniBatchKMeans
   n_clusters: 6
-minibatchkmeans.n_clusters-7:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-7:
+  clusterer: MiniBatchKMeans
   n_clusters: 7
-minibatchkmeans.n_clusters-8:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-8:
+  clusterer: MiniBatchKMeans
   n_clusters: 8
-minibatchkmeans.n_clusters-9:
-  clusterer: minibatchkmeans
+MiniBatchKMeans.n_clusters-9:
+  clusterer: MiniBatchKMeans
   n_clusters: 9
-optics.min_samples-10:
-  clusterer: optics
+OPTICS.min_samples-10:
+  clusterer: OPTICS
   min_samples: 10
-optics.min_samples-11:
-  clusterer: optics
+OPTICS.min_samples-11:
+  clusterer: OPTICS
   min_samples: 11
-optics.min_samples-12:
-  clusterer: optics
+OPTICS.min_samples-12:
+  clusterer: OPTICS
   min_samples: 12
-optics.min_samples-13:
-  clusterer: optics
+OPTICS.min_samples-13:
+  clusterer: OPTICS
   min_samples: 13
-optics.min_samples-14:
-  clusterer: optics
+OPTICS.min_samples-14:
+  clusterer: OPTICS
   min_samples: 14
-optics.min_samples-15:
-  clusterer: optics
+OPTICS.min_samples-15:
+  clusterer: OPTICS
   min_samples: 15
-optics.min_samples-16:
-  clusterer: optics
+OPTICS.min_samples-16:
+  clusterer: OPTICS
   min_samples: 16
-optics.min_samples-2:
-  clusterer: optics
+OPTICS.min_samples-2:
+  clusterer: OPTICS
   min_samples: 2
-optics.min_samples-3:
-  clusterer: optics
+OPTICS.min_samples-3:
+  clusterer: OPTICS
   min_samples: 3
-optics.min_samples-4:
-  clusterer: optics
+OPTICS.min_samples-4:
+  clusterer: OPTICS
   min_samples: 4
-optics.min_samples-5:
-  clusterer: optics
+OPTICS.min_samples-5:
+  clusterer: OPTICS
   min_samples: 5
-optics.min_samples-6:
-  clusterer: optics
+OPTICS.min_samples-6:
+  clusterer: OPTICS
   min_samples: 6
-optics.min_samples-7:
-  clusterer: optics
+OPTICS.min_samples-7:
+  clusterer: OPTICS
   min_samples: 7
-optics.min_samples-8:
-  clusterer: optics
+OPTICS.min_samples-8:
+  clusterer: OPTICS
   min_samples: 8
-optics.min_samples-9:
-  clusterer: optics
+OPTICS.min_samples-9:
+  clusterer: OPTICS
   min_samples: 9

@@ -1,5 +1,9 @@
+from sklearn.cluster import *
+from sklearn.metrics import *
+from hdbscan import HDBSCAN
 from pandas import DataFrame
-import pandas as pd, numpy as np
+import pandas as pd
+import numpy as np
 import logging
 from typing import Optional, Iterable, Dict, Union
 from itertools import product

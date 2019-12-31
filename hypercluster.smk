@@ -57,12 +57,22 @@ def generate_parameters(config):
         yaml.dump(final_param_sets, fh)
 
 
-def handle_ext(base):
+def handle_ext(wildcards):
+    base = wildcards.input_file
+    files = []
     for file_ext in [".csv", ".tsv", ".txt"]:
-        if os.path.exists(input_data_folder + base + file_ext):
-            print([base + file_ext])
-            return [base + file_ext]
-
+        file = '%s/%s%s' % (input_data_folder, base, file_ext)
+        if os.path.exists(file):
+            files.append(file)
+    if len(files) == 1:
+        return files[0]
+    if len(files) > 1:
+        raise ValueError(
+        'Multiple files with prefix %s/%s can be found, must be unique' % (input_data_folder, base)
+    )
+    raise FileNotFoundError(
+        'No .txt, .csv or .tsv files with prefix %s/%s can be found' % (input_data_folder, base)
+    )
 
 generate_parameters(config)
 
@@ -75,7 +85,7 @@ rule all:
             targets=config['targets']
         ),
         expand(
-            "{input_file}/%s/{labs}_labels.csv" % clustering_results,
+            "{input_file}/%s/{labs}_labels.csv" % intermediates_folder,
             input_file=input_files,
             labs=config["param_sets"]
          )
@@ -83,7 +93,7 @@ rule all:
 
 rule run_clusterer:
     input:
-        infile = handle_ext("{input_file}")
+        infile = handle_ext
     output:
         "{input_file}/%s/{labs}_labels.csv" % intermediates_folder
     params:
@@ -159,4 +169,4 @@ rule collect_dfs:
 #TODO add heatmaps for vis
 #TODO add example where opt 2 things at once for 1 clusterer
 #TODO figure out how to pass just the index col parameter around. don't need separate kwargs for
-# that. 
+# that.

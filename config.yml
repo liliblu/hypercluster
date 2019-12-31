@@ -2,7 +2,9 @@ intermediates_folder: 'clustering_intermediates'
 clustering_results: 'clustering'
 gold_standard_file: 'gold_standard_file.txt'
 
-input_data_folder: '/gpfs/home/lmb529/ruggleslabHome/phosphodisco/datasets/normalized'
+input_data_folder:
+#  '/gpfs/home/lmb529/ruggleslabHome/phosphodisco/datasets/normalized'
+  '.'
 input_data_files: 'test_input'
 #  - brca-combined-v4.0-phosphoproteome-ratio-norm-unfiltered-dedup-prot-normed-top10000std
 #  - lscc-v1.0-proteome-ratio-norm-unfiltered-dedup-prot-normed-top10000std
@@ -23,7 +25,7 @@ clusterer_kwargs: {}
 output_kwargs: {'evaluations': {'index_col':[0]}, 'labels':*id003}
 
 optimization_parameters:
-  affinitypropagation:
+  AffinityPropagation:
     damping:
     - 0.55
     - 0.6
@@ -33,7 +35,7 @@ optimization_parameters:
     - 0.8
     - 0.85
     - 0.9
-  hdbscan:
+  HDBSCAN:
     min_cluster_size: &id002
     - 2
     - 3
@@ -50,7 +52,7 @@ optimization_parameters:
     - 14
     - 15
     - 16
-  kmeans:
+  KMeans:
     n_clusters: &id001
     - 2
     - 3
@@ -91,7 +93,7 @@ optimization_parameters:
     - 38
     - 39
     - 40
-  minibatchkmeans:
+  MiniBatchKMeans:
     n_clusters: *id001
-  optics:
+  OPTICS:
     min_samples: *id002

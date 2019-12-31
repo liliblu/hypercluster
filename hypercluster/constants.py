@@ -1,8 +1,8 @@
-from sklearn.cluster import KMeans, MiniBatchKMeans, AffinityPropagation, MeanShift, OPTICS
-from sklearn.metrics import adjusted_rand_score, adjusted_mutual_info_score, homogeneity_score, \
-    completeness_score, fowlkes_mallows_score, silhouette_score, calinski_harabasz_score,  \
-    davies_bouldin_score
-from hdbscan import HDBSCAN
+# from sklearn.cluster import KMeans, MiniBatchKMeans, AffinityPropagation, MeanShift, OPTICS
+# from sklearn.metrics import adjusted_rand_score, adjusted_mutual_info_score, homogeneity_score, \
+#     completeness_score, fowlkes_mallows_score, silhouette_score, calinski_harabasz_score,  \
+#     davies_bouldin_score
+# from hdbscan import HDBSCAN
 
 
 # clusterers = {
