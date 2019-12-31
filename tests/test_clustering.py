@@ -1,12 +1,7 @@
 from hypercluster import clustering
+from hypercluster.constants import *
 import pandas as pd
 import numpy as np
-
-
-variables_to_optimize = clustering.variables_to_optimize
-need_ground_truth = clustering.need_ground_truth
-inherent_metric = clustering.inherent_metric
-min_or_max = clustering.min_or_max
 
 
 test_data = pd.DataFrame(
@@ -27,6 +22,7 @@ test_data = pd.DataFrame(
              [-4, np.nan], [-0.2, -0.1], [0.34, 0.7]]
         )
 )
+
 
 test_data['ind1'] = 'a'
 test_data['ind2'] = range(len(test_data))
@@ -59,7 +55,29 @@ def test_autoclusterer():
     for clus_name in variables_to_optimize.keys():
         clustering.AutoClusterer(clus_name, random_search=False).fit(test_data)
 
-# TODO add test for parameter weights
+
+def test_param_weights():
+    for clus_name in variables_to_optimize.keys():
+        weights = {
+            param: {value: (1/len(values)) for value in values} for param, values in
+            variables_to_optimize[
+                clus_name
+            ].items()
+        }
+        clustering.AutoClusterer(clus_name, param_weights=weights).fit(
+            test_data
+        )
+    for clus_name in variables_to_optimize.keys():
+        clustering.AutoClusterer(clus_name, random_search=False).fit(test_data)
+
+
+def test_passing_kwargs_for_a_clusterer():
+    clus_name = 'KMeans'
+
+    clustering.AutoClusterer(clus_name, clus_kwargs={'max_iter': 50}).fit(
+        test_data
+    )
+
 
 def test_evaluate_results():
     labs = clustering.AutoClusterer('KMeans').fit(test_data).labels_
@@ -72,10 +90,3 @@ def test_evaluate_results():
 
 def test_optimize_clustering():
     best, evals, labs = clustering.optimize_clustering(test_data)
-    #TODO add run through of evaluation metrics
-
-
-# test_cluster_one()
-# test_run_conditions_one_algorithm()
-# test_evaluate_results()
-# test_optimize_clustering()

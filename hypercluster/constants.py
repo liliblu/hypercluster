@@ -1,14 +1,14 @@
 slow = ['AffinityPropagation', 'MeanShift']
 fast = ['KMeans', 'OPTICS', 'HDBSCAN']
 fastest = ['MiniBatchKMeans']
-partitioning = ['AffinityPropagation', 'MeanShift', 'KMeans', 'MiniBatchKMeans']
-clustering = ['OPTICS', 'HDBSCAN']
+partitioners = ['AffinityPropagation', 'MeanShift', 'KMeans', 'MiniBatchKMeans']
+clusterers = ['OPTICS', 'HDBSCAN']
 categories = {
-    'slow':slow,
-    'fast':fast,
-    'fastest':fastest,
-    'partitioning':partitioning,
-    'clustering':clustering
+    'slow': slow,
+    'fast': fast,
+    'fastest': fastest,
+    'partitioning': partitioners,
+    'clustering': clusterers
 }
 
 min_cluster_size = [i for i in range(2, 17, 2)]
@@ -21,7 +21,7 @@ variables_to_optimize = {
     'KMeans':dict(n_clusters=n_clusters),
     'MiniBatchKMeans':dict(n_clusters=n_clusters),
     'AffinityPropagation':dict(damping=damping),
-    'MeanShift':dict(cluster_all=[False]), #TODO add something to optimize here
+    'MeanShift':dict(cluster_all=[False]),
     'OPTICS':dict(min_samples=min_cluster_size),
 }
 

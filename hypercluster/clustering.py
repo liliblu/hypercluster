@@ -106,26 +106,20 @@ class AutoClusterer:
         Returns:
             self
         """
-        total_kwargs = self.clus_kwargs
-        total_kwargs.update(self.params_to_optimize)
-
         conditions = 1
         vars_to_optimize = {}
         static_kwargs = {}
-        for parameter_name, possible_values in self.clus_kwargs.items():
-            if len(possible_values) > 1:
-                vars_to_optimize[parameter_name] = possible_values
-                conditions *= len(possible_values)
-            else:
+        for parameter_name, possible_values in self.params_to_optimize.items():
+            if len(possible_values) == 1:
                 static_kwargs[parameter_name] = possible_values
-        if conditions == 1:
-            logging.error(
-                'Clusterer %s was only given one set of parameters, nothing to optimize.'
-                % self.clusterer_name
-            )
-            self.param_sets = None
-            #TODO change so that it makes a df with 1 row
-            return self
+            elif len(possible_values) > 1:
+                vars_to_optimize[parameter_name] = possible_values
+                conditions *= conditions*len(possible_values)
+            else:
+                logging.error(
+                    'Parameter %s was given no possibilities. Will continue with default parameter.'
+                    % parameter_name
+                )
 
         self.static_kwargs = static_kwargs
         self.total_possible_conditions = conditions
@@ -135,24 +129,31 @@ class AutoClusterer:
             parameters = parameters.append(
                 dict(zip(vars_to_optimize.keys(), row)), ignore_index=True
             )
-        if self.random_search:
+
+        if self.random_search and len(parameters) > 1:
             will_search = int(conditions * self.random_search_fraction)
+
             # calculates probability of getting a particular set of parameters, given the probs of
             # all the individual params. If a prob isn't set, give uniform probability to each
             # parameter.
             if self.param_weights:
                 weights = parameters.apply(
-                    lambda row: calculate_row_weights(row, self.param_weights, vars_to_optimize),
-                    axis=1
+                    lambda param_set: calculate_row_weights(
+                        param_set, self.param_weights, vars_to_optimize
+                    ), axis=1
                 )
             else:
                 weights = None
             parameters = parameters.sample(will_search, weights=weights)
 
+        for col in static_kwargs.keys():
+            parameters[col] = static_kwargs[col]
+
         logging.info(
             'For clusterer %s, testing %s out of %s possible conditions'
             % (self.clusterer_name, len(parameters), conditions)
         )
+
         self.param_sets = parameters
         return self
 
@@ -165,23 +166,26 @@ class AutoClusterer:
         Returns:
             self with self.labels_ assigned
         """
-        if self.param_sets is None:
-            logging.warning('No parameters to optimize for %s, cannot fit' % self.clusterer_name)
-            self.labels_ = None
-            return self
+
+        if self.param_sets.shape == (0,0):
+            labels_results = pd.DataFrame(
+                cluster(self.clusterer_name, data).labels_,
+                columns=['default_parameters'],
+                index=data.index
+            )
 
         label_results = pd.DataFrame(columns=self.param_sets.columns.union(data.index))
         for i, row in self.param_sets.iterrows():
             single_params = row.to_dict()
-            single_params.update(self.static_kwargs)
             labels = cluster(self.clusterer_name, data, single_params).labels_
 
             label_row = dict(zip(data.index, labels))
             label_row.update(single_params)
             label_results = label_results.append(label_row, ignore_index=True)
             logging.info('%s - %s of conditions done' % (i, (i / self.total_possible_conditions)))
+        if len(self.param_sets.columns) > 0:
+            label_results = label_results.set_index(list(self.param_sets.columns)).transpose()
 
-        label_results = label_results.set_index(list(self.param_sets.columns)).transpose()
         self.labels_ = label_results
         return self
 
@@ -235,7 +239,6 @@ def evaluate_results(
         evaluation_results[col] = eval(method)(
             compare_to, label_df[col][clustered], **metric_kwargs
         )
-
     return evaluation_results
 
 
@@ -293,8 +296,7 @@ def optimize_clustering(
             param_weights=algorithm_param_weights.get(clusterer_name, None),
             clus_kwargs=algorithm_clus_kwargs.get(clusterer_name, {})
         ).fit(data).labels_
-        if label_df is None:
-            continue
+        print(label_df)
 
         clustering_labels[clusterer_name] = label_df
         #TODO allow more evaluations, change output into a df like the smk
