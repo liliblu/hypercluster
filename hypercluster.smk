@@ -7,7 +7,7 @@ import subprocess
 configfile: 'config.yml'
 
 input_data_folder = config['input_data_folder']
-input_files = config['input_data_file']
+input_files = config['input_data_files']
 optimization_parameters = config['optimization_parameters']
 read_csv_kwargs = config['read_csv_kwargs']
 clustering_addtl_kwargs = config['clustering_addtl_kwargs']
@@ -19,12 +19,12 @@ clustering_results = config['clustering_results']
 gold_standard_file = config['gold_standard_file']
 
 
-def concat_dfs(df_list, **read_csv_kwargs):
-    df = pd.DataFrame()
+def concat_dfs(df_list, kwargs):
+    results = pd.DataFrame()
     for fil in df_list:
-        temp = pd.read_csv(fil, **read_csv_kwargs)
-        df = pd.concat([df, temp], join='outer', axis=1)
-    return df
+        temp = pd.read_csv(fil, **kwargs)
+        results = pd.concat([results, temp], join='outer', axis=1)
+    return results
 
 
 def generate_parameters(config):
@@ -57,6 +57,13 @@ def generate_parameters(config):
         yaml.dump(final_param_sets, fh)
 
 
+def handle_ext(base):
+    for file_ext in [".csv", ".tsv", ".txt"]:
+        if os.path.exists(input_data_folder + base + file_ext):
+            print([base + file_ext])
+            return [base + file_ext]
+
+
 generate_parameters(config)
 
 
@@ -66,12 +73,17 @@ rule all:
             '{input_file}/%s/{input_file}_{targets}.csv' % clustering_results,
             input_file=input_files,
             targets=config['targets']
-        )
-        # 'brca-combined-v4.0-phosphoproteome-ratio-norm-unfiltered-dedup-prot-normed-top10000std/%s/%s.csv' % (intermediates_folder, 'minibatchkmeans.n_clusters37_evaluations')
+        ),
+        expand(
+            "{input_file}/%s/{labs}_labels.csv" % clustering_results,
+            input_file=input_files,
+            labs=config["param_sets"]
+         )
+
 
 rule run_clusterer:
     input:
-        infile = '%s/{input_file}.csv' % input_data_folder,
+        infile = handle_ext("{input_file}")
     output:
         "{input_file}/%s/{labs}_labels.csv" % intermediates_folder
     params:
@@ -136,7 +148,7 @@ rule collect_dfs:
     output:
         '{input_file}/%s/{input_file}_{targets}.csv' % (clustering_results)
     run:
-        df = concat_dfs(input.files, **params.readkwargs[wildcards.targets])
+        df = concat_dfs(input.files, params.readkwargs[wildcards.targets])
         df.to_csv(
             '%s/%s/%s_%s.csv' % (
                 wildcards.input_file, clustering_results,wildcards.input_file, wildcards.targets
@@ -144,6 +156,7 @@ rule collect_dfs:
         )
 
 #TODO add pairwise comparison bn results
-#TODO add pick best labels
 #TODO add heatmaps for vis
 #TODO add example where opt 2 things at once for 1 clusterer
+#TODO figure out how to pass just the index col parameter around. don't need separate kwargs for
+# that. 

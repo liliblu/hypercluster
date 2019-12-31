@@ -3,9 +3,7 @@ import pandas as pd
 import numpy as np
 
 
-clusterers = clustering.clusterers
 variables_to_optimize = clustering.variables_to_optimize
-evaluations = clustering.evaluations
 need_ground_truth = clustering.need_ground_truth
 inherent_metric = clustering.inherent_metric
 min_or_max = clustering.min_or_max
@@ -43,11 +41,11 @@ test_ground_truth = pd.Series(
 
 def test_cluster_one():
     # Test all clusterers are working with default params
-    for clus_name in clusterers.keys():
+    for clus_name in variables_to_optimize.keys():
         clustering.cluster(clus_name, test_data)
 
     # Test with putting extra params in there
-    for clus_name in clusterers.keys():
+    for clus_name in variables_to_optimize.keys():
         vars = variables_to_optimize[clus_name]
         key = list(vars.keys())[0]
         params = {key: vars[key][0]}
@@ -56,15 +54,15 @@ def test_cluster_one():
 
 
 def test_autoclusterer():
-    for clus_name in clusterers.keys():
+    for clus_name in variables_to_optimize.keys():
         clustering.AutoClusterer(clus_name).fit(test_data)
-    for clus_name in clusterers.keys():
+    for clus_name in variables_to_optimize.keys():
         clustering.AutoClusterer(clus_name, random_search=False).fit(test_data)
 
 # TODO add test for parameter weights
 
 def test_evaluate_results():
-    labs = clustering.AutoClusterer('kmeans').fit(test_data).labels_
+    labs = clustering.AutoClusterer('KMeans').fit(test_data).labels_
     for metric in inherent_metric:
         clustering.evaluate_results(labs, metric, data=test_data)
 

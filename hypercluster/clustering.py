@@ -46,7 +46,7 @@ def cluster(clusterer_name: str, data: DataFrame, params: dict = {}):
     Returns: 
         Instance of the clusterer fit with the data provided.  
     """
-    clusterer = clusterers[clusterer_name](**params)
+    clusterer = eval(clusterer_name)(**params)
     return clusterer.fit(data)
 
 
@@ -184,7 +184,7 @@ class AutoClusterer:
 
 def evaluate_results(
         label_df: DataFrame,
-        method: str = 'silhouette',
+        method: str = 'silhouette_score',
         data: Optional[DataFrame] = None,
         gold_standard: Optional[Iterable] = None,
         metric_kwargs: Optional[dict] = None
@@ -216,7 +216,7 @@ def evaluate_results(
             raise ValueError('Chosen evaluation metric %s requires data input.' % method)
     else:
         raise ValueError('Evaluation metric %s not valid' % method)
-
+        #TODO need to fix to check for other things. Add eval characteristics.
     for col in label_df.columns:
         if method in need_ground_truth:
             clustered = (gold_standard != -1) & (label_df[col] != -1)
@@ -228,7 +228,7 @@ def evaluate_results(
         if len(label_df[col][clustered].value_counts()) <= 2:
             logging.warning('Condition %s does not have at least two clusters, skipping' %col)
             continue
-        evaluation_results[col] = evaluations[method](
+        evaluation_results[col] = eval(method)(
             compare_to, label_df[col][clustered], **metric_kwargs
         )
 
@@ -237,13 +237,13 @@ def evaluate_results(
 
 def optimize_clustering(
         data,
-        algorithm_names: Union[Iterable, str] = clusterers.keys(),
+        algorithm_names: Union[Iterable, str] = variables_to_optimize.keys(),
         algorithm_parameters: Optional[Dict[str, dict]] = None,
         random_search: bool = True,
         random_search_fraction: float = 0.5,
         algorithm_param_weights: Optional[dict] = None,
         algorithm_clus_kwargs: Optional[dict] = None,
-        evaluation_method: Optional[str] = 'silhouette',
+        evaluation_method: Optional[str] = 'silhouette_score',
         gold_standard: Optional[Iterable] = None,
         metric_kwargs: Optional[dict] = None,
 ) -> tuple:
@@ -251,8 +251,8 @@ def optimize_clustering(
     Runs through many clusterers and parameters to get best clustering labels.
     Args:
         data: Dataframe with elements to cluster as index and examples as columns.
-        algorithm_names: Which clusterers to try. Default is all. For options see
-        hypercluster.constants.clusterers. Can also put 'slow', 'fast' or 'fastest' for subset of clusterers. See hypercluster.constants.speeds.
+        algorithm_names: Which clusterers to try. Default is in variables_to_optimize.Can also
+        put 'slow', 'fast' or 'fastest' for subset of clusterers. See hypercluster.constants.speeds.
         algorithm_parameters: Dictionary of str:dict, with parameters to optimize for each clusterer. Ex. structure:: {'clusterer1':{'param1':['opt1', 'opt2', 'opt3']}}.
         random_search: Whether to search a random selection of possible parameters or all possibilities. Default True.
         random_search_fraction: If random_search is True, what fraction of the possible parameters to search, applied to all clusterers. Default 0.5.
@@ -281,10 +281,6 @@ def optimize_clustering(
     clustering_labels = {}
     clustering_evaluations = {}
     for clusterer_name in algorithm_names:
-        if clusterer_name not in clusterers.keys():
-            logging.error('Algorithm %s not available, skipping. '% clusterer_name)
-            continue
-
         label_df = AutoClusterer(
             clusterer_name=clusterer_name,
             params_to_optimize=algorithm_parameters.get(clusterer_name, None),
