@@ -279,8 +279,8 @@ def optimize_clustering(
     if metric_kwargs is None:
         metric_kwargs = {}
 
-    if algorithm_names in list(speeds.keys()):
-        algorithm_names = speeds[algorithm_names]
+    if algorithm_names in list(categories.keys()):
+        algorithm_names = categories[algorithm_names]
 
     clustering_labels = {}
     clustering_evaluations = {}

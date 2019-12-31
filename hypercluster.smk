@@ -119,7 +119,7 @@ rule run_evaluation:
         "{input_file}/%s/{labs}_evaluations.csv" % intermediates_folder
     params:
         gold_standard_file = gold_standard_file,
-        input_data = '%s/{input_file}.csv' % input_data_folder,
+        input_data = handle_ext,
         readkwargs = read_csv_kwargs,
         evals = config["evaluations"],
         evalkwargs = config["eval_kwargs"]

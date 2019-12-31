@@ -16,7 +16,7 @@ targets: ['labels', 'evaluations']
 read_csv_kwargs: &id003
   {'index_col':[0, 1]}
 
-evaluations: ['silhouette', 'calinskiharabasz', 'daviesbouldin']
+evaluations: ['silhouette_score', 'calinski_harabasz_score', 'davies_bouldin_score']
 eval_kwargs: {}
 clustering_addtl_kwargs: {}
 generate_parameters_addtl_kwargs: {'random_search':false}
