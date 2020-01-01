@@ -12,9 +12,7 @@ from .constants import *
 
 
 def calculate_row_weights(
-        row: Iterable,
-        param_weights: dict,
-        vars_to_optimize: dict
+    row: Iterable, param_weights: dict, vars_to_optimize: dict
 ) -> float:
     """
     Used to select random rows of parameter combinations using individual parameter weights.  
@@ -32,7 +30,9 @@ def calculate_row_weights(
     weights = []
     for var_lab, val in row.to_dict().items():
         weights.append(
-            param_weights.get(var_lab, {}).get(val, (1 / len(vars_to_optimize[var_lab])))
+            param_weights.get(var_lab, {}).get(
+                val, (1 / len(vars_to_optimize[var_lab]))
+            )
         )
     # TODO if probs are given to some options and not other, split the remaining probability,
     # don't just give equal prob.
@@ -75,13 +75,13 @@ class AutoClusterer:
         """
 
     def __init__(
-            self,
-            clusterer_name: Optional[str] = 'hdbscan',
-            params_to_optimize: Optional[dict] = None,
-            random_search: bool = True,
-            random_search_fraction: float = 0.5,
-            param_weights: dict = {},
-            clus_kwargs: Optional[dict] = None
+        self,
+        clusterer_name: Optional[str] = "hdbscan",
+        params_to_optimize: Optional[dict] = None,
+        random_search: bool = True,
+        random_search_fraction: float = 0.5,
+        param_weights: dict = {},
+        clus_kwargs: Optional[dict] = None,
     ):
         self.clusterer_name = clusterer_name
         self.params_to_optimize = params_to_optimize
@@ -119,7 +119,7 @@ class AutoClusterer:
                 conditions *= conditions * len(possible_values)
             else:
                 logging.error(
-                    'Parameter %s was given no possibilities. Will continue with default parameter.'
+                    "Parameter %s was given no possibilities. Will continue with default parameter."
                     % parameter_name
                 )
 
@@ -142,7 +142,8 @@ class AutoClusterer:
                 weights = parameters.apply(
                     lambda param_set: calculate_row_weights(
                         param_set, self.param_weights, vars_to_optimize
-                    ), axis=1
+                    ),
+                    axis=1,
                 )
             else:
                 weights = None
@@ -152,7 +153,7 @@ class AutoClusterer:
             parameters[col] = static_kwargs[col]
 
         logging.info(
-            'For clusterer %s, testing %s out of %s possible conditions'
+            "For clusterer %s, testing %s out of %s possible conditions"
             % (self.clusterer_name, len(parameters), conditions)
         )
 
@@ -172,8 +173,8 @@ class AutoClusterer:
         if self.param_sets.shape == (0, 0):
             labels_results = pd.DataFrame(
                 cluster(self.clusterer_name, data).labels_,
-                columns=['default_parameters'],
-                index=data.index
+                columns=["default_parameters"],
+                index=data.index,
             )
 
         label_results = pd.DataFrame(columns=self.param_sets.columns.union(data.index))
@@ -184,20 +185,24 @@ class AutoClusterer:
             label_row = dict(zip(data.index, labels))
             label_row.update(single_params)
             label_results = label_results.append(label_row, ignore_index=True)
-            logging.info('%s - %s of conditions done' % (i, (i / self.total_possible_conditions)))
+            logging.info(
+                "%s - %s of conditions done" % (i, (i / self.total_possible_conditions))
+            )
         if len(self.param_sets.columns) > 0:
-            label_results = label_results.set_index(list(self.param_sets.columns)).transpose()
+            label_results = label_results.set_index(
+                list(self.param_sets.columns)
+            ).transpose()
 
         self.labels_ = label_results
         return self
 
 
 def evaluate_results(
-        labels: Iterable,
-        method: str = 'silhouette_score',
-        data: Optional[DataFrame] = None,
-        gold_standard: Optional[Iterable] = None,
-        metric_kwargs: Optional[dict] = None
+    labels: Iterable,
+    method: str = "silhouette_score",
+    data: Optional[DataFrame] = None,
+    gold_standard: Optional[Iterable] = None,
+    metric_kwargs: Optional[dict] = None,
 ) -> dict:
     """
     Uses a given metric to evaluate clustering results.  
@@ -219,36 +224,42 @@ def evaluate_results(
 
     if method in need_ground_truth:
         if gold_standard is None:
-            raise ValueError('Chosen evaluation metric %s requires gold standard set.' % method)
+            raise ValueError(
+                "Chosen evaluation metric %s requires gold standard set." % method
+            )
         clustered = (gold_standard != -1) & (labels != -1)
         compare_to = gold_standard[clustered]
 
     elif method in inherent_metrics:
         if data is None:
-            raise ValueError('Chosen evaluation metric %s requires data input.' % method)
-        clustered = (labels != -1)
+            raise ValueError(
+                "Chosen evaluation metric %s requires data input." % method
+            )
+        clustered = labels != -1
         compare_to = data.loc[clustered]
     else:
-        raise ValueError('Evaluation metric %s not valid' % method)
+        raise ValueError("Evaluation metric %s not valid" % method)
 
     if len(labels[clustered].value_counts()) < 2:
-        logging.error('Condition %s does not have at least two clusters, skipping' % labels.name)
+        logging.error(
+            "Condition %s does not have at least two clusters, skipping" % labels.name
+        )
         return np.nan
 
     return eval(method)(compare_to, labels[clustered], **metric_kwargs)
 
 
 def optimize_clustering(
-        data,
-        algorithm_names: Union[Iterable, str] = variables_to_optimize.keys(),
-        algorithm_parameters: Optional[Dict[str, dict]] = None,
-        random_search: bool = True,
-        random_search_fraction: float = 0.5,
-        algorithm_param_weights: Optional[dict] = None,
-        algorithm_clus_kwargs: Optional[dict] = None,
-        evaluation_methods: Optional[list] = None,
-        gold_standard: Optional[Iterable] = None,
-        metric_kwargs: Optional[dict] = None,
+    data,
+    algorithm_names: Union[Iterable, str] = variables_to_optimize.keys(),
+    algorithm_parameters: Optional[Dict[str, dict]] = None,
+    random_search: bool = True,
+    random_search_fraction: float = 0.5,
+    algorithm_param_weights: Optional[dict] = None,
+    algorithm_clus_kwargs: Optional[dict] = None,
+    evaluation_methods: Optional[list] = None,
+    gold_standard: Optional[Iterable] = None,
+    metric_kwargs: Optional[dict] = None,
 ) -> tuple:
     """
     Runs through many clusterers and parameters to get best clustering labels.
@@ -287,14 +298,18 @@ def optimize_clustering(
     clustering_labels = {}
     clustering_labels_df = pd.DataFrame()
     for clusterer_name in algorithm_names:
-        label_df = AutoClusterer(
-            clusterer_name=clusterer_name,
-            params_to_optimize=algorithm_parameters.get(clusterer_name, None),
-            random_search=random_search,
-            random_search_fraction=random_search_fraction,
-            param_weights=algorithm_param_weights.get(clusterer_name, None),
-            clus_kwargs=algorithm_clus_kwargs.get(clusterer_name, None)
-        ).fit(data).labels_
+        label_df = (
+            AutoClusterer(
+                clusterer_name=clusterer_name,
+                params_to_optimize=algorithm_parameters.get(clusterer_name, None),
+                random_search=random_search,
+                random_search_fraction=random_search_fraction,
+                param_weights=algorithm_param_weights.get(clusterer_name, None),
+                clus_kwargs=algorithm_clus_kwargs.get(clusterer_name, None),
+            )
+            .fit(data)
+            .labels_
+        )
         label_df.index = pd.MultiIndex.from_tuples(label_df.index)
         clustering_labels[clusterer_name] = label_df
 
@@ -304,24 +319,29 @@ def optimize_clustering(
 
         inds = cols_for_labels.apply(
             lambda row: param_delim.join(
-                [clusterer_name] + ['%s%s%s' % (k, val_delim, v) for k, v in row.to_dict().items()]
-            ), axis=1
+                [clusterer_name]
+                + ["%s%s%s" % (k, val_delim, v) for k, v in row.to_dict().items()]
+            ),
+            axis=1,
         )
 
         label_df.index = inds
         label_df = label_df.transpose()
-        clustering_labels_df = pd.concat([clustering_labels_df, label_df], join='outer', axis=1)
+        clustering_labels_df = pd.concat(
+            [clustering_labels_df, label_df], join="outer", axis=1
+        )
 
-    evaluation_results_df = pd.DataFrame({'methods': evaluation_methods})
+    evaluation_results_df = pd.DataFrame({"methods": evaluation_methods})
     for col in clustering_labels_df.columns:
         evaluation_results_df[col] = evaluation_results_df.apply(
             lambda row: evaluate_results(
                 clustering_labels_df[col],
-                method=row['methods'],
+                method=row["methods"],
                 data=data,
                 gold_standard=gold_standard,
-                metric_kwargs=metric_kwargs.get(row['methods'], None)
-            ), axis=1
+                metric_kwargs=metric_kwargs.get(row["methods"], None),
+            ),
+            axis=1,
         )
 
     return evaluation_results_df, clustering_labels_df, clustering_labels
