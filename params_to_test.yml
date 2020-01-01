@@ -1,6 +1,3 @@
-AffinityPropagation;damping-0.55:
-  clusterer: AffinityPropagation
-  damping: 0.55
 AffinityPropagation;damping-0.6:
   clusterer: AffinityPropagation
   damping: 0.6
@@ -13,9 +10,6 @@ HDBSCAN;min_cluster_size-2:
 HDBSCAN;min_cluster_size-3:
   clusterer: HDBSCAN
   min_cluster_size: 3
-HDBSCAN;min_cluster_size-4:
-  clusterer: HDBSCAN
-  min_cluster_size: 4
 KMeans;n_clusters-2:
   clusterer: KMeans
   n_clusters: 2
@@ -34,6 +28,3 @@ OPTICS;min_samples-2:
 OPTICS;min_samples-3:
   clusterer: OPTICS
   min_samples: 3
-OPTICS;min_samples-4:
-  clusterer: OPTICS
-  min_samples: 4

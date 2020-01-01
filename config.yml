@@ -12,9 +12,16 @@ input_data_files: test_input
 #  - UCEC_proteomics_pass_only-prot-normed-top10000std
 
 read_csv_kwargs: &id003
-  {'index_col':[0, 1]}
+  {'index_col':[0]}
 
-evaluations: ['silhouette_score', 'calinski_harabasz_score', 'davies_bouldin_score']
+evaluations: [
+  'silhouette_score',
+  'calinski_harabasz_score',
+  'davies_bouldin_score',
+  "number_clustered",
+  "smallest_largest_clusters_ratio",
+  "smallest_cluster_ratio",
+]
 eval_kwargs: {}
 clustering_addtl_kwargs: {}
 generate_parameters_addtl_kwargs: {'random_search':false}
@@ -27,7 +34,7 @@ targets: ['labels', 'evaluations']
 optimization_parameters:
   AffinityPropagation:
     damping:
-    - 0.55
+#    - 0.55
     - 0.6
     - 0.65
 #    - 0.7
@@ -39,7 +46,7 @@ optimization_parameters:
     min_cluster_size: &id002
     - 2
     - 3
-    - 4
+#    - 4
 #    - 5
 #    - 6
 #    - 7
