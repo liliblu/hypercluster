@@ -2,7 +2,7 @@
     "__default__": {
         "job-name": "snakemake",
         "time": "4-23:59:59",
-        "mem": 8G,
+        "mem": 2G,
         "partition": "fn_medium",
         "cpus-per-task": 1,
         "output": "logs/slurm/%j.out",
@@ -20,9 +20,9 @@
     "run_evaluation": {
         "job-name": "snakeevaluate",
         "time": "4-23:59:59",
-        "mem": 16G,
+        "mem": 4G,
         "partition": "fn_medium",
-        "cpus-per-task": 2,
+        "cpus-per-task": 1,
         "output": "logs/slurm/%j.out",
         "error": "logs/slurm/%j.err"
     }
