@@ -5,8 +5,7 @@ gold_standard_file: 'gold_standard_file.txt'
 input_data_folder:
 #  '/gpfs/home/lmb529/ruggleslabHome/phosphodisco/datasets/normalized'
   '.'
-input_data_files:
-  - test_input
+input_data_files: test_input
 #  - brca-combined-v4.0-phosphoproteome-ratio-norm-unfiltered-dedup-prot-normed-top10000std
 #  - lscc-v1.0-proteome-ratio-norm-unfiltered-dedup-prot-normed-top10000std
 #  - luad-v3.0-phosphoproteome-ratio-norm-unfiltered-dedup-prot-normed-top10000std
@@ -21,6 +20,7 @@ clustering_addtl_kwargs: {}
 generate_parameters_addtl_kwargs: {'random_search':false}
 clusterer_kwargs: {}
 output_kwargs: {'evaluations': {'index_col':[0]}, 'labels': *id003}
+heatmap_kwargs: {}
 
 targets: ['labels', 'evaluations']
 
@@ -56,9 +56,9 @@ optimization_parameters:
     n_clusters: &id001
     - 2
     - 3
-    - 4
-    - 5
-    - 6
+#    - 4
+#    - 5
+#    - 6
 #    - 7
 #    - 8
 #    - 9
