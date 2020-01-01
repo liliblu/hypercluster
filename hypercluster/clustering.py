@@ -1,5 +1,6 @@
 from sklearn.cluster import *
 from sklearn.metrics import *
+from .metrics import *
 from hdbscan import HDBSCAN
 from pandas import DataFrame
 import pandas as pd
