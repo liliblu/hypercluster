@@ -22,30 +22,12 @@ KMeans;n_clusters-2:
 KMeans;n_clusters-3:
   clusterer: KMeans
   n_clusters: 3
-KMeans;n_clusters-4:
-  clusterer: KMeans
-  n_clusters: 4
-KMeans;n_clusters-5:
-  clusterer: KMeans
-  n_clusters: 5
-KMeans;n_clusters-6:
-  clusterer: KMeans
-  n_clusters: 6
 MiniBatchKMeans;n_clusters-2:
   clusterer: MiniBatchKMeans
   n_clusters: 2
 MiniBatchKMeans;n_clusters-3:
   clusterer: MiniBatchKMeans
   n_clusters: 3
-MiniBatchKMeans;n_clusters-4:
-  clusterer: MiniBatchKMeans
-  n_clusters: 4
-MiniBatchKMeans;n_clusters-5:
-  clusterer: MiniBatchKMeans
-  n_clusters: 5
-MiniBatchKMeans;n_clusters-6:
-  clusterer: MiniBatchKMeans
-  n_clusters: 6
 OPTICS;min_samples-2:
   clusterer: OPTICS
   min_samples: 2

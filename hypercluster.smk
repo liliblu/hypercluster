@@ -1,5 +1,5 @@
 import pandas as pd
-from hypercluster import clustering
+from hypercluster import clustering, visualize
 from hypercluster.constants import param_delim, val_delim
 import os
 import yaml
@@ -18,14 +18,6 @@ generate_parameters_addtl_kwargs = config['generate_parameters_addtl_kwargs']
 intermediates_folder = config['intermediates_folder']
 clustering_results = config['clustering_results']
 gold_standard_file = config['gold_standard_file']
-
-
-def concat_dfs(df_list, kwargs):
-    results = pd.DataFrame()
-    for fil in df_list:
-        temp = pd.read_csv(fil, **kwargs)
-        results = pd.concat([results, temp], join='outer', axis=1)
-    return results
 
 
 def generate_parameters(config):
@@ -75,6 +67,15 @@ def handle_ext(wildcards):
         'No .txt, .csv or .tsv files with prefix %s/%s can be found' % (input_data_folder, base)
     )
 
+
+def concat_dfs(df_list, kwargs):
+    results = pd.DataFrame()
+    for fil in df_list:
+        temp = pd.read_csv(fil, **kwargs)
+        results = pd.concat([results, temp], join='outer', axis=1)
+    return results
+
+
 generate_parameters(config)
 
 
@@ -84,12 +85,16 @@ rule all:
             '{input_file}/%s/{input_file}_{targets}.txt' % clustering_results,
             input_file=input_files,
             targets=config['targets']
-        ),
+        ) +
         expand(
             "{input_file}/%s/{labs}_labels.txt" % intermediates_folder,
             input_file=input_files,
-            labs=config["param_sets"]
-         )
+            labs=config["param_sets_labels"]
+         ) +
+        expand(
+            '{input_file}/%s/{input_file}_evaluations.pdf' % clustering_results,
+            input_file=input_files
+        )
 
 
 rule run_clusterer:
@@ -161,20 +166,32 @@ rule collect_dfs:
             params_label = config['param_sets_labels'],
         )
     params:
-        readkwargs = read_csv_kwargs,
         outputkwargs = config['output_kwargs']
     output:
-        '{input_file}/%s/{input_file}_{targets}.txt' % (clustering_results)
+        '{input_file}/%s/{input_file}_{targets}.txt' % clustering_results
     run:
         df = concat_dfs(input.files, params.outputkwargs[wildcards.targets])
         df.to_csv(
             '%s/%s/%s_%s.txt' % (
                 wildcards.input_file, clustering_results,wildcards.input_file, wildcards.targets
-            ), sep = params.readkwargs.get('sep', ',')
+            ), sep = read_csv_kwargs.get('sep', ',')
+        )
+
+
+rule visualize_evaluations:
+    input:
+        files = '{input_file}/%s/{input_file}_evaluations.txt' % clustering_results,
+    output:
+        output_file = '{input_file}/%s/{input_file}_evaluations.pdf' % clustering_results
+    params:
+        heatmap_kwargs = config['heatmap_kwargs']
+
+    run:
+        df = pd.read_csv(input.files, sep=read_csv_kwargs.get('sep', ','), index_col=0)
+        visualize.visualize_evaluations(
+            df, output_prefix=output.output_file.rsplit('.', 1)[0], savefig=True,
+            **params.heatmap_kwargs
         )
 
 #TODO add pairwise comparison bn results
-#TODO add heatmaps for vis
 #TODO add example where opt 2 things at once for 1 clusterer
-#TODO figure out how to pass just the index col parameter around. don't need separate kwargs for
-# that.
