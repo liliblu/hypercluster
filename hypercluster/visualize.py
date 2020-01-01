@@ -12,6 +12,8 @@ matplotlib.rcParams["pdf.fonttype"] = 42
 matplotlib.rcParams["ps.fonttype"] = 42
 sns.set(font="arial", style="white", color_codes=True, font_scale=1.3)
 matplotlib.rcParams.update({"savefig.bbox": "tight"})
+cmap = sns.cubehelix_palette(8, as_cmap=True)
+cmap.set_bad('#DAE0E6')
 
 
 def zscore(df):
@@ -85,6 +87,7 @@ def visualize_evaluations(
             xticklabels=["-".join([str(i) for i in col]) for col in temp.columns],
             vmin=vmin,
             vmax=vmax,
+            cmap=cmap,
             cbar_ax=axs[-1],
             cbar_kws=dict(label="z-score"),
             **heatmap_kws
