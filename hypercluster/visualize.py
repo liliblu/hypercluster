@@ -5,9 +5,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pandas import DataFrame
-from typing import Iterable, Optional, List
+from typing import List
 from hypercluster.constants import param_delim, val_delim
-
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 sns.set(font='arial', style='white', color_codes=True, font_scale=1.3)
 matplotlib.rcParams.update({'savefig.bbox': 'tight'})
 
@@ -41,8 +42,7 @@ def visualize_evaluations(
             wspace=0.01,
             left=0, right=1,
             top=1, bottom=0
-        ),
-        # sharey=True,
+        )
     )
     vmin = np.nanquantile(evaluations_df, 0.1)
     vmax = np.nanquantile(evaluations_df, 0.9)
