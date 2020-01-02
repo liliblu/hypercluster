@@ -11,7 +11,7 @@ input_data_folder = config['input_data_folder']
 input_files = config['input_data_files']
 optimization_parameters = config['optimization_parameters']
 read_csv_kwargs = config['read_csv_kwargs']
-clustering_addtl_kwargs = config['clustering_addtl_kwargs']
+clusterer_kwargs = config['clusterer_kwargs']
 generate_parameters_addtl_kwargs = config['generate_parameters_addtl_kwargs']
 
 
@@ -22,7 +22,6 @@ gold_standard_file = config['gold_standard_file']
 
 def generate_parameters(config):
     kwargs = config['generate_parameters_addtl_kwargs']
-    clusterer_kwargs = config['clusterer_kwargs']
     parameters = config['optimization_parameters']
     all_params_to_test = []
     for clusterer, params in parameters.items():
@@ -105,12 +104,14 @@ rule run_clusterer:
     params:
         kwargs = lambda wildcards: config["param_sets"][wildcards.labs],
         readkwargs = read_csv_kwargs,
-        cluskwargs = clustering_addtl_kwargs
+        cluskwargs = clusterer_kwargs
     run:
         df = pd.read_csv(input.infile, **params.readkwargs)
+        kwargs = params.kwargs
+        clusterer = kwargs.pop('clusterer')
 
-        clusterer = params.kwargs.pop('clusterer')
-        cls = clustering.cluster(clusterer, df, params.kwargs)
+        kwargs.update(clusterer_kwargs.get(clusterer, {}))
+        cls = clustering.cluster(clusterer, df, kwargs)
 
         labs = pd.DataFrame(cls.labels_, index=df.index, columns=[wildcards.labs])
         labs.to_csv(
