@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 files = ['hypercluster.smk', 'snakemake_submit.sh', 'config.yml', 'cluster.json']
 setuptools.setup(
     name="hypercluster",
-    version="0.0.1",
+    version="0.0.2",
     author="Lili Blumenberg, Ruggles Lab",
     author_email="lili.blumenberg@gmail.com",
     description="A package for automatic clustering hyperparameter optmization",
@@ -31,6 +31,5 @@ setuptools.setup(
     package_data={"hypercluster": files},
     packages=setuptools.find_packages(
         exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
-    ),
-    # entry_points={"console_scripts": ["blacksheep = blacksheep.cli:_main"]},
+    )
 )

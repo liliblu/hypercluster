@@ -1,5 +1,6 @@
 from sklearn.cluster import *
 from sklearn.metrics import *
+from .additional_clusterers import *
 from .metrics import *
 from hdbscan import HDBSCAN
 from pandas import DataFrame
@@ -207,17 +208,22 @@ def evaluate_results(
     """
     Uses a given metric to evaluate clustering results.  
     Args:
-        labels: Series of labels
-        method: Str of name of evaluation to use. For options see hypercluster.categories.evaluations. Default is silhouette.
+        labels: Series of labels.
+        method: Str of name of evaluation to use. Default is silhouette.
         data: If using an inherent metric, must provide Dataframe of original data used to
-        cluster. For options see hypercluster.constants.inherent_metric.
+        cluster.
         gold_standard: If using a metric that compares to ground truth, must provide a set of
-        gold standard labels. For options see hypercluster.constants.need_ground_truth.
+        gold standard labels.
         metric_kwargs: Additional kwargs to use in evaluation.
 
     Returns:
-        Dictionary where every column from the label_df is a key and its evaluation is the value.
+        Metric value  
     """
+    if len(labels[labels != -1].value_counts()) < 2:
+        logging.error(
+            "Condition %s does not have at least two clusters, skipping" % labels.name
+        )
+        return np.nan
 
     if metric_kwargs is None:
         metric_kwargs = {}
@@ -238,13 +244,7 @@ def evaluate_results(
         clustered = labels != -1
         compare_to = data.loc[clustered]
     else:
-        raise ValueError("Evaluation metric %s not valid" % method)
-
-    if len(labels[clustered].value_counts()) < 2:
-        logging.error(
-            "Condition %s does not have at least two clusters, skipping" % labels.name
-        )
-        return np.nan
+        eval(method)(labels, **metric_kwargs)
 
     return eval(method)(compare_to, labels[clustered], **metric_kwargs)
 

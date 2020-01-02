@@ -13,7 +13,7 @@ matplotlib.rcParams["ps.fonttype"] = 42
 sns.set(font="arial", style="white", color_codes=True, font_scale=1.3)
 matplotlib.rcParams.update({"savefig.bbox": "tight"})
 cmap = sns.cubehelix_palette(8, as_cmap=True)
-cmap.set_bad("#DAE0E6")
+cmap.set_bad('#DAE0E6')
 
 
 def zscore(df):
@@ -46,8 +46,7 @@ def visualize_evaluations(
                     )
                 )[clus]
                 for clus in clusterers
-            ]
-            + [2],
+            ] + [2],
             wspace=0.01,
             left=0,
             right=1,
