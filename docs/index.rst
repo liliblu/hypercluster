@@ -13,6 +13,24 @@ Welcome to Hypercluster's documentation!
    hypercluster
 
 
+Clustering
+================================
+.. automodule:: clustering
+  :members:
+
+
+Metrics
+================================
+.. automodule:: metrics
+  :members:
+
+
+Visualization
+================================
+.. automodule:: visualize
+  :members:
+
+
 Indices and tables
 ==================
 
