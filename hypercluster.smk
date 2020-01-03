@@ -1,7 +1,8 @@
-import pandas as pd
+import pandas as pd,numpy as np
 from hypercluster import clustering, visualize
 from hypercluster.constants import param_delim, val_delim
-import os
+import os, subprocess
+from shutil import copyfile
 import yaml
 
 
@@ -17,7 +18,7 @@ generate_parameters_addtl_kwargs = config['generate_parameters_addtl_kwargs']
 
 intermediates_folder = config['intermediates_folder']
 clustering_results = config['clustering_results']
-gold_standard_file = config['gold_standard_file']
+gold_standards = config['gold_standards']
 
 
 def generate_parameters(config):
@@ -86,12 +87,27 @@ rule all:
             targets=config['targets']
         ) +
         expand(
-            "{input_file}/%s/{labs}_labels.txt" % intermediates_folder,
+            "{input_file}/%s/{labs}_{targets}.txt" % intermediates_folder,
             input_file=input_files,
-            labs=config["param_sets_labels"]
+            labs=config["param_sets_labels"],
+            targets=config['targets']
          ) +
         expand(
             '{input_file}/%s/{input_file}_evaluations.pdf' % clustering_results,
+            input_file=input_files
+        ) +
+        expand(
+            "{input_file}/%s/best_labels.txt" % clustering_results,
+            input_file=input_files
+        )+
+        expand(
+            '{input_file}/%s/%s_label_comparison.txt' % (
+                clustering_results, config['metric_to_compare_labels']
+            ),
+            input_file=input_files
+        )+
+        expand(
+            '{input_file}/%s/sample_label_agreement.txt' % clustering_results,
             input_file=input_files
         )
 
@@ -103,7 +119,7 @@ rule run_clusterer:
         "{input_file}/%s/{labs}_labels.txt" % intermediates_folder
     params:
         kwargs = lambda wildcards: config["param_sets"][wildcards.labs],
-        readkwargs = read_csv_kwargs,
+        readkwargs = lambda wildcards: read_csv_kwargs.get(wildcards.input_file, {}),
         cluskwargs = clusterer_kwargs
     run:
         df = pd.read_csv(input.infile, **params.readkwargs)
@@ -126,21 +142,22 @@ rule run_evaluation:
     output:
         "{input_file}/%s/{labs}_evaluations.txt" % intermediates_folder
     params:
-        gold_standard_file = gold_standard_file,
+        gold_standards = lambda wildcards: gold_standards.get(wildcards.input_file, ''),
         input_data = handle_ext,
-        readkwargs = {
-            'index_col':read_csv_kwargs.get('index_col', 0),
-            'sep':read_csv_kwargs.get('sep', ',')
-        },
+        readkwargs = lambda wildcards: read_csv_kwargs.get(wildcards.input_file, {}),
         evals = config["evaluations"],
         evalkwargs = config["eval_kwargs"]
     run:
         test_labels = pd.read_csv(input[0], **params.readkwargs)
-        if os.path.exists(params.gold_standard_file):
-            gold_standard = pd.read_csv(params.gold_standard_file, **params.readkwargs)
+        if os.path.exists(params.gold_standards):
+            gold_standard = pd.read_csv(params.gold_standards, **params.readkwargs)
         else:
             gold_standard = None
-        data = pd.read_csv(params.input_data, **params.readkwargs)
+        readcsv_kwargs = {
+            'index_col':params.readkwargs.get('index_col', 0),
+            'sep':params.readkwargs.get('sep', ',')
+        }
+        data = pd.read_csv(params.input_data, **readcsv_kwargs)
         res = pd.DataFrame({'methods':params.evals})
 
         res[wildcards.labs] = res.apply(
@@ -154,9 +171,11 @@ rule run_evaluation:
         )
         res = res.set_index('methods')
         res.to_csv(
-            '%s/%s/%s_evaluations.txt'% (wildcards.input_file, intermediates_folder,
-                                         wildcards.labs),
-            sep=params.readkwargs['sep']
+            '%s/%s/%s_evaluations.txt'% (
+                wildcards.input_file,
+                intermediates_folder,
+                wildcards.labs
+            ), sep=readcsv_kwargs['sep']
         )
 
 
@@ -167,32 +186,132 @@ rule collect_dfs:
             params_label = config['param_sets_labels'],
         )
     params:
-        outputkwargs = config['output_kwargs']
+        outputkwargs = lambda wildcards: config['output_kwargs'].get(wildcards.targets)
     output:
         '{input_file}/%s/{input_file}_{targets}.txt' % clustering_results
     run:
-        df = concat_dfs(input.files, params.outputkwargs[wildcards.targets])
+        kwargs = {
+            'index_col':params.outputkwargs.get('index_col', 0),
+            'sep':params.outputkwargs.get('sep', ',')
+        }
+
+        df = concat_dfs(input.files, kwargs)
         df.to_csv(
             '%s/%s/%s_%s.txt' % (
-                wildcards.input_file, clustering_results,wildcards.input_file, wildcards.targets
-            ), sep = read_csv_kwargs.get('sep', ',')
+                wildcards.input_file,
+                clustering_results,
+                wildcards.input_file,
+                wildcards.targets
+            ), sep = kwargs['sep']
         )
 
 
 rule visualize_evaluations:
     input:
-        files = '{input_file}/%s/{input_file}_evaluations.txt' % clustering_results,
+        files = '{input_file}/%s/{input_file}_evaluations.txt' % clustering_results
     output:
         output_file = '{input_file}/%s/{input_file}_evaluations.pdf' % clustering_results
     params:
         heatmap_kwargs = config['heatmap_kwargs']
 
     run:
-        df = pd.read_csv(input.files, sep=read_csv_kwargs.get('sep', ','), index_col=0)
+        df = pd.read_csv(
+            input.files, sep=read_csv_kwargs.get(
+                wildcards.input_file, {}
+            ).get('sep', ','), index_col=0
+        )
+
         visualize.visualize_evaluations(
             df, output_prefix=output.output_file.rsplit('.', 1)[0], savefig=True,
             **params.heatmap_kwargs
         )
 
-#TODO add pairwise comparison bn results
-#TODO add example where opt 2 things at once for 1 clusterer
+
+
+rule pick_best_clusters:
+    input:
+        evals = '{input_file}/%s/{input_file}_evaluations.txt' % clustering_results
+    output:
+        "{input_file}/%s/best_labels.txt" % clustering_results
+    params:
+        metric = config['metric_to_choose_best']
+    run:
+        subprocess.run([
+            'touch',
+            "%s/%s/best_labels.txt" % (
+                wildcards.input_file,
+                clustering_results,
+            )
+        ])
+
+        df = pd.read_csv(
+            input.evals, sep=read_csv_kwargs.get(
+                wildcards.input_file, {}
+            ).get('sep', ','), index_col=0
+        ).transpose()
+        labs = list(df[df[params.metric]==df[params.metric].max()].index)
+        for lab in labs:
+            copyfile(
+                "%s/%s/%s_labels.txt" % (
+                    wildcards.input_file,
+                    intermediates_folder,
+                    lab
+                ),
+                "%s/%s/%s_labels.txt" % (
+                    wildcards.input_file,
+                    clustering_results,
+                    lab
+                )
+            )
+            with open(
+                    "%s/%s/best_labels.txt" % (wildcards.input_file,clustering_results), 'a'
+            ) as fh:
+                fh.write('%s\n' % lab)
+
+rule compare_labels:
+    input:
+         labels = '{input_file}/%s/{input_file}_labels.txt' % clustering_results
+    output:
+        table = '{input_file}/%s/%s_label_comparison.txt' % (
+            clustering_results, config['metric_to_compare_labels']
+        )
+    params:
+        make_label_fig = config['make_label_fig'],
+        metric = config['metric_to_compare_labels']
+    run:
+        df = pd.read_csv(input.labels, **read_csv_kwargs.get(wildcards.input_file, {}))
+        df = df.corr(lambda x, y: clustering.evaluate_results(
+            x, method=params.metric, gold_standard=y
+        ))
+        df.to_csv(
+            '%s/%s/%s_label_comparison.txt' % (
+                wildcards.input_file, clustering_results, params.metric
+            )
+        )
+        if params.make_label_fig:
+            visualize.visualize_pairwise(
+                df,
+                config['heatmap_kwargs'],
+                output_prefix='%s/%s/%s_label_comparison' % (
+                    wildcards.input_file, clustering_results, params.metric
+                )
+            )
+
+
+rule compare_samples:
+    input:
+         labels = '{input_file}/%s/{input_file}_labels.txt' % clustering_results
+    output:
+          table = '{input_file}/%s/sample_label_agreement.txt' % clustering_results
+    params:
+          make_sample_fig = config['make_sample_fig']
+    run:
+        df = pd.read_csv(input.labels, **read_csv_kwargs.get(wildcards.input_file, {})).transpose()
+        df = df.corr(lambda x, y: sum(np.equal(x, y)))
+        df.to_csv('%s/%s/sample_label_agreement.txt' % (wildcards.input_file, clustering_results))
+        if params.make_sample_fig:
+            visualize.visualize_pairwise(
+                df,
+                config['heatmap_kwargs'],
+                output_prefix='%s/%s/sample_agreement' % (wildcards.input_file, clustering_results)
+            )

@@ -5,19 +5,44 @@ import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pandas import DataFrame
-from typing import List
+from typing import List, Optional
 from hypercluster.constants import param_delim, val_delim
+from scipy.cluster import hierarchy
+from scipy.spatial.distance import pdist
+from hypercluster import clustering
 
 matplotlib.rcParams["pdf.fonttype"] = 42
 matplotlib.rcParams["ps.fonttype"] = 42
 sns.set(font="arial", style="white", color_codes=True, font_scale=1.3)
 matplotlib.rcParams.update({"savefig.bbox": "tight"})
-cmap = sns.cubehelix_palette(8, as_cmap=True)
+cmap = sns.cubehelix_palette(
+    start=0,
+    rot=0.4,
+    gamma=1.0,
+    hue=0.82,
+    light=1,
+    dark=0,
+    reverse=False,
+    as_cmap=True
+)
+cmap.set_over('black')
+cmap.set_under('white')
 cmap.set_bad("#DAE0E6")
 
 
 def zscore(df):
     return df.subtract(df.mean(axis=1), axis=0).divide(df.std(axis=1), axis=0)
+
+
+def compute_order(
+        df,
+        dist_method="euclidean",
+        cluster_method="average"
+):
+    dist_mat = pdist(df, metric=dist_method)
+    link_mat = hierarchy.linkage(dist_mat, method=cluster_method)
+
+    return df.index[hierarchy.leaves_list(hierarchy.optimal_leaf_ordering(link_mat, dist_mat))]
 
 
 def visualize_evaluations(
@@ -57,6 +82,11 @@ def visualize_evaluations(
     )
     vmin = np.nanquantile(evaluations_df, 0.1)
     vmax = np.nanquantile(evaluations_df, 0.9)
+
+    heatmap_kws['cmap'] = heatmap_kws.get('cmap', cmap)
+    heatmap_kws['vmin'] = heatmap_kws.get('vmin', vmin)
+    heatmap_kws['vmax'] = heatmap_kws.get('vmax', vmax)
+
     for i, clus in enumerate(clusterers):
         temp = evaluations_df[
             [
@@ -86,9 +116,6 @@ def visualize_evaluations(
             ax=ax,
             yticklabels=temp.index,
             xticklabels=["-".join([str(i) for i in col]) for col in temp.columns],
-            vmin=vmin,
-            vmax=vmax,
-            cmap=cmap,
             cbar_ax=axs[-1],
             cbar_kws=dict(label="z-score"),
             **heatmap_kws
@@ -102,3 +129,64 @@ def visualize_evaluations(
     if savefig:
         plt.savefig("%s.pdf" % output_prefix)
     return axs
+
+
+def visualize_pairwise(
+        df: DataFrame,
+        heatmap_kws: Optional[dict] = None,
+        output_prefix: str = "heatmap.pairwise"
+):
+    if heatmap_kws is None:
+        heatmap_kws = {}
+
+    vmin = np.nanquantile(df, 0.1)
+    vmax = np.nanquantile(df, 0.9)
+
+    heatmap_kws['cmap'] = heatmap_kws.get('cmap', cmap)
+    heatmap_kws['vmin'] = heatmap_kws.get('vmin', vmin)
+    heatmap_kws['vmax'] = heatmap_kws.get('vmax', vmax)
+
+    cbar_ratio = 2
+    wspace = 0.01
+    height = 0.18 * len(df)
+    width = 0.18 * (len(df.columns)+cbar_ratio+wspace)
+    fig, axs = plt.subplots(
+        figsize=(width, height),
+        nrows=1,
+        ncols=2,
+        gridspec_kw=dict(
+            width_ratios=[len(df.columns), cbar_ratio],
+            wspace=wspace,
+            left=0,
+            right=1,
+            top=1,
+            bottom=0,
+        )
+    )
+    order = compute_order(df)
+    df = df.loc[order, order]
+    sns.heatmap(df, xticklabels=order, yticklabels=order, ax=axs[0], cbar_ax=axs[1], **heatmap_kws)
+    plt.savefig('%s.pdf' % output_prefix)
+
+    return axs
+
+
+def visualize_label_agreement_pairwise(
+        labels: DataFrame,
+        method: 'adjusted_rand_score',
+        heatmap_kws: Optional[dict] = None,
+        output_prefix: str = "heatmap.labels.pairwise"
+):
+    labels = labels.corr(
+        lambda x, y: clustering.evaluate_results(x, method=method, gold_standard=y)
+    )
+    return visualize_pairwise(labels, heatmap_kws, output_prefix)
+
+
+def visualize_sample_labeling_pairwise(
+        labels: DataFrame,
+        heatmap_kws: Optional[dict] = None,
+        output_prefix: str = "heatmap.sample.pairwise"
+):
+    labels = labels.corr(lambda x, y: sum(np.equal(x, y)))
+    return visualize_pairwise(labels, heatmap_kws, output_prefix)

@@ -1,0 +1,107 @@
+intermediates_folder: 'clustering_intermediates'
+clustering_results: 'clustering'
+gold_standard_file: 'gold_standard_file.txt'
+
+input_data_folder: '/gpfs/home/lmb529/ruggleslabHome/phosphodisco/datasets/normalized'
+
+input_data_files:
+#  - brca-combined-v4.0-phosphoproteome-ratio-norm-unfiltered-dedup-prot-normed-top10000std
+#  - lscc-v1.0-proteome-ratio-norm-unfiltered-dedup-prot-normed-top10000std
+#  - luad-v3.0-phosphoproteome-ratio-norm-unfiltered-dedup-prot-normed-top10000std
+#  - UCEC_proteomics_pass_only-prot-normed-top10000std
+ - brca_RNA_TCGA_2012_top5000
+
+read_csv_kwargs: &id003
+#   {'index_col':[0, 1]}
+    {'index_col':[0]}
+
+evaluations:
+  - 'silhouette_score'
+  - 'calinski_harabasz_score'
+  - 'davies_bouldin_score'
+  - 'number_clustered'
+  - 'smallest_largest_clusters_ratio'
+  - 'smallest_cluster_ratio'
+
+eval_kwargs: {}
+generate_parameters_addtl_kwargs: {'random_search':false}
+clusterer_kwargs: {}
+output_kwargs: {'evaluations': {'index_col':[0]}, 'labels': *id003}
+heatmap_kwargs: {}
+
+targets: ['labels', 'evaluations']
+
+optimization_parameters:
+  AffinityPropagation:
+    damping:
+    - 0.55
+    - 0.6
+    - 0.65
+    - 0.7
+    - 0.75
+    - 0.8
+    - 0.85
+    - 0.9
+    - 0.95
+  HDBSCAN:
+    min_cluster_size: &id002
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+  KMeans:
+    n_clusters: &id001
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    - 17
+    - 18
+    - 19
+    - 20
+    - 21
+    - 22
+    - 23
+    - 24
+    - 25
+    - 26
+    - 27
+    - 28
+    - 29
+    - 30
+    - 31
+    - 32
+    - 33
+    - 34
+    - 35
+    - 36
+    - 37
+    - 38
+    - 39
+    - 40
+  MiniBatchKMeans:
+    n_clusters: *id001
+  OPTICS:
+    min_samples: *id002
