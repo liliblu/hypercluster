@@ -4,6 +4,9 @@ AffinityPropagation;damping-0.6:
 AffinityPropagation;damping-0.65:
   clusterer: AffinityPropagation
   damping: 0.65
+AffinityPropagation;damping-0.95:
+  clusterer: AffinityPropagation
+  damping: 0.95
 HDBSCAN;min_cluster_size-2:
   clusterer: HDBSCAN
   min_cluster_size: 2

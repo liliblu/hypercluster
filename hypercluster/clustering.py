@@ -219,6 +219,8 @@ def evaluate_results(
     Returns:
         Metric value  
     """
+    if isinstance(labels, pd.Series) is False:
+        labels = pd.Series(labels)
     if len(labels[labels != -1].value_counts()) < 2:
         logging.error(
             "Condition %s does not have at least two clusters, skipping" % labels.name
@@ -244,7 +246,7 @@ def evaluate_results(
         clustered = labels != -1
         compare_to = data.loc[clustered]
     else:
-        eval(method)(labels, **metric_kwargs)
+        return eval(method)(labels, **metric_kwargs)
 
     return eval(method)(compare_to, labels[clustered], **metric_kwargs)
 

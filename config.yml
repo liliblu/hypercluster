@@ -1,35 +1,37 @@
+input_data_folder: '.'
+input_data_files: test_input
+gold_standards:
+  test_input: 'gold_standard_file.txt'
+read_csv_kwargs:
+  test_input: &id003
+    {'index_col':[0]}
+
 intermediates_folder: 'clustering_intermediates'
 clustering_results: 'clustering'
-gold_standard_file: 'gold_standard_file.txt'
+targets:
+  - labels
+  - evaluations
 
-input_data_folder:
-#  '/gpfs/home/lmb529/ruggleslabHome/phosphodisco/datasets/normalized'
-  '.'
-input_data_files: test_input
-#  - brca-combined-v4.0-phosphoproteome-ratio-norm-unfiltered-dedup-prot-normed-top10000std
-#  - lscc-v1.0-proteome-ratio-norm-unfiltered-dedup-prot-normed-top10000std
-#  - luad-v3.0-phosphoproteome-ratio-norm-unfiltered-dedup-prot-normed-top10000std
-#  - UCEC_proteomics_pass_only-prot-normed-top10000std
-
-read_csv_kwargs: &id003
-  {'index_col':[0]}
-
-evaluations: [
-  'silhouette_score',
-  'calinski_harabasz_score',
-  'davies_bouldin_score',
-  "number_clustered",
-  "smallest_largest_clusters_ratio",
-  "smallest_cluster_ratio",
-]
-eval_kwargs: {}
-clustering_addtl_kwargs: {}
 generate_parameters_addtl_kwargs: {'random_search':false}
 clusterer_kwargs: {}
-output_kwargs: {'evaluations': {'index_col':[0]}, 'labels': *id003}
-heatmap_kwargs: {}
+evaluations:
+  - silhouette_score
+  - calinski_harabasz_score
+  - davies_bouldin_score
+  - number_clustered
+  - smallest_largest_clusters_ratio
+  - smallest_cluster_ratio
+eval_kwargs: {}
+metric_to_choose_best: silhouette_score
+metric_to_compare_labels: adjusted_rand_score
+make_label_fig: true
+make_sample_fig: true
 
-targets: ['labels', 'evaluations']
+output_kwargs:
+  evaluations:
+    index_col: [0]
+  labels: *id003
+heatmap_kwargs: {}
 
 optimization_parameters:
   AffinityPropagation:
@@ -42,6 +44,7 @@ optimization_parameters:
 #    - 0.8
 #    - 0.85
 #    - 0.9
+    - 0.95
   HDBSCAN:
     min_cluster_size: &id002
     - 2
