@@ -97,7 +97,7 @@ rule all:
             input_file=input_files
         ) +
         expand(
-            "{input_file}/%s/best_labels.txt" % clustering_results,
+            "{input_file}/%s/best_parameters.txt" % clustering_results,
             input_file=input_files
         )+
         expand(
@@ -232,7 +232,7 @@ rule pick_best_clusters:
     input:
         evals = '{input_file}/%s/{input_file}_evaluations.txt' % clustering_results
     output:
-        "{input_file}/%s/best_labels.txt" % clustering_results
+        "{input_file}/%s/best_parameters.txt" % clustering_results
     params:
         metric = config['metric_to_choose_best']
     run:
