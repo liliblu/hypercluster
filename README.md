@@ -5,6 +5,10 @@ Install:
 ```
 pip install hypercluster
 ```
+or
+```
+conda install -c bioconda hypercluster
+```
 
 Docs: https://hypercluster.readthedocs.io/en/latest/
 
