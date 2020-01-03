@@ -347,3 +347,19 @@ def optimize_clustering(
         )
 
     return evaluation_results_df, clustering_labels_df, clustering_labels
+
+
+def pick_best_labels(
+        evaluation_results_df: DataFrame,
+        clustering_labels_df: DataFrame,
+        method: str = "silhouette_score",
+        min_or_max: str = 'max'
+) -> Iterable:
+    best_labels = evaluation_results_df.loc[method, :]
+    if min_or_max == 'min':
+        best_labels = best_labels.index[best_labels==best_labels.min()]
+        return clustering_labels_df[best_labels]
+    elif min_or_max == 'max':
+        best_labels = best_labels.index[best_labels == best_labels.max()]
+        return clustering_labels_df[best_labels]
+    logging.error('min_or_max must be either min or max, %s invalid choice' % min_or_max)
