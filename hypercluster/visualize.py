@@ -163,7 +163,10 @@ def visualize_pairwise(
             bottom=0,
         )
     )
-    order = compute_order(df.fillna(df.median()))
+    try:
+        order = compute_order(df.fillna(df.median()))
+    except ValueError:
+        order = df.index
     df = df.loc[order, order]
     sns.heatmap(df, xticklabels=order, yticklabels=order, ax=axs[0], cbar_ax=axs[1], **heatmap_kws)
     plt.savefig('%s.pdf' % output_prefix)
