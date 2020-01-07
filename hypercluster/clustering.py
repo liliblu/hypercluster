@@ -2,7 +2,7 @@ from sklearn.cluster import *
 from sklearn.metrics import *
 from .additional_clusterers import *
 from .metrics import *
-from hdbscan import HDBSCAN
+# from hdbscan import HDBSCAN
 from pandas import DataFrame
 import pandas as pd
 import numpy as np

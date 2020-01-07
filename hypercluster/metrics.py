@@ -45,3 +45,15 @@ def smallest_cluster_ratio(labels: Iterable) -> float:
     counts = Counter(labels)
     counts.pop(-1, None)
     return min(counts.values()) / len(labels)
+
+
+def number_of_clusters(labels: Iterable) -> float:
+    return len(Counter(labels))
+
+
+def smallest_cluster_size(labels: Iterable) -> float:
+    return min(Counter(labels).values())
+
+
+def largest_cluster_size(labels: Iterable) -> float:
+    return max(Counter(labels).values())
