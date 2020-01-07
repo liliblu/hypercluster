@@ -85,31 +85,31 @@ rule all:
             '{input_file}/%s/{input_file}_{targets}.txt' % clustering_results,
             input_file=input_files,
             targets=config['targets']
-        ) +
-        expand(
+        )
+        + expand(
             "{input_file}/%s/{labs}_{targets}.txt" % intermediates_folder,
             input_file=input_files,
             labs=config["param_sets_labels"],
             targets=config['targets']
-         ) +
-        expand(
+         )
+        + expand(
             '{input_file}/%s/{input_file}_evaluations.pdf' % clustering_results,
             input_file=input_files
-        ) +
-        expand(
+        )
+        + expand(
             "{input_file}/%s/best_parameters.txt" % clustering_results,
             input_file=input_files
-        )+
-        expand(
+        )
+        + expand(
             '{input_file}/%s/%s_label_comparison.txt' % (
                 clustering_results, config['metric_to_compare_labels']
             ),
             input_file=input_files
-        )+
-        expand(
-            '{input_file}/%s/sample_label_agreement.txt' % clustering_results,
-            input_file=input_files
         )
+        # + expand(
+        #     '{input_file}/%s/sample_label_agreement.txt' % clustering_results,
+        #     input_file=input_files
+        # )
 
 
 rule run_clusterer:
@@ -154,10 +154,13 @@ rule run_evaluation:
         }
         test_labels = pd.read_csv(input[0], **params.readkwargs)
         if os.path.exists(params.gold_standards):
-            gold_standard = pd.read_csv(params.gold_standards, **readcsv_kwargs)
+            gold_standard = pd.read_csv(
+                '%s/%s' %(input_data_folder, params.gold_standards),
+                **readcsv_kwargs
+            )
         else:
             gold_standard = None
-        
+
         data = pd.read_csv(params.input_data, **readcsv_kwargs)
         res = pd.DataFrame({'methods':params.evals})
 
