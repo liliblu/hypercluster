@@ -347,7 +347,7 @@ def optimize_clustering(
             ),
             axis=1,
         )
-
+    evaluation_results_df = evaluation_results_df.set_index('methods')
     return evaluation_results_df, clustering_labels_df, clustering_labels
 
 
