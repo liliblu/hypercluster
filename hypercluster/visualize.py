@@ -105,7 +105,7 @@ def visualize_evaluations(
                     }
                     for i in temp.index
                 ]
-            ).astype(float)
+            ).astype(float, errors='ignore')
         )
         temp = temp.sort_index()
         temp = temp.transpose()
