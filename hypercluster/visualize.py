@@ -134,7 +134,9 @@ def visualize_evaluations(
 def visualize_pairwise(
         df: DataFrame,
         heatmap_kws: Optional[dict] = None,
-        output_prefix: str = "heatmap.pairwise"
+        savefig: bool = True,
+        output_prefix: str = "heatmap.pairwise",
+        method: Optional[str] = None
 ):
     if heatmap_kws is None:
         heatmap_kws = {}
@@ -145,6 +147,9 @@ def visualize_pairwise(
     heatmap_kws['cmap'] = heatmap_kws.get('cmap', cmap)
     heatmap_kws['vmin'] = heatmap_kws.get('vmin', vmin)
     heatmap_kws['vmax'] = heatmap_kws.get('vmax', vmax)
+    cbar_kws = heatmap_kws.get('cbar_kws', {})
+    cbar_kws['label'] = cbar_kws.get('label', method)
+    heatmap_kws['cbar_kws'] = cbar_kws
 
     cbar_ratio = 2
     wspace = 0.01
@@ -168,8 +173,16 @@ def visualize_pairwise(
     except ValueError:
         order = df.index
     df = df.loc[order, order]
-    sns.heatmap(df, xticklabels=order, yticklabels=order, ax=axs[0], cbar_ax=axs[1], **heatmap_kws)
-    plt.savefig('%s.pdf' % output_prefix)
+    sns.heatmap(
+        df,
+        xticklabels=order,
+        yticklabels=order,
+        ax=axs[0],
+        cbar_ax=axs[1],
+        **heatmap_kws
+    )
+    if savefig:
+        plt.savefig('%s.pdf' % output_prefix)
 
     return axs
 
@@ -178,18 +191,20 @@ def visualize_label_agreement_pairwise(
         labels: DataFrame,
         method: 'adjusted_rand_score',
         heatmap_kws: Optional[dict] = None,
+        savefig: bool = True,
         output_prefix: str = "heatmap.labels.pairwise"
 ):
     labels = labels.corr(
         lambda x, y: clustering.evaluate_results(x, method=method, gold_standard=y)
     )
-    return visualize_pairwise(labels, heatmap_kws, output_prefix)
+    return visualize_pairwise(labels, heatmap_kws, savefig, output_prefix, method=method)
 
 
 def visualize_sample_labeling_pairwise(
         labels: DataFrame,
         heatmap_kws: Optional[dict] = None,
+        savefig: bool = True,
         output_prefix: str = "heatmap.sample.pairwise"
 ):
     labels = labels.corr(lambda x, y: sum(np.equal(x, y)))
-    return visualize_pairwise(labels, heatmap_kws, output_prefix)
+    return visualize_pairwise(labels, heatmap_kws, savefig, output_prefix, method='# same cluster')

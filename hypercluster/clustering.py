@@ -206,7 +206,7 @@ def evaluate_results(
     metric_kwargs: Optional[dict] = None,
 ) -> dict:
     """
-    Uses a given metric to evaluate clustering results.  
+    Uses a given metric to evaluate clustering results.
     Args:
         labels: Series of labels.
         method: Str of name of evaluation to use. Default is silhouette.

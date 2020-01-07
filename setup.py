@@ -29,7 +29,7 @@ setuptools.setup(
         "snakemake >= 5.8.2"
     ],
     package_data={"hypercluster": files},
-    packages=setuptools.find_packages(
-        exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
-    )
+    # packages=setuptools.find_packages(
+    #     exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
+    # )
 )
