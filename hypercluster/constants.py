@@ -42,6 +42,10 @@ inherent_metrics = [
     "silhouette_score",
     "calinski_harabasz_score",
     "davies_bouldin_score",
+    "smallest_largest_clusters_ratio",
+    "number_of_clusters",
+    "smallest_cluster_size",
+    "largest_cluster_size"
 ]
 
 min_or_max = {

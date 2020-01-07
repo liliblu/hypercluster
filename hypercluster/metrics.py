@@ -7,7 +7,7 @@ __doc__ = (
 )
 
 
-def number_clustered(labels: Iterable) -> float:
+def number_clustered(_, labels: Iterable) -> float:
     """
 
     Args:
@@ -19,7 +19,7 @@ def number_clustered(labels: Iterable) -> float:
     return (labels != -1).sum()
 
 
-def smallest_largest_clusters_ratio(labels: Iterable) -> float:
+def smallest_largest_clusters_ratio(_, labels: Iterable) -> float:
     """
 
     Args:
@@ -33,7 +33,7 @@ def smallest_largest_clusters_ratio(labels: Iterable) -> float:
     return min(counts.values()) / max(counts.values())
 
 
-def smallest_cluster_ratio(labels: Iterable) -> float:
+def smallest_cluster_ratio(_, labels: Iterable) -> float:
     """
 
     Args:
@@ -47,13 +47,13 @@ def smallest_cluster_ratio(labels: Iterable) -> float:
     return min(counts.values()) / len(labels)
 
 
-def number_of_clusters(labels: Iterable) -> float:
+def number_of_clusters(_, labels: Iterable) -> float:
     return len(Counter(labels))
 
 
-def smallest_cluster_size(labels: Iterable) -> float:
+def smallest_cluster_size(_, labels: Iterable) -> float:
     return min(Counter(labels).values())
 
 
-def largest_cluster_size(labels: Iterable) -> float:
+def largest_cluster_size(_, labels: Iterable) -> float:
     return max(Counter(labels).values())

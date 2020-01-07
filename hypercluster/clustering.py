@@ -248,7 +248,8 @@ def evaluate_results(
         clustered = labels != -1
         compare_to = data.loc[clustered]
     else:
-        return eval(method)(labels, **metric_kwargs)
+        compare_to = None
+        clustered = labels.index
 
     return eval(method)(compare_to, labels[clustered], **metric_kwargs)
 
