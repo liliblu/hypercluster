@@ -194,6 +194,8 @@ class AutoClusterer:
                 list(self.param_sets.columns)
             ).transpose()
 
+        if isinstance(data.index, pd.MultiIndex):
+            label_results.index = pd.MultiIndex.from_tuples(label_results.index)
         self.labels_ = label_results
         return self
 
@@ -312,7 +314,7 @@ def optimize_clustering(
             .fit(data)
             .labels_
         )
-        label_df.index = pd.MultiIndex.from_tuples(label_df.index)
+
         clustering_labels[clusterer_name] = label_df
 
         # Put all parameter labels into 1 for a big df
