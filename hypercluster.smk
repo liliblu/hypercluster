@@ -148,15 +148,16 @@ rule run_evaluation:
         evals = config["evaluations"],
         evalkwargs = config["eval_kwargs"]
     run:
-        test_labels = pd.read_csv(input[0], **params.readkwargs)
-        if os.path.exists(params.gold_standards):
-            gold_standard = pd.read_csv(params.gold_standards, **params.readkwargs)
-        else:
-            gold_standard = None
         readcsv_kwargs = {
             'index_col':params.readkwargs.get('index_col', 0),
             'sep':params.readkwargs.get('sep', ',')
         }
+        test_labels = pd.read_csv(input[0], **params.readkwargs)
+        if os.path.exists(params.gold_standards):
+            gold_standard = pd.read_csv(params.gold_standards, **readcsv_kwargs)
+        else:
+            gold_standard = None
+        
         data = pd.read_csv(params.input_data, **readcsv_kwargs)
         res = pd.DataFrame({'methods':params.evals})
 
@@ -165,7 +166,7 @@ rule run_evaluation:
                 test_labels[test_labels.columns[0]],
                 method=row['methods'],
                 data=data,
-                gold_standard=gold_standard,
+                gold_standard=gold_standard[gold_standard.columns[0]],
                 metric_kwargs=params.evalkwargs.get(row['methods'], None)
             ), axis=1
         )
