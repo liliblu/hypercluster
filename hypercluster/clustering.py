@@ -2,7 +2,6 @@ from sklearn.cluster import *
 from sklearn.metrics import *
 from .additional_clusterers import *
 from .metrics import *
-# from hdbscan import HDBSCAN
 from pandas import DataFrame
 import pandas as pd
 import numpy as np
@@ -19,13 +18,13 @@ def calculate_row_weights(
     Used to select random rows of parameter combinations using individual parameter weights.  
 
     Args:
-        row:  Series of parameters, with parameter names as index.
-        param_weights: Dictionary of str: dictionaries. Ex format - {'parameter_name':{'param_option_1':0.5, 'param_option_2':0.5}}.
-        vars_to_optimize: Dictionary with possibilities for different parameters. Ex format - {'parameter_name':[1, 2, 3, 4, 5]}.
+        row (Iterable):  Series of parameters, with parameter names as index.
+        param_weights (dict): Dictionary of str: dictionaries. Ex format - {'parameter_name':{'param_option_1':0.5, 'param_option_2':0.5}}.
+        vars_to_optimize (Iterable): Dictionary with possibilities for different parameters. Ex format - {'parameter_name':[1, 2, 3, 4, 5]}.
 
     Returns:
-        Float representing the probability of seeing that combination of parameters,
-        given their individual weights.
+        Float representing the probability of seeing that combination of parameters, given their
+        individual weights.
 
     """
     weights = []
@@ -45,9 +44,9 @@ def cluster(clusterer_name: str, data: DataFrame, params: dict = {}):
     Runs a given clusterer with a given set of parameters.
 
     Args:
-        clusterer_name: String name of clusterer, for options see hypercluster.categories.clusterers.
-        data: Dataframe with elements to cluster as index and examples as columns.  
-        params: Dictionary of parameter names and values to feed into clusterer. Default {}.  
+        clusterer_name (str): String name of clusterer.
+        data (DataFrame): Dataframe with elements to cluster as index and examples as columns.
+        params (dict): Dictionary of parameter names and values to feed into clusterer. Default {}
 
     Returns: 
         Instance of the clusterer fit with the data provided.  
@@ -60,19 +59,18 @@ class AutoClusterer:
     """
     Main hypercluster object.
     Args:
-            clusterer_name: String name of clustererm for options see
-        hypercluster.categories.clusterers..
-            params_to_optimize: Dictionary with possibilities for different parameters. Ex format - {
-        'parameter_name':[1, 2, 3, 4, 5]}. If None, will optimize default selection, given in
-        hypercluster.constants.variables_to_optimize. Default None.
-            random_search: Whether to search a random selection of possible parameters or all
-        possibilites. Default True.
-            random_search_fraction: If random_search is True, what fraction of the possible
-            parameters to search. Default 0.5.
-            param_weights: Dictionary of str: dictionaries. Ex format - {'parameter_name':{
-        'param_option_1':0.5, 'param_option_2':0.5}}.
-            clus_kwargs: Additional kwargs to pass into given clusterer, but not to be optimized.
-        Default None.
+            clusterer_name (str): String name of clusterer
+            params_to_optimize (dict): Dictionary with possibilities for different parameters. Ex
+            format - {'parameter_name':[1, 2, 3, 4, 5]}. If None, will optimize default
+            selection, given in hypercluster.constants.variables_to_optimize. Default None.
+            random_search (bool): Whether to search a random selection of possible parameters or
+            all possibilites. Default True.
+            random_search_fraction (float): If random_search is True, what fraction of the
+            possible parameters to search. Default 0.5.
+            param_weights (dict): Dictionary of str: dictionaries. Ex format - {
+            'parameter_name':{'param_option_1':0.5, 'param_option_2':0.5}}.
+            clus_kwargs (dict): Additional kwargs to pass into given clusterer, but not to be
+            optimized. Default None.
         """
 
     def __init__(
@@ -165,7 +163,7 @@ class AutoClusterer:
         """
         Fits clusterer to data with each parameter set.
         Args:
-            data: Dataframe with elements to cluster as index and examples as columns.
+            data (DataFrame): Dataframe with elements to cluster as index and features as columns.
 
         Returns:
             self with self.labels_ assigned
@@ -210,13 +208,13 @@ def evaluate_results(
     """
     Uses a given metric to evaluate clustering results.
     Args:
-        labels: Series of labels.
-        method: Str of name of evaluation to use. Default is silhouette.
-        data: If using an inherent metric, must provide Dataframe of original data used to
-        cluster.
-        gold_standard: If using a metric that compares to ground truth, must provide a set of
+        labels (Iterable): Series of labels.
+        method (str): Str of name of evaluation to use. Default is silhouette.
+        data (DataFrame): If using an inherent metric, must provide Dataframe with which to
+        calculate the metric.
+        gold_standard (Iterable): If using a metric that compares to ground truth, must provide a set of
         gold standard labels.
-        metric_kwargs: Additional kwargs to use in evaluation.
+        metric_kwargs (dict): Additional kwargs to use in evaluation.
 
     Returns:
         Metric value  
@@ -269,18 +267,24 @@ def optimize_clustering(
     """
     Runs through many clusterers and parameters to get best clustering labels.
     Args:
-        data: Dataframe with elements to cluster as index and examples as columns.
-        algorithm_names: Which clusterers to try. Default is in variables_to_optimize.Can also
-        put 'slow', 'fast' or 'fastest' for subset of clusterers. See hypercluster.constants.speeds.
-        algorithm_parameters: Dictionary of str:dict, with parameters to optimize for each clusterer. Ex. structure:: {'clusterer1':{'param1':['opt1', 'opt2', 'opt3']}}.
-        random_search: Whether to search a random selection of possible parameters or all possibilities. Default True.
-        random_search_fraction: If random_search is True, what fraction of the possible parameters to search, applied to all clusterers. Default 0.5.
-        algorithm_param_weights: Dictionary of str: dictionaries. Ex format - {'clusterer_name': {'parameter_name':{'param_option_1':0.5, 'param_option_2':0.5}}}.
-        algorithm_clus_kwargs: Dictionary of additional kwargs per clusterer.
-        evaluation_methods: Str name of evaluation metric to use. For options see
-        hypercluster.categories.evaluations. Default silhouette.
-        gold_standard: If using a evaluation needs ground truth, must provide ground truth labels. For options see hypercluster.constants.need_ground_truth.
-        metric_kwargs: Additional evaluation metric kwargs.  
+        data (DataFrame): Dataframe with elements to cluster as index and examples as columns.
+        algorithm_names (Iterable[str]): Which clusterers to try. Default is in
+        variables_to_optimize. Can also  put 'slow', 'fast' or 'fastest' for subset of
+        clusterers. See hypercluster.constants.categories.
+        algorithm_parameters (dict): Dictionary of str:dict, with parameters to optimize for each
+        clusterer. Ex. structure:: {'clusterer1':{'param1':['opt1', 'opt2', 'opt3']}}.
+        random_search (bool): Whether to search a random selection of possible parameters or all
+        possibilities. Default True.
+        random_search_fraction (float): If random_search is True, what fraction of the possible
+        parameters to search, applied to all clusterers. Must be between 0 and 1. Default 0.5.
+        algorithm_param_weights (dict): Dictionary of str: dictionaries. Ex format - {
+        'clusterer_name': {'parameter_name':{'param_option_1':0.5, 'param_option_2':0.5}}}.
+        algorithm_clus_kwargs (dict): Dictionary of additional kwargs per clusterer.
+        evaluation_methods (Iterable[str]): Str name of evaluation metric to use. Default
+        all inherent metrics.
+        gold_standard (Iterable): If using a evaluation needs ground truth, must provide ground
+        truth labels. For options see hypercluster.constants.need_ground_truth.
+        metric_kwargs (dict): Additional evaluation metric kwargs.
 
     Returns:
         Best labels, dictionary of clustering evaluations, dictionary of all clustering labels
@@ -358,6 +362,17 @@ def pick_best_labels(
         method: str = "silhouette_score",
         min_or_max: str = 'max'
 ) -> Iterable:
+    """
+    From evaluations and a metric to minimize or maximize, return all labels with top pick.
+    Args:
+        evaluation_results_df (DataFrame): Evaluations DataFrame from optimize_clustering
+        clustering_labels_df (DataFrame: Labels DataFrame from optimize_clustering
+        method (str): Method with which to choose the best labels.
+        min_or_max (str): Whether to minimize or maximize the metric. Must be 'min' or 'max'
+
+    Returns:
+        DataFrame of All top labels.
+    """
     best_labels = evaluation_results_df.loc[method, :]
     if min_or_max == 'min':
         best_labels = best_labels.index[best_labels==best_labels.min()]
