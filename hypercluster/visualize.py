@@ -259,7 +259,7 @@ def visualize_label_agreement_pairwise(
     if heatmap_kws is None:
         heatmap_kws = {}
     labels = labels.corr(
-        lambda x, y: clustering.evaluate_results(x, method=method, gold_standard=y)
+        lambda x, y: clustering.evaluate_one(x, method=method, gold_standard=y)
     )
     return visualize_pairwise(labels, savefig, output_prefix, method=method, **heatmap_kws)
 

@@ -165,7 +165,7 @@ rule run_evaluation:
         res = pd.DataFrame({'methods':params.evals})
 
         res[wildcards.labs] = res.apply(
-            lambda row: clustering.evaluate_results(
+            lambda row: clustering.evaluate_one(
                 test_labels[test_labels.columns[0]],
                 method=row['methods'],
                 data=data,
@@ -284,7 +284,7 @@ rule compare_labels:
         metric = config['metric_to_compare_labels']
     run:
         df = pd.read_csv(input.labels, **read_csv_kwargs.get(wildcards.input_file, {}))
-        df = df.corr(lambda x, y: clustering.evaluate_results(
+        df = df.corr(lambda x, y: clustering.evaluate_one(
             x, method=params.metric, gold_standard=y
         ))
         df.to_csv(
