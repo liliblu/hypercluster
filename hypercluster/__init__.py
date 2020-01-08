@@ -1,1 +1,1 @@
-from hypercluster import clustering, constants, visualize, metrics, additional_clusterers
+from hypercluster import clustering, constants, visualize, additional_metrics, additional_clusterers

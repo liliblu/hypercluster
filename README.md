@@ -10,5 +10,7 @@ or
 conda install -c bioconda hypercluster
 ```
 
-Docs: https://hypercluster.readthedocs.io/en/latest/
+Docs: https://hypercluster.readthedocs.io/en/latest/index.html  
+Examples: https://github.com/liliblu/hypercluster/tree/dev/examples
+
 
