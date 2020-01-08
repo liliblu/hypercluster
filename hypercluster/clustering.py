@@ -15,7 +15,7 @@ def calculate_row_weights(
     row: Iterable, param_weights: dict, vars_to_optimize: dict
 ) -> float:
     """
-    Used to select random rows of parameter combinations using individual parameter weights.  
+    Used to select random rows of parameter combinations using individual parameter weights.
 
     Args:
         row (Iterable):  Series of parameters, with parameter names as index.
@@ -58,7 +58,20 @@ def cluster(clusterer_name: str, data: DataFrame, params: dict = {}):
 class AutoClusterer:
     """
     Main hypercluster object.
-    Args:
+    """
+
+    def __init__(
+        self,
+        clusterer_name: Optional[str] = "hdbscan",
+        params_to_optimize: Optional[dict] = None,
+        random_search: bool = True,
+        random_search_fraction: float = 0.5,
+        param_weights: dict = {},
+        clus_kwargs: Optional[dict] = None,
+    ):
+        """
+        Main hypercluster object.
+        Args:
             clusterer_name (str): String name of clusterer
             params_to_optimize (dict): Dictionary with possibilities for different parameters. Ex
             format - {'parameter_name':[1, 2, 3, 4, 5]}. If None, will optimize default
@@ -72,16 +85,6 @@ class AutoClusterer:
             clus_kwargs (dict): Additional kwargs to pass into given clusterer, but not to be
             optimized. Default None.
         """
-
-    def __init__(
-        self,
-        clusterer_name: Optional[str] = "hdbscan",
-        params_to_optimize: Optional[dict] = None,
-        random_search: bool = True,
-        random_search_fraction: float = 0.5,
-        param_weights: dict = {},
-        clus_kwargs: Optional[dict] = None,
-    ):
         self.clusterer_name = clusterer_name
         self.params_to_optimize = params_to_optimize
         self.random_search = random_search
@@ -118,7 +121,8 @@ class AutoClusterer:
                 conditions *= conditions * len(possible_values)
             else:
                 logging.error(
-                    "Parameter %s was given no possibilities. Will continue with default parameter."
+                    "Parameter %s was given no possibilities. Will continue with default "
+                    "parameters."
                     % parameter_name
                 )
 
