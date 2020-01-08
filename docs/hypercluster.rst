@@ -6,8 +6,13 @@ hypercluster package
     :undoc-members:
     :show-inheritance:
 
-Submodules
-----------
+hypercluster.additional\_clusterers module
+------------------------------------------
+
+.. automodule:: hypercluster.additional_clusterers
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 hypercluster.clustering module
 ------------------------------
@@ -25,12 +30,18 @@ hypercluster.constants module
     :undoc-members:
     :show-inheritance:
 
-hypercluster.evaluations module
--------------------------------
+hypercluster.metrics module
+---------------------------
 
-.. automodule:: hypercluster.evaluations
+.. automodule:: hypercluster.metrics
     :members:
     :undoc-members:
     :show-inheritance:
 
+hypercluster.visualize module
+-----------------------------
 
+.. automodule:: hypercluster.visualize
+    :members:
+    :undoc-members:
+    :show-inheritance:

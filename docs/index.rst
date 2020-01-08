@@ -33,11 +33,12 @@ Available via pip::
   pip install hypercluster
 
 NOTE: bioconda installation is having issues with solving environments on linux
-machines. Pip is suggested as of now.
+machines. Pip is suggested as of now.  
 Or bioconda::
 
   conda install -c bioconda hypercluster
 
+Example workflows for both python and snakemake are 
+`here <https://github.com/liliblu/hypercluster/tree/dev/examples/>`_  
 
-Example workflows for both python and snakemake are `here <https://github.com/liliblu/hypercluster/tree/dev/examples/>`_
-Development versions and source code are available 'here <https://github.com/liliblu/hypercluster/>`_
+Source code is available `here <https://github.com/liliblu/hypercluster/>`_  
