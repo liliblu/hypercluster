@@ -1,5 +1,5 @@
 from hypercluster import clustering
-from hypercluster.metrics import *
+from hypercluster.additional_metrics import *
 
 
 __all__ = [

@@ -1,7 +1,7 @@
 from sklearn.cluster import *
 from sklearn.metrics import *
 from .additional_clusterers import *
-from .metrics import *
+from .additional_metrics import *
 from pandas import DataFrame
 import pandas as pd
 import numpy as np
@@ -23,7 +23,7 @@ def calculate_row_weights(
         vars_to_optimize (Iterable): Dictionary with possibilities for different parameters. Ex \
         format - {'parameter_name':[1, 2, 3, 4, 5]}.  
 
-    Returns: 
+    Returns (float): 
         Float representing the probability of seeing that combination of parameters, given their \
         individual weights.  
 
@@ -105,7 +105,7 @@ class AutoClusterer:
     def generate_param_sets(self):
         """Uses info from init to make a Dataframe of all parameter sets that will be tried.  
           
-        Returns: 
+        Returns (AutoClusterer): 
             self  
         """
         conditions = 1
@@ -163,11 +163,12 @@ class AutoClusterer:
 
     def fit(self, data: DataFrame):
         """Fits clusterer to data with each parameter set.  
+        
         Args: 
             data (DataFrame): Dataframe with elements to cluster as index and features as columns.  
 
-        Returns: 
-            self with self.labels_ assigned  
+        Returns: (AutoClusterer) 
+            self
         """
 
         if self.param_sets.shape == (0, 0):
@@ -217,7 +218,7 @@ def evaluate_results(
         set of gold standard labels.  
         metric_kwargs (dict): Additional kwargs to use in evaluation.  
 
-    Returns:  
+    Returns (float):  
         Metric value   
     """
     if isinstance(labels, pd.Series) is False:
@@ -287,8 +288,9 @@ def optimize_clustering(
         truth labels. For options see hypercluster.constants.need_ground_truth.  
         metric_kwargs (dict): Additional evaluation metric kwargs.  
 
-    Returns: 
-        Best labels, dictionary of clustering evaluations, dictionary of all clustering labels  
+    Returns (DataFrame, DataFrame, Dict[str, DataFrame]): 
+        DataFrame of evaluation results, DatafFrame of labeling results, dictionary of labeling \
+        results per clusterer.   
     """
 
     if algorithm_param_weights is None:
@@ -371,8 +373,8 @@ def pick_best_labels(
         method (str): Method with which to choose the best labels.  
         min_or_max (str): Whether to minimize or maximize the metric. Must be 'min' or 'max'  
 
-    Returns: 
-        DataFrame of All top labels.  
+    Returns (DataFrame): 
+        DataFrame of all top labels.  
     """
     best_labels = evaluation_results_df.loc[method, :]
     if min_or_max == 'min':

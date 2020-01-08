@@ -36,7 +36,7 @@ def zscore(df):
     Args: 
         df (DataFrame): DataFrame to z-score  
 
-    Returns: 
+    Returns (DataFrame): 
         Row-zscored DataFrame.  
     """
     return df.subtract(df.mean(axis=1), axis=0).divide(df.std(axis=1), axis=0)
@@ -54,7 +54,7 @@ def compute_order(
         dist_method (str):  Distance method to pass to scipy.cluster.hierarchy.linkage.    
         cluster_method (str): Clustering method to pass to scipy.spatial.distance.pdist.  
 
-    Returns: 
+    Returns (pandas.Index): 
         Ordered row index.  
 
     """
@@ -78,7 +78,7 @@ def visualize_evaluations(
         savefig (bool): Whether to save a pdf
         **heatmap_kws: Additional keyword arguments to pass to seaborn.heatmap.  
 
-    Returns: 
+    Returns (List[matplotlib.axes.Axes]): 
         List of all matplotlib axes.  
 
     """
@@ -170,7 +170,7 @@ def visualize_pairwise(
         **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
     """Visualize symmetrical square DataFrames.  
-    
+
     Args: 
         df (DataFrame): DataFrame to visualize.    
         savefig (bool): Whether to save a pdf.  
@@ -178,9 +178,9 @@ def visualize_pairwise(
         method (str): Label for cbar, if relevant.   
         **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_   
 
-    Returns: 
+    Returns (List[matplotlib.axes.Axes]): 
         List of matplotlib axes for figure.  
-        
+
     .. _seaborn.heatmap:
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
     """
@@ -250,9 +250,9 @@ def visualize_label_agreement_pairwise(
         output_prefix (str): If saving a pdf, file prefix to use.  
         **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_   
 
-    Returns: 
+    Returns (List[matplotlib.axes.Axes]): 
         List of matplotlib axes  
-        
+
     .. _seaborn.heatmap:
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
     """
@@ -275,7 +275,7 @@ def visualize_sample_labeling_pairwise(
     KMeans, those cluster more similarly across conditions than between clusterers. This means 
     that more agreement in labeling could be due to the choice of clusterers rather than true 
     similarity between samples.  
-    
+
     Args: 
         labels (DataFrame): Labels DataFrame, e.g. from optimize_clustering or 
         AutoClusterer.labels_  
@@ -283,9 +283,9 @@ def visualize_sample_labeling_pairwise(
         output_prefix (str): If saving a pdf, file prefix to use.  
         **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_  
 
-    Returns: 
+    Returns (List[matplotlib.axes.Axes]): 
         List of matplotlib axes  
-        
+
     .. _seaborn.heatmap:
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
 

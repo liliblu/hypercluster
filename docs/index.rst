@@ -3,8 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Hypercluster's documentation!
-========================================
+Documentation for hypercluster
+==============================
+
+.. toctree::
+   :hidden:
+
+   self
 
 .. toctree::
    :maxdepth: 4
@@ -18,7 +23,6 @@ Indices and tables
 
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`
 
 
 Installation and logistics
@@ -38,7 +42,7 @@ Or bioconda::
 
   conda install -c bioconda hypercluster
 
-Example workflows for both python and snakemake are 
+Example work flows for both python and snakemake are 
 `here <https://github.com/liliblu/hypercluster/tree/dev/examples/>`_  
 
 Source code is available `here <https://github.com/liliblu/hypercluster/>`_  
