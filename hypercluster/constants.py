@@ -1,19 +1,19 @@
 __doc__ = """
-Args:  
-    param_delim: delimiter between hyperparameters for snakemake file labels and labels DataFrame
-    columns.    
-    val_delim: delimiter between hyperparameter label and value for snakemake file labels and labels
-    DataFrame columns.    
-    categories: Convenient groups of clusterers to use. If all samples need to be clustered,
-    'partitioners' is a good choice. If there are millions of samples, 'fastest' might be a good
+Attributes: 
+    param_delim: delimiter between hyperparameters for snakemake file labels and labels DataFrame \
+    columns.  
+    val_delim: delimiter between hyperparameter label and value for snakemake file labels and \
+    labels DataFrame columns.  
+    categories: Convenient groups of clusterers to use. If all samples need to be clustered, \
+    'partitioners' is a good choice. If there are millions of samples, 'fastest' might be a good \
     choice.    
-    variables_to_optimize: Some default hyperparameters to optimize and value ranges for a selection
-    of commonly used clustering algoirthms from sklearn. Used as deafults for clustering.Autoclsuter
-    and clustering.optimize_clustering.    
+    variables_to_optimize: Some default hyperparameters to optimize and value ranges for a \
+    selection of commonly used clustering algoirthms from sklearn. Used as deafults for \
+    clustering.AutoClusterer and clustering.optimize_clustering.    
     need_ground_truth: list of sklearn metrics that need ground truth labeling.  
     inherent_metrics: list of sklearn metrics that need original data for calculation.  
-    min_or_max: establishing whether each sklearn metric is better when minimized or maximized for
-    clustering.pick_best_labels.    
+    min_or_max: establishing whether each sklearn metric is better when minimized or maximized for \
+    clustering.pick_best_labels.  
 """
 param_delim = ";"
 val_delim = "-"

@@ -3,7 +3,7 @@ from collections import Counter
 
 __doc__ = (
     "More functions for evaluating clustering results. Additional metric evaluations can "
-    "be added here, as long as the first argument is labels"
+    "be added here, as long as the second argument is the labels to evaluate"
 )
 
 
