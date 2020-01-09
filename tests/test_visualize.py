@@ -37,35 +37,35 @@ test_ground_truth = pd.Series(
 
 def test_vis_eval():
     clusterer = hypercluster.MultiAutoClusterer().fit(test_data).evaluate()
-    # visualize.visualize_evaluations(clusterer.evaluation_df)
+    visualize.visualize_evaluations(clusterer.evaluation_df)
     clusterer.visualize_evaluations()
 # 
-#     clusterer = hypercluster.AutoClusterer().fit(test_data).evaluate()
-#     visualize.visualize_evaluations(clusterer.evaluation_df)
-#     clusterer.visualize_evaluations()
-# 
-# 
-# def test_vis_sample():
-#     clusterer = hypercluster.MultiAutoClusterer().fit(test_data).evaluate()
-#     visualize.visualize_sample_label_consistency(clusterer.labels_df)
-#     clusterer.visualize_sample_label_consistency()
-# 
-#     clusterer = hypercluster.AutoClusterer().fit(test_data).evaluate()
-#     visualize.visualize_sample_label_consistency(clusterer.labels_df)
-#     clusterer.visualize_sample_label_consistency()
-# 
-# 
-# def test_vis_labels():
-#     clusterer = hypercluster.MultiAutoClusterer().fit(test_data).evaluate()
-#     visualize.visualize_label_agreement(clusterer.labels_df)
-#     clusterer.visualize_label_agreement(
-#         # savefig=True, 
-#         # output_prefix='test_input/test_label_agreement_multi'
-#     )
-# 
-#     clusterer = hypercluster.AutoClusterer().fit(test_data).evaluate()
-#     visualize.visualize_label_agreement(clusterer.labels_df)
-#     clusterer.visualize_label_agreement(
-#         # savefig=True, 
-#         # output_prefix='test_input/test_label_agreement_auto'
-#     )
+    clusterer = hypercluster.AutoClusterer().fit(test_data).evaluate()
+    visualize.visualize_evaluations(clusterer.evaluation_df)
+    clusterer.visualize_evaluations()
+
+
+def test_vis_sample():
+    clusterer = hypercluster.MultiAutoClusterer().fit(test_data).evaluate()
+    visualize.visualize_sample_label_consistency(clusterer.labels_df)
+    clusterer.visualize_sample_label_consistency()
+
+    clusterer = hypercluster.AutoClusterer().fit(test_data).evaluate()
+    visualize.visualize_sample_label_consistency(clusterer.labels_df)
+    clusterer.visualize_sample_label_consistency()
+
+
+def test_vis_labels():
+    clusterer = hypercluster.MultiAutoClusterer().fit(test_data).evaluate()
+    visualize.visualize_label_agreement(clusterer.labels_df)
+    clusterer.visualize_label_agreement(
+        # savefig=True, 
+        # output_prefix='test_input/test_label_agreement_multi'
+    )
+
+    clusterer = hypercluster.AutoClusterer().fit(test_data).evaluate()
+    visualize.visualize_label_agreement(clusterer.labels_df)
+    clusterer.visualize_label_agreement(
+        # savefig=True, 
+        # output_prefix='test_input/test_label_agreement_auto'
+    )

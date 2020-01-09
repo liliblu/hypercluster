@@ -109,6 +109,15 @@ def evaluate_one(
 
 
 def generate_flattened_df(df_dict: Dict[str, DataFrame]) -> DataFrame:
+    """Takes dictionary of results from many clusterers and makes 1 dataframe. 
+
+    Args: 
+        df_dict (Dict[str, DataFrame]): Dictionary of dataframes to flatten. Can be .labels_ or \
+        .evaluations_ from MultiAutoClusterer.  
+
+    Returns: 
+        Flattened DataFrame with all data. 
+    """
     merged_df = pd.DataFrame()
     for clus_name, df in df_dict.items():
         df = df.transpose()

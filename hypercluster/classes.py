@@ -6,7 +6,7 @@ from itertools import product
 from .constants import *
 
 
-class _PickAndVisualize:
+class _PickPredictVisualize:
     def pick_best_labels(self, method: Optional[str] = None, min_or_max: Optional[str] = None):
         return pick_best_labels(self.evaluation_df, self.labels_df, method, min_or_max)
 
@@ -46,8 +46,11 @@ class _PickAndVisualize:
             **heatmap_kws
         )
 
+    def fit_predict(self, data: Optional[DataFrame], parameter_set_name, method, min_of_max):
+        pass
 
-class AutoClusterer (_PickAndVisualize):
+
+class AutoClusterer (_PickPredictVisualize):
     """Main hypercluster object.  
 
     Attributes: 
@@ -56,16 +59,16 @@ class AutoClusterer (_PickAndVisualize):
         format - {'parameter_name':[1, 2, 3, 4, 5]}. If None, will optimize default \
         selection, given in hypercluster.constants.variables_to_optimize. Default None.  
         random_search (bool): Whether to search a random selection of possible parameters or \
-        all possibilites. Default True.  
+        all possibilities. Default True.  
         random_search_fraction (float): If random_search is True, what fraction of the \
         possible parameters to search. Default 0.5.  
         param_weights (dict): Dictionary of str: dictionaries. Ex format - { \
         'parameter_name':{'param_option_1':0.5, 'param_option_2':0.5}}.  
         clus_kwargs (dict): Additional kwargs to pass into given clusterer, but not to be \
         optimized. Default None.  
-        labels_ (Optional[DataFrame]): 
-        evaluation_ (Optional[DataFrame]): 
-        data (Optional[DataFrame]): 
+        labels_ (Optional[DataFrame]): If already fit, labels DataFrame fit to data. 
+        evaluation_ (Optional[DataFrame]): If already fit and evalute, evaluations per label. 
+        data (Optional[DataFrame]): Data to fit, will not fit by default even if passed data. 
     """
 
     def __init__(
@@ -175,18 +178,21 @@ class AutoClusterer (_PickAndVisualize):
         """Fits clusterer to data with each parameter set.  
 
         Args: 
-            data (DataFrame): Dataframe with elements to cluster as index and features as columns.  
+            data (DataFrame): DataFrame with elements to cluster as index and features as columns.  
 
         Returns: (AutoClusterer) 
             self
         """
         self.data = data
         if self.param_sets.shape == (0, 0):
-            labels_results = pd.DataFrame(
+            label_results = pd.DataFrame(
                 cluster(self.clusterer_name, data).labels_,
                 columns=["default_parameters"],
                 index=data.index,
             )
+            self.labels_ = label_results
+            self.labels_df = generate_flattened_df({self.clusterer_name: label_results})
+            return self
 
         label_results = pd.DataFrame(columns=self.param_sets.columns.union(data.index))
         for i, row in self.param_sets.iterrows():
@@ -216,7 +222,7 @@ class AutoClusterer (_PickAndVisualize):
             metric_kwargs: Optional[dict] = None,
             gold_standard: Optional[Iterable] = None
     ):
-        """Evaluate 
+        """Evaluate labels with given metrics.
 
         Args: 
             methods (Optional[Iterable[str]]): List of evaluation methods to use.  
@@ -249,15 +255,49 @@ class AutoClusterer (_PickAndVisualize):
                 axis=1,
             )
         evaluation_df = evaluation_df.set_index('methods')
+        evaluation_df.columns = self.labels_.columns
         self.evaluation_ = evaluation_df
         self.evaluation_df = generate_flattened_df({self.clusterer_name: evaluation_df})
         return self
 
 
-class MultiAutoClusterer (_PickAndVisualize):
+class MultiAutoClusterer (_PickPredictVisualize):
+    """Object for training multiple clustering algorithms  
+
+    Attributes: 
+        algorithm_names (Optional[Union[Iterable, str]]): List of algorithm names to test OR \
+        name of category of clusterers from hypercluster.constants.categories, OR None. If None, \
+        default is hypercluster.constants.variables_to_optimize.keys().  
+        algorithm_parameters (Optional[Dict[str, dict]]):  Dictionary of hyperparameters to \
+        optimize. Example format: {'clusterer_name1':{'hyperparam1':[val1, val2]}}.  
+        random_search (bool): Whether to search a random subsample of possible conditions.  
+        random_search_fraction (float): If random_search, what fraction of conditions to search.  
+        algorithm_param_weights (Dict[str, Dict[str, dict]]): If random_search, and you want to \
+        give probability weights to certain parameters, dictionary of probability weights. \
+        Example format: {'clusterer1': {'hyperparam1':{val1:probability1, val2:probability2}}}.   
+        algorithm_clus_kwargs (Dict[str, dict]): Dictionary of additional keyword args for any \
+        clusterer. Example format: {'clusterer1':{'param1':val1}}.   
+        data (Optional[DataFrame]): Optional, data to fit. Will not fit even if passed, \
+        need to call fit method.  
+        evaluation_methods (Optional[List[str]]): List of metrics with which to evaluate. If \
+        None, will use hypercluster.constants.inherent_metrics. Default is None.  
+        metric_kwargs (Optional[Dict[str, dict]]): Additional keyword args for any metric \
+        function. Example format: {'metric1':{'param1':value}}.  
+        gold_standard (Optional[Iterable]): If using methods that need ground truth, vector of \
+        correct labels. Can also pass in during evaluate.  
+        autoclusterers (Iterable[AutoClusterer]): If building from initialized AutoClusterer \
+        objects, can give a list of them here. If these are given, it will override anything 
+        passed to labels\_ and evaluation\_.  
+        labels_ (Optional[Dict[str, DataFrame]]): Dictionary of label DataFrames per clusterer, \
+        if already fit.  Example format: {'clusterer1': labels_df}.  
+        evaluation_ (Optional[Dict[str, DataFrame]]): Dictionary of evaluation DataFrames per \
+        clusterer, if already fit and evaluated.  Example format: {'clusterer1': evaluation_df}.  
+        labels_df (Optional[DataFrame]): Combined DataFrame of all labeling results.  
+        evaluation_df (Optional[DataFrame]): Combined DataFrame of all evaluation results. 
+    """
     def __init__(
             self,
-            algorithm_names: Union[Iterable, str] = None,
+            algorithm_names: Optional[Union[Iterable, str]] = None,
             algorithm_parameters: Optional[Dict[str, dict]] = None,
             random_search: bool = False,
             random_search_fraction: Optional[float] = 0.5,
@@ -267,7 +307,7 @@ class MultiAutoClusterer (_PickAndVisualize):
             evaluation_methods: Optional[List[str]] = None,
             metric_kwargs: Optional[Dict[str, dict]] = None,
             gold_standard: Optional[Iterable] = None,
-            autoclusterers: Dict[str, AutoClusterer] = None,
+            autoclusterers: Iterable[AutoClusterer] = None,
             labels_: Dict[str, AutoClusterer] = None,
             evaluation_: Dict[str, AutoClusterer] = None,
             labels_df: Optional[DataFrame] = None,
@@ -325,27 +365,24 @@ class MultiAutoClusterer (_PickAndVisualize):
                     evaluation_=self.evaluation_.get(clus_name, None)
                 )
         else:
-            self.algorithm_names = autoclusterers.keys()
+            self.algorithm_names = [ac.clusterer_name for ac in autoclusterers]
             self.algorithm_parameters = {
-                clus_name: autoclusterers[clus_name].params_to_optimize for clus_name in 
-                self.algorithm_names
+                ac.clusterer_name: ac.params_to_optimize for ac in autoclusterers
             }
             self.algorithm_param_weights = {
-                clus_name: autoclusterers[clus_name].param_weights for clus_name in 
-                self.algorithm_names
+                ac.clusterer_name: ac.param_weights for ac in autoclusterers
             }
             self.algorithm_clus_kwargs = {
-                clus_name: autoclusterers[clus_name].clus_kwargs for clus_name in 
-                self.algorithm_names
+                ac.clusterer_name: ac.clus_kwargs for ac in autoclusterers
             }
             self.labels_ = {
-                clus_name: autoclusterers[clus_name].labels_ for clus_name in 
-                self.algorithm_names
+                ac.clusterer_name: ac.labels_ for ac in autoclusterers if ac.labels_ is not None
             }
             self.evaluation_ = {
-                clus_name: autoclusterers[clus_name].evaluation_ for clus_name in
-                self.algorithm_names
+                ac.clusterer_name: ac.evaluation_ 
+                for ac in autoclusterers if ac.evaluation_ is not None
             }
+
             self.labels_df = generate_flattened_df(self.labels_)
             self.evaluation_df = generate_flattened_df(self.evaluation_)
 
@@ -410,42 +447,3 @@ class MultiAutoClusterer (_PickAndVisualize):
         }
         self.evaluation_df = generate_flattened_df(self.evaluation_)
         return self
-
-    # def pick_best_labels(self, method: str = "silhouette_score", min_or_max: str = 'max'):
-    #     return pick_best_labels(self.evaluation_df, self.labels_df, method, min_or_max)
-    # 
-    # def visualize_evaluations(
-    #         self,
-    #         savefig: bool = False,
-    #         output_prefix: str = "evaluations",
-    #         **heatmap_kws
-    # ) -> List[matplotlib.axes.Axes]:
-    #     return visualize_evaluations(self.evaluation_df, output_prefix, savefig, **heatmap_kws)
-    # 
-    # def visualize_sample_label_consistency(
-    #         self, 
-    #         savefig: bool = False,
-    #         output_prefix: str = "heatmap.sample.pairwise",
-    #         **heatmap_kws
-    # ) -> List[matplotlib.axes.Axes]:
-    #     return visualize_sample_label_consistency(
-    #         self.labels_df, 
-    #         savefig, 
-    #         output_prefix, 
-    #         **heatmap_kws
-    #     )
-    # 
-    # def visualize_label_agreement(
-    #         self, 
-    #         method: Optional[str] = None,
-    #         savefig: bool = False,
-    #         output_prefix: str = "heatmap.labels.pairwise",
-    #         **heatmap_kws
-    # ) -> List[matplotlib.axes.Axes]:
-    #     return visualize_label_agreement(
-    #         self.labels_df, 
-    #         method, 
-    #         savefig, 
-    #         output_prefix, 
-    #         **heatmap_kws
-    #     )
