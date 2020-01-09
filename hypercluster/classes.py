@@ -6,7 +6,48 @@ from itertools import product
 from .constants import *
 
 
-class AutoClusterer:
+class _PickAndVisualize:
+    def pick_best_labels(self, method: Optional[str] = None, min_or_max: Optional[str] = None):
+        return pick_best_labels(self.evaluation_df, self.labels_df, method, min_or_max)
+
+    def visualize_evaluations(
+            self,
+            savefig: bool = False,
+            output_prefix: str = "evaluations",
+            **heatmap_kws
+    ) -> List[matplotlib.axes.Axes]:
+        return visualize_evaluations(self.evaluation_df, savefig, output_prefix, **heatmap_kws)
+
+    def visualize_sample_label_consistency(
+            self, 
+            savefig: bool = False,
+            output_prefix: Optional[str] = None,
+            **heatmap_kws
+    ) -> List[matplotlib.axes.Axes]:
+        return visualize_sample_label_consistency(
+            self.labels_df, 
+            savefig, 
+            output_prefix,
+            **heatmap_kws
+        )
+
+    def visualize_label_agreement(
+            self, 
+            method: Optional[str] = None,
+            savefig: bool = False,
+            output_prefix: Optional[str] = None,
+            **heatmap_kws
+    ) -> List[matplotlib.axes.Axes]:
+        return visualize_label_agreement(
+            self.labels_df, 
+            method, 
+            savefig, 
+            output_prefix, 
+            **heatmap_kws
+        )
+
+
+class AutoClusterer (_PickAndVisualize):
     """Main hypercluster object.  
 
     Attributes: 
@@ -212,47 +253,8 @@ class AutoClusterer:
         self.evaluation_df = generate_flattened_df({self.clusterer_name: evaluation_df})
         return self
 
-    def pick_best_labels(self, method: str = "silhouette_score", min_or_max: str = 'max'):
-        return pick_best_labels(self.evaluation_df, self.labels_df, method, min_or_max)
 
-    def visualize_evaluations(
-            self, 
-            output_prefix: str = "evaluations",
-            savefig: bool = False,
-            **heatmap_kws
-    ) -> List[matplotlib.axes.Axes]:
-        return visualize_evaluations(self.evaluation_df, output_prefix, savefig, **heatmap_kws)
-
-    def visualize_sample_label_consistency(
-            self, 
-            savefig: bool = False,
-            output_prefix: str = "heatmap.sample.pairwise",
-            **heatmap_kws
-    ) -> List[matplotlib.axes.Axes]:
-        return visualize_sample_label_consistency(
-            self.labels_df, 
-            savefig, 
-            output_prefix,
-            **heatmap_kws
-        )
-
-    def visualize_label_agreement(
-            self, 
-            method: Optional[str] = None,
-            savefig: bool = False,
-            output_prefix: str = "heatmap.labels.pairwise",
-            **heatmap_kws
-    ) -> List[matplotlib.axes.Axes]:
-        return visualize_label_agreement(
-            self.labels_df, 
-            method, 
-            savefig, 
-            output_prefix, 
-            **heatmap_kws
-        )
-
-
-class MultiAutoClusterer:
+class MultiAutoClusterer (_PickAndVisualize):
     def __init__(
             self,
             algorithm_names: Union[Iterable, str] = None,
@@ -409,41 +411,41 @@ class MultiAutoClusterer:
         self.evaluation_df = generate_flattened_df(self.evaluation_)
         return self
 
-    def pick_best_labels(self, method: str = "silhouette_score", min_or_max: str = 'max'):
-        return pick_best_labels(self.evaluation_df, self.labels_df, method, min_or_max)
-
-    def visualize_evaluations(
-            self,
-            savefig: bool = False,
-            output_prefix: str = "evaluations",
-            **heatmap_kws
-    ) -> List[matplotlib.axes.Axes]:
-        return visualize_evaluations(self.evaluation_df, output_prefix, savefig, **heatmap_kws)
-
-    def visualize_sample_label_consistency(
-            self, 
-            savefig: bool = False,
-            output_prefix: str = "heatmap.sample.pairwise",
-            **heatmap_kws
-    ) -> List[matplotlib.axes.Axes]:
-        return visualize_sample_label_consistency(
-            self.labels_df, 
-            savefig, 
-            output_prefix, 
-            **heatmap_kws
-        )
-
-    def visualize_label_agreement(
-            self, 
-            method: Optional[str] = None,
-            savefig: bool = False,
-            output_prefix: str = "heatmap.labels.pairwise",
-            **heatmap_kws
-    ) -> List[matplotlib.axes.Axes]:
-        return visualize_label_agreement(
-            self.labels_df, 
-            method, 
-            savefig, 
-            output_prefix, 
-            **heatmap_kws
-        )
+    # def pick_best_labels(self, method: str = "silhouette_score", min_or_max: str = 'max'):
+    #     return pick_best_labels(self.evaluation_df, self.labels_df, method, min_or_max)
+    # 
+    # def visualize_evaluations(
+    #         self,
+    #         savefig: bool = False,
+    #         output_prefix: str = "evaluations",
+    #         **heatmap_kws
+    # ) -> List[matplotlib.axes.Axes]:
+    #     return visualize_evaluations(self.evaluation_df, output_prefix, savefig, **heatmap_kws)
+    # 
+    # def visualize_sample_label_consistency(
+    #         self, 
+    #         savefig: bool = False,
+    #         output_prefix: str = "heatmap.sample.pairwise",
+    #         **heatmap_kws
+    # ) -> List[matplotlib.axes.Axes]:
+    #     return visualize_sample_label_consistency(
+    #         self.labels_df, 
+    #         savefig, 
+    #         output_prefix, 
+    #         **heatmap_kws
+    #     )
+    # 
+    # def visualize_label_agreement(
+    #         self, 
+    #         method: Optional[str] = None,
+    #         savefig: bool = False,
+    #         output_prefix: str = "heatmap.labels.pairwise",
+    #         **heatmap_kws
+    # ) -> List[matplotlib.axes.Axes]:
+    #     return visualize_label_agreement(
+    #         self.labels_df, 
+    #         method, 
+    #         savefig, 
+    #         output_prefix, 
+    #         **heatmap_kws
+    #     )

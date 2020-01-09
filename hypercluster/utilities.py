@@ -131,8 +131,8 @@ def generate_flattened_df(df_dict: Dict[str, DataFrame]) -> DataFrame:
 def pick_best_labels(
         evaluation_results_df: DataFrame,
         clustering_labels_df: DataFrame,
-        method: str = "silhouette_score",
-        min_or_max: str = 'max'
+        method: Optional[str] = None,
+        min_or_max: Optional[str] = None
 ) -> Iterable:
     """From evaluations and a metric to minimize or maximize, return all labels with top pick.  
 
@@ -145,9 +145,14 @@ def pick_best_labels(
     Returns (DataFrame): 
         DataFrame of all top labels.  
     """
+    if method is None:
+        method = "silhouette_score"
+    if min_or_max is None:
+        min_or_max = 'max'
+
     best_labels = evaluation_results_df.loc[method, :]
     if min_or_max == 'min':
-        best_labels = best_labels.index[best_labels==best_labels.min()]
+        best_labels = best_labels.index[best_labels == best_labels.min()]
         return clustering_labels_df[best_labels]
     elif min_or_max == 'max':
         best_labels = best_labels.index[best_labels == best_labels.max()]

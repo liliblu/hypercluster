@@ -165,7 +165,7 @@ def visualize_evaluations(
 def visualize_pairwise(
         df: DataFrame,
         savefig: bool = False,
-        output_prefix: str = "heatmap.pairwise",
+        output_prefix: Optional[str] = None,
         method: Optional[str] = None, 
         **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
@@ -227,6 +227,8 @@ def visualize_pairwise(
         **heatmap_kws
     )
     if savefig:
+        if output_prefix is None:
+            output_prefix = "heatmap.pairwise"
         plt.savefig('%s.pdf' % output_prefix)
 
     return axs
@@ -234,13 +236,13 @@ def visualize_pairwise(
 
 def visualize_label_agreement(
         labels: DataFrame,
-        method: 'adjusted_rand_score',
+        method: Optional[str] = None,
         savefig: bool = False,
-        output_prefix: str = "heatmap.labels.pairwise",
+        output_prefix: Optional[str] = None,
         **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
     """Visualize similarity between clustering results given an evaluation metric.  
-    
+
     Args: 
         labels (DataFrame): Labels DataFrame, e.g. from optimize_clustering or 
         AutoClusterer.labels_  
@@ -256,8 +258,11 @@ def visualize_label_agreement(
     .. _seaborn.heatmap:
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
     """
-    if heatmap_kws is None:
-        heatmap_kws = {}
+    if savefig and output_prefix is None:
+        output_prefix = 'heatmap.labels.pairwise'
+    if method is None:
+        method = 'adjusted_rand_score'
+
     labels = labels.corr(
         lambda x, y: utilities.evaluate_one(x, method=method, gold_standard=y)
     )
@@ -267,7 +272,7 @@ def visualize_label_agreement(
 def visualize_sample_label_consistency(
         labels: DataFrame,
         savefig: bool = False,
-        output_prefix: str = "heatmap.sample.pairwise",
+        output_prefix: Optional[str] = None,
         **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
     """Visualize how often two samples are labeled in the same group across conditions. Interpret 
@@ -290,6 +295,8 @@ def visualize_sample_label_consistency(
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
 
     """
+    if savefig and output_prefix is None:
+        output_prefix = "heatmap.sample.pairwise"
     labels = labels.transpose().corr(lambda x, y: sum(
         np.equal(x[((x != -1) | (y != -1))], y[((x != -1) | (y != -1))])
     ))
