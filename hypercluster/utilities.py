@@ -27,16 +27,18 @@ def calculate_row_weights(
         individual weights.  
 
     """
-    weights = []
-    for var_lab, val in row.to_dict().items():
-        weights.append(
-            param_weights.get(var_lab, {}).get(
-                val, (1 / len(vars_to_optimize[var_lab]))
+    param_weights.update({
+        param: {
+            val: param_weights.get(param, {}).get(
+                val, (1-sum(param_weights.get(param, {}).values()))/len([
+                    notweighted for notweighted in vars_to_optimize.get(param,  {}) 
+                    if notweighted not in param_weights.get(param, {}).keys()
+                ])
             )
-        )
-    # TODO if probs are given to some options and not other, split the remaining probability,
-    # don't just give equal prob.
-    return np.prod(weights)
+        } for param, vals in vars_to_optimize.items() for val in vals
+    })
+
+    return np.prod([param_weights[param][val] for param, val in row.to_dict().items()])
 
 
 def cluster(clusterer_name: str, data: DataFrame, params: dict = {}):

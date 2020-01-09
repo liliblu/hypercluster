@@ -1,5 +1,5 @@
-from hypercluster import (utilities, constants, visualize, additional_metrics,
-                          additional_clusterers, classes)
+import hypercluster
+from hypercluster import *
 from hypercluster.classes import AutoClusterer, MultiAutoClusterer
 
 __all__ = [
