@@ -1,10 +1,9 @@
-from hypercluster import utilities
-from hypercluster.additional_metrics import *
-
+import hypercluster
+from hypercluster import *
+from hypercluster.classes import AutoClusterer, MultiAutoClusterer
 
 __all__ = [
-    "utilities.py",
-    "fraction_clustered",
-    "smallest_largest_clusters_ratio",
-    "smallest_cluster_ratio",
+    "AutoClusterer",
+    "MultiAutoClusterer"
 ]
+
