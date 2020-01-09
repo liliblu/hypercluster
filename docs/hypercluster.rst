@@ -6,10 +6,18 @@ hypercluster package
    :undoc-members:
    :show-inheritance:
 
-hypercluster.clustering module
-------------------------------
+hypercluster.classes module
+---------------------------
 
-.. automodule:: hypercluster.clustering
+.. automodule:: hypercluster.classes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+hypercluster.utilities module
+-----------------------------
+
+.. automodule:: hypercluster.utilities
    :members:
    :undoc-members:
    :show-inheritance:
