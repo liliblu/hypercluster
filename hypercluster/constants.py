@@ -1,3 +1,7 @@
+import matplotlib
+import seaborn as sns
+
+
 __doc__ = """
 Attributes: 
     param_delim: delimiter between hyperparameters for snakemake file labels and labels DataFrame \
@@ -78,3 +82,21 @@ min_or_max = {
     "mutual_info_score": 'max',
     "v_measure_score": 'max',
 }
+
+matplotlib.rcParams["pdf.fonttype"] = 42
+matplotlib.rcParams["ps.fonttype"] = 42
+sns.set(font="arial", style="white", color_codes=True, font_scale=1.3)
+matplotlib.rcParams.update({"savefig.bbox": "tight"})
+cmap = sns.cubehelix_palette(
+    start=0,
+    rot=0.4,
+    gamma=1.0,
+    hue=0.82,
+    light=1,
+    dark=0,
+    reverse=False,
+    as_cmap=True
+)
+cmap.set_over('black')
+cmap.set_under('white')
+cmap.set_bad("#DAE0E6")

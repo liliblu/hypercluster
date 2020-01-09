@@ -1,5 +1,6 @@
 import pandas as pd,numpy as np
-from hypercluster import clustering, visualize
+from hypercluster import utilities, visualize
+import hypercluster
 from hypercluster.constants import param_delim, val_delim
 import os, subprocess
 from shutil import copyfile
@@ -27,7 +28,7 @@ def generate_parameters(config):
     all_params_to_test = []
     for clusterer, params in parameters.items():
         clus_kwargs = clusterer_kwargs.get(clusterer, {})
-        df = clustering.AutoClusterer(
+        df = hypercluster.AutoClusterer(
             clusterer_name=clusterer,
             params_to_optimize=params,
             clus_kwargs=clus_kwargs,
@@ -127,7 +128,7 @@ rule run_clusterer:
         clusterer = kwargs.pop('clusterer')
 
         kwargs.update(clusterer_kwargs.get(clusterer, {}))
-        cls = clustering.cluster(clusterer, df, kwargs)
+        cls = utilities.cluster(clusterer, df, kwargs)
 
         labs = pd.DataFrame(cls.labels_, index=df.index, columns=[wildcards.labs])
         labs.to_csv(
@@ -165,7 +166,7 @@ rule run_evaluation:
         res = pd.DataFrame({'methods':params.evals})
 
         res[wildcards.labs] = res.apply(
-            lambda row: clustering.evaluate_one(
+            lambda row: utilities.evaluate_one(
                 test_labels[test_labels.columns[0]],
                 method=row['methods'],
                 data=data,
@@ -284,7 +285,7 @@ rule compare_labels:
         metric = config['metric_to_compare_labels']
     run:
         df = pd.read_csv(input.labels, **read_csv_kwargs.get(wildcards.input_file, {}))
-        df = df.corr(lambda x, y: clustering.evaluate_one(
+        df = df.corr(lambda x, y: utilities.evaluate_one(
             x, method=params.metric, gold_standard=y
         ))
         df.to_csv(
@@ -295,10 +296,12 @@ rule compare_labels:
         if params.make_label_fig:
             visualize.visualize_pairwise(
                 df,
-                config['heatmap_kwargs'],
+                savefig=True,
                 output_prefix='%s/%s/%s_label_comparison' % (
                     wildcards.input_file, clustering_results, params.metric
-                )
+                ),
+                method = params.metric,
+                **config['heatmap_kwargs']
             )
 
 
@@ -316,6 +319,8 @@ rule compare_samples:
         if params.make_sample_fig:
             visualize.visualize_pairwise(
                 df,
-                config['heatmap_kwargs'],
-                output_prefix='%s/%s/sample_agreement' % (wildcards.input_file, clustering_results)
+                savefig=True,
+                output_prefix='%s/%s/sample_agreement' % (wildcards.input_file, clustering_results),
+                method = '# same label',
+                **config['heatmap_kwargs']
             )

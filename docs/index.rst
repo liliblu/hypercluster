@@ -16,6 +16,7 @@ Documentation for hypercluster
    :caption: Contents:
 
    hypercluster
+   snakemake
 
 
 Indices and tables

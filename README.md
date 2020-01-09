@@ -42,7 +42,7 @@ data = pd.DataFrame(data)
 labels = pd.Series(labels, index=data.index, name='labels')
 
 # With a single clustering algorithm
-clusterer = hypercluster.clustering.AutoClusterer()
+clusterer = hypercluster.utilities.AutoClusterer()
 clusterer.fit(data).evaluate(
   methods = hypercluster.constants.need_ground_truth+hypercluster.constants.inherent_metrics, 
   gold_standard = labels

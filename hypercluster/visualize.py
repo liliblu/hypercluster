@@ -9,7 +9,7 @@ from typing import List, Optional
 from hypercluster.constants import param_delim, val_delim
 from scipy.cluster import hierarchy
 from scipy.spatial.distance import pdist
-from hypercluster import clustering
+from hypercluster import utilities
 
 matplotlib.rcParams["pdf.fonttype"] = 42
 matplotlib.rcParams["ps.fonttype"] = 42
@@ -32,7 +32,7 @@ cmap.set_bad("#DAE0E6")
 
 def zscore(df):
     """Row zscores a DataFrame, ignores np.nan   
-    
+
     Args: 
         df (DataFrame): DataFrame to z-score  
 
@@ -44,11 +44,11 @@ def zscore(df):
 
 def compute_order(
         df,
-        dist_method: str="euclidean",
-        cluster_method: str="average"
+        dist_method: str = "euclidean",
+        cluster_method: str = "average"
 ):
     """Gives hierarchical clustering order for the rows of a DataFrame  
-    
+
     Args: 
         df (DataFrame): DataFrame with rows to order.  
         dist_method (str):  Distance method to pass to scipy.cluster.hierarchy.linkage.    
@@ -66,12 +66,12 @@ def compute_order(
 
 def visualize_evaluations(
     evaluations_df: DataFrame,
-    output_prefix: str = "evaluations",
     savefig: bool = False,
+    output_prefix: str = "evaluations",
     **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
     """Makes a z-scored visualization of all evaluations.  
-      
+
     Args: 
         evaluations_df (DataFrame): Evaluations dataframe from clustering.optimize_clustering  
         output_prefix (str): If saving a figure, file prefix to use.  
@@ -82,10 +82,22 @@ def visualize_evaluations(
         List of all matplotlib axes.  
 
     """
-
     clusterers = sorted(
         list(set([i.split(param_delim, 1)[0] for i in evaluations_df.columns]))
     )
+    width_ratios = [
+            dict(
+                Counter(
+                    [i.split(param_delim, 1)[0] for i in evaluations_df.columns]
+                )
+            )[clus]
+            for clus in clusterers
+        ]
+    clus_cols = {
+        clus: [col for col in evaluations_df.columns if clus == col.split(param_delim, 1)[0]] 
+        for clus in clusterers
+    }
+
     evaluations_df = zscore(evaluations_df)
     width = 0.18 * (len(evaluations_df.columns) + 2 + (0.01 * (len(clusterers) - 1)))
     height = 0.22 * (len(evaluations_df))
@@ -95,15 +107,7 @@ def visualize_evaluations(
         nrows=1,
         ncols=(len(clusterers) + 1),
         gridspec_kw=dict(
-            width_ratios=[
-                dict(
-                    Counter(
-                        [i.split(param_delim, 1)[0] for i in evaluations_df.columns]
-                    )
-                )[clus]
-                for clus in clusterers
-            ]
-            + [2],
+            width_ratios=width_ratios + [2],
             wspace=0.01,
             left=0,
             right=1,
@@ -120,11 +124,7 @@ def visualize_evaluations(
 
     for i, clus in enumerate(clusterers):
         temp = evaluations_df[
-            [
-                col
-                for col in evaluations_df.columns
-                if clus == col.split(param_delim, 1)[0]
-            ]
+            clus_cols[clus]
         ].transpose()
 
         temp.index = pd.MultiIndex.from_frame(
@@ -164,7 +164,7 @@ def visualize_evaluations(
 
 def visualize_pairwise(
         df: DataFrame,
-        savefig: bool = True,
+        savefig: bool = False,
         output_prefix: str = "heatmap.pairwise",
         method: Optional[str] = None, 
         **heatmap_kws
@@ -232,10 +232,10 @@ def visualize_pairwise(
     return axs
 
 
-def visualize_label_agreement_pairwise(
+def visualize_label_agreement(
         labels: DataFrame,
         method: 'adjusted_rand_score',
-        savefig: bool = True,
+        savefig: bool = False,
         output_prefix: str = "heatmap.labels.pairwise",
         **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
@@ -259,14 +259,14 @@ def visualize_label_agreement_pairwise(
     if heatmap_kws is None:
         heatmap_kws = {}
     labels = labels.corr(
-        lambda x, y: clustering.evaluate_one(x, method=method, gold_standard=y)
+        lambda x, y: utilities.evaluate_one(x, method=method, gold_standard=y)
     )
     return visualize_pairwise(labels, savefig, output_prefix, method=method, **heatmap_kws)
 
 
-def visualize_sample_labeling_pairwise(
+def visualize_sample_label_consistency(
         labels: DataFrame,
-        savefig: bool = True,
+        savefig: bool = False,
         output_prefix: str = "heatmap.sample.pairwise",
         **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
@@ -290,5 +290,7 @@ def visualize_sample_labeling_pairwise(
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
 
     """
-    labels = labels.corr(lambda x, y: sum(np.equal(x, y)))
+    labels = labels.transpose().corr(lambda x, y: sum(
+        np.equal(x[((x != -1) | (y != -1))], y[((x != -1) | (y != -1))])
+    ))
     return visualize_pairwise(labels, savefig, output_prefix, method='# same label', **heatmap_kws)

@@ -14,18 +14,18 @@ hypercluster.clustering module
    :undoc-members:
    :show-inheritance:
 
-hypercluster.constants module
------------------------------
-
-.. automodule:: hypercluster.constants
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 hypercluster.visualize module
 -----------------------------
 
 .. automodule:: hypercluster.visualize
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+hypercluster.constants module
+-----------------------------
+
+.. automodule:: hypercluster.constants
    :members:
    :undoc-members:
    :show-inheritance:

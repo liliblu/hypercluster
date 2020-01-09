@@ -1,5 +1,6 @@
-from hypercluster import clustering
+from hypercluster import utilities
 from hypercluster.constants import *
+import hypercluster
 import pandas as pd
 import numpy as np
 
@@ -38,7 +39,7 @@ test_ground_truth = pd.Series(
 def test_cluster_one():
     # Test all clusterers are working with default params
     for clus_name in variables_to_optimize.keys():
-        clustering.cluster(clus_name, test_data)
+        utilities.cluster(clus_name, test_data)
 
     # Test with putting extra params in there
     for clus_name in variables_to_optimize.keys():
@@ -46,14 +47,14 @@ def test_cluster_one():
         key = list(vars.keys())[0]
         params = {key: vars[key][0]}
         # grabbing a variable and making sure var passing works
-        clustering.cluster(clus_name, test_data, params)
+        utilities.cluster(clus_name, test_data, params)
 
 
 def test_autoclusterer():
     for clus_name in variables_to_optimize.keys():
-        clustering.AutoClusterer(clus_name).fit(test_data)
+        hypercluster.AutoClusterer(clus_name).fit(test_data)
     for clus_name in variables_to_optimize.keys():
-        clustering.AutoClusterer(clus_name, random_search=False).fit(test_data)
+        hypercluster.AutoClusterer(clus_name, random_search=False).fit(test_data)
 
 
 def test_param_weights():
@@ -64,28 +65,28 @@ def test_param_weights():
                 clus_name
             ].items()
         }
-        clustering.AutoClusterer(clus_name, param_weights=weights).fit(
+        hypercluster.AutoClusterer(clus_name, param_weights=weights).fit(
             test_data
         )
     for clus_name in variables_to_optimize.keys():
-        clustering.AutoClusterer(clus_name, random_search=False).fit(test_data)
+        hypercluster.AutoClusterer(clus_name, random_search=False).fit(test_data)
 
 
 def test_passing_kwargs_for_a_clusterer():
     clus_name = 'KMeans'
 
-    clustering.AutoClusterer(clus_name, clus_kwargs={'max_iter': 50}).fit(
+    hypercluster.AutoClusterer(clus_name, clus_kwargs={'max_iter': 50}).fit(
         test_data
     )
 
 
 def test_evaluate_results():
-    labs = clustering.AutoClusterer('KMeans').fit(test_data).labels_
+    labs = hypercluster.AutoClusterer('KMeans').fit(test_data).labels_
     for metric in inherent_metrics + need_ground_truth:
-        clustering.evaluate_one(
+        utilities.evaluate_one(
             labs[labs.columns[0]], metric, data=test_data, gold_standard=test_ground_truth
         )
 
 
-def test_optimize_clustering():
-    clustering.optimize_clustering(test_data)
+def test_multiauto():
+    hypercluster.MultiAutoClusterer().fit(test_data).evaluate()
