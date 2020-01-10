@@ -15,26 +15,27 @@ Line-by-line explanation of config.yml
      - Path to folder in which input data can be found. No / at the end.
      - ``/input_data``
    * - ``input_data_files``
-     - List of prefixes of data files. Exclude extension, .csv, .tsv and .txt
-       allowed.
+     - | List of prefixes of data files. Exclude extension, .csv, .tsv and .txt
+       | allowed.
      - ``['input_data1', 'input_data2']``
    * - ``gold_standard_file``
-     - File name of gold_standard_file. Must have same pandas.read_csv kwargs
-       as the corresponding input file. Must be in input_data_folder.
+     - | File name of gold_standard_file. Must have same pandas.read_csv kwargs
+       | as the corresponding input file. Must be in input_data_folder.
      - ``{'input_data': 'gold_standard_file.txt'}``
    * - ``read_csv_kwargs``
-     - Per input data file, keyword args to put into `pandas.read_csv <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html>`_. **If specifying multiindex, also put the same in output_kwargs['labels']**
+     - | Per input data file, keyword args to put into `pandas.read_csv <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html>`_.
+       | **If specifying multiindex, also put the same in output_kwargs['labels']**
      - ``{'test_input': {'index_col':[0]}}``
    * - ``output_folder``
      - Path to folder in which results will be written. No / at the end.
      - ``/hypercluster_results``
    * - ``intermediates_folder``
-     - Name of the folder within the output_folder to put intermediate results,
-       such as labels and evaluations per condition. No need to change this usually.
+     - | Name of the folder within the output_folder to put intermediate results,
+       | such as labels and evaluations per condition. No need to change this usually.
      - ``clustering_intermediates``
    * - ``clustering_results``
-     - Name of the folder within the output_folder to put final results.
-       No need to change this usually.
+     - | Name of the folder within the output_folder to put final results.
+       | No need to change this usually.
      - ``clustering``
    * - ``targets``
      - Suffixes for files to generate. Not recommended to change these.
@@ -46,9 +47,9 @@ Line-by-line explanation of config.yml
      - Additonal keyword arguments for the hypercluster.AutoClusterer class.
      - ``random_search: false``
    * - ``evaluations``
-     - Names of evaluation metrics to use. See
-       hypercluster.constants.inherent_metrics or
-       hypercluster.constants.need_ground_truth
+     - | Names of evaluation metrics to use. See
+       | hypercluster.constants.inherent_metrics or
+       | hypercluster.constants.need_ground_truth
      - ``['silhouette_score', 'number_clustered']``
    * - ``eval_kwargs``
      - Additional kwargs per evaluation metric function.
@@ -63,16 +64,16 @@ Line-by-line explanation of config.yml
      - Whether to made a figure of the labeling result pairwise similarity
      - ``true``
    * - ``make_sample_fig``
-     - Whether to made a figure of the sample pairwise similarity. Beware,
-       with a lot of samples, this will be huge.
+     - | Whether to made a figure of the sample pairwise similarity. Beware,
+       | with a lot of samples, this will be huge.
      - ``false``
    * - ``heatmap_kwargs``
      - Additional kwargs for `seaborn.heatmap <https://seaborn.pydata.org/generated/seaborn.heatmap.html>`_ for visualizations.
      - ``{'vmin':-2, 'vmax':2}``
    * - ``output_kwargs``
-     - pandas.to_csv and pandas.read_csv kwargs per output type. Generally,
-       don't need to change the evaluations kwargs, but labels index_col have to
-       match index_col like in the read_csv_kwargs.
+     - | pandas.to_csv and pandas.read_csv kwargs per output type. Generally,
+       | don't need to change the evaluations kwargs, but labels index_col have to
+       | match index_col like in the read_csv_kwargs.
      - ``{'evaluations': {'index_col':[0]},  'labels': {'index_col':[0]}}``
    * - ``optimization_parameters``
      - Fun part! This is where you put which hyperparameters per algorithm to try.
