@@ -37,9 +37,7 @@ Installation
 Available via pip::
 
   pip install hypercluster
-
-NOTE: bioconda installation is having issues with solving environments on linux
-machines. Pip is suggested as of now.  
+ 
 Or bioconda::
 
   conda install hypercluster
@@ -47,15 +45,19 @@ Or bioconda::
   conda install -c conda-forge -c bioconda hypercluster
    
 If you are having problems installing with conda, try changing your channel priority. Priority of
-conda-forge > bioconda > defaults is recommended.    
+conda-forge > bioconda > defaults is recommended.  
+
 To check channel priority: :code:`conda config --get channels`
 
+
 It should look like::
+
    --add channels 'defaults'   # lowest priority
    --add channels 'bioconda'
    --add channels 'conda-forge'   # highest priority
 
 If it doesn't look like that, try::
+
    conda config --add channels bioconda
    conda config --add channels conda-forge
 
@@ -64,7 +66,8 @@ Quickstart and examples
 ***********************
 Quickstart: 
 
-.. code:: python
+.. code-block:: python
+
    import pandas as pd
    from sklearn.datasets import make_blobs
    import hypercluster
