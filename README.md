@@ -20,9 +20,24 @@ pip install hypercluster
 ```
 or
 ```
+conda install hypercluster
+# or
 conda install -c bioconda hypercluster
 ```
-Right now there are issue with the bioconda install on linux. Try the pip, if you are having problems. 
+If you are having problems installing with conda, try changing your channel priority. Priority of conda-forge > bioconda > defaults is recommended. 
+To check channel priority: `conda config --get channels`
+It should look like:
+```
+--add channels 'defaults'   # lowest priority
+--add channels 'bioconda'
+--add channels 'conda-forge'   # highest priority
+```
+
+If it doesn't look like that, try:
+```
+conda config --add channels bioconda
+conda config --add channels conda-forge
+```
 
 ### Docs 
 https://hypercluster.readthedocs.io/en/latest/index.html   
@@ -42,19 +57,22 @@ data = pd.DataFrame(data)
 labels = pd.Series(labels, index=data.index, name='labels')
 
 # With a single clustering algorithm
-clusterer = hypercluster.utilities.AutoClusterer()
+clusterer = hypercluster.AutoClusterer()
 clusterer.fit(data).evaluate(
   methods = hypercluster.constants.need_ground_truth+hypercluster.constants.inherent_metrics, 
   gold_standard = labels
   )
 
-hypercluster.visualize.visualize_evaluations(clusterer.evaluation_, multiple_clusterers=False)
+clusterer.visualize_evaluations()
 
 # With a range of algorithms
 
-evals, labels_df, labels_dict = optimize_clustering(data)
+clusterer = hypercluster.MultiAutoClusterer()
+clusterer.fit(data).evaluate(
+  methods = hypercluster.constants.need_ground_truth+hypercluster.constants.inherent_metrics, 
+  gold_standard = labels
+  )
 
-hypercluster.visualize.visualize_evaluations(evals)
-
+clusterer.visualize_evaluations()
 ```
 
