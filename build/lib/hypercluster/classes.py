@@ -352,9 +352,9 @@ class MultiAutoClusterer (_PickPredictVisualize):
             self.evaluation_ = evaluation_
             self.evaluation_df = evaluation_df
 
-            autoclusterers = {}
+            autoclusterers = []
             for clus_name in self.algorithm_names:
-                autoclusterers[clus_name] = AutoClusterer(
+                autoclusterers.append(AutoClusterer(
                     clus_name, 
                     params_to_optimize=self.algorithm_parameters.get(clus_name, {}),
                     random_search = self.random_search,
@@ -363,7 +363,7 @@ class MultiAutoClusterer (_PickPredictVisualize):
                     clus_kwargs=self.algorithm_clus_kwargs.get(clus_name, {}),
                     labels_=self.labels_.get(clus_name, None),
                     evaluation_=self.evaluation_.get(clus_name, None)
-                )
+                ))
         else:
             self.algorithm_names = [ac.clusterer_name for ac in autoclusterers]
             self.algorithm_parameters = {
@@ -399,12 +399,12 @@ class MultiAutoClusterer (_PickPredictVisualize):
             raise ValueError('Must initialize with data or pass data in function to fit.')
         self.data = data
 
-        fitted_clusterers = {}
-        for clus_name, clusterer in self.autoclusterers.items():
-            fitted_clusterers[clus_name] = clusterer.fit(data)
+        fitted_clusterers = []
+        for clusterer in self.autoclusterers:
+            fitted_clusterers.append(clusterer.fit(data))
         self.autoclusterers = fitted_clusterers
         self.labels_ = {
-            clus_name: fitted_clusterers[clus_name].labels_ for clus_name in self.algorithm_names
+            ac.clusterer_name: ac.labels_ for ac in self.autoclusterers
         }
         self.labels_df = generate_flattened_df(self.labels_)
         return self
@@ -428,13 +428,13 @@ class MultiAutoClusterer (_PickPredictVisualize):
         if gold_standard is None:
             gold_standard = self.gold_standard
 
-        evaluated_clusterers = {}
-        for clus_name, clusterer in self.autoclusterers.items():
-            evaluated_clusterers[clus_name] = clusterer.evaluate(
+        evaluated_clusterers = []
+        for ac in self.autoclusterers:
+            evaluated_clusterers.append(ac.evaluate(
                 methods=evaluation_methods,
                 metric_kwargs=metric_kwargs,
                 gold_standard=gold_standard
-            )
+            ))
 
         self.gold_standard = gold_standard
         self.metric_kwargs = metric_kwargs
@@ -442,8 +442,7 @@ class MultiAutoClusterer (_PickPredictVisualize):
 
         self.autoclusterers = evaluated_clusterers
         self.evaluation_ = {
-            clus_name: evaluated_clusterers[clus_name].evaluation_ for clus_name in 
-            self.algorithm_names
+            ac.clusterer_name: ac.evaluation_ for ac in self.autoclusterers
         }
         self.evaluation_df = generate_flattened_df(self.evaluation_)
         return self

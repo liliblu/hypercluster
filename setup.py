@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 files = ['hypercluster.smk', 'config.yml']
 setuptools.setup(
     name="hypercluster",
-    version="0.1.1",
+    version="0.1.2",
     author="Lili Blumenberg, Ruggles Lab",
     author_email="lili.blumenberg@gmail.com",
     description="A package for automatic clustering hyperparameter optmization",
