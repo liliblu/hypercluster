@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 files = ['hypercluster.smk', 'config.yml', 'hypercluster/tests/test_input.txt']
 setuptools.setup(
     name="hypercluster",
-    version="0.1.2",
+    version="0.1.3",
     author="Lili Blumenberg, Ruggles Lab",
     author_email="lili.blumenberg@gmail.com",
     description="A package for automatic clustering hyperparameter optmization",
@@ -30,6 +30,8 @@ setuptools.setup(
     ],
     package_data={"hypercluster": files},
     packages=setuptools.find_packages(
-        exclude=["examples", "manuscript", "test_input", "bioconda-recipe"]
+        exclude=[
+            # "examples", "manuscript", "test_input", "bioconda-recipe"
+        ]
     )
 )
