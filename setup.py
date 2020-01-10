@@ -2,7 +2,7 @@ import setuptools
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-files = ['hypercluster.smk', 'config.yml']
+files = ['hypercluster.smk', 'config.yml', 'hypercluster/tests/test_input.txt']
 setuptools.setup(
     name="hypercluster",
     version="0.1.2",
