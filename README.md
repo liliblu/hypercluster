@@ -15,14 +15,16 @@ snakemake
 
 
 ### Install  
+With pip:
 ```
 pip install hypercluster
 ```
-or
+
+or with conda:
 ```
 conda install hypercluster
 # or
-conda install -c bioconda hypercluster
+conda create -c conda-forge -c bioconda hypercluster
 ```
 If you are having problems installing with conda, try changing your channel priority. Priority of conda-forge > bioconda > defaults is recommended. 
 To check channel priority: `conda config --get channels`
