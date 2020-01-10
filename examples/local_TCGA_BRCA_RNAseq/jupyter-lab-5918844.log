@@ -1,0 +1,114 @@
+
+MacOS or linux terminal command to create your ssh tunnel:
+ssh -N -L 8693:fn-0002:8693 lmb529@bigpurple3.nyumc.org
+
+For more info and how to connect from windows,
+   see research.computing.yale.edu/jupyter-nb
+Here is the MobaXterm info:
+
+Forwarded port:same as remote port
+Remote server: fn-0002
+Remote port: 8693
+SSH server: bigpurple3.nyumc.org
+SSH login: lmb529
+SSH port: 22
+
+Use a Browser on your local machine to go to:
+http://localhost:8693  (prefix w/ https:// if using password)
+
+/cm/local/apps/slurm/var/spool/job5918844/slurm_script: line 57: activate: No such file or directory
+[I 11:42:30.612 LabApp] JupyterLab extension loaded from /gpfs/data/ruggleslab/home/lmb529/conda/envs/hc_test/lib/python3.7/site-packages/jupyterlab
+[I 11:42:30.614 LabApp] JupyterLab application directory is /gpfs/data/ruggleslab/home/lmb529/conda/envs/hc_test/share/jupyter/lab
+[I 11:42:30.619 LabApp] Serving notebooks from local directory: /gpfs/data/ruggleslab
+[I 11:42:30.619 LabApp] The Jupyter Notebook is running at:
+[I 11:42:30.619 LabApp] http://fn-0002:8693/?token=fc13b11a9a39ac2da71f8cedf08311581dddfd01c51561fb
+[I 11:42:30.620 LabApp]  or http://127.0.0.1:8693/?token=fc13b11a9a39ac2da71f8cedf08311581dddfd01c51561fb
+[I 11:42:30.620 LabApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[C 11:42:30.662 LabApp] 
+    
+    To access the notebook, open this file in a browser:
+        file:///gpfs/home/lmb529/.local/share/jupyter/runtime/nbserver-187904-open.html
+    Or copy and paste one of these URLs:
+        http://fn-0002:8693/?token=fc13b11a9a39ac2da71f8cedf08311581dddfd01c51561fb
+     or http://127.0.0.1:8693/?token=fc13b11a9a39ac2da71f8cedf08311581dddfd01c51561fb
+[I 11:43:24.452 LabApp] 302 GET / (192.168.0.103) 0.60ms
+[I 11:43:24.467 LabApp] 302 GET /lab? (192.168.0.103) 0.85ms
+[I 11:43:35.596 LabApp] 302 POST /login?next=%2Flab%3F (192.168.0.103) 1.19ms
+[W 11:43:36.846 LabApp] Could not determine jupyterlab build status without nodejs
+[I 11:43:38.497 LabApp] Kernel started: 5905720c-dcbc-407d-acd9-e3e535378860
+[I 11:43:38.533 LabApp] Kernel started: e06fce5a-5298-45f3-99f7-3c929235c5b6
+[I 11:45:38.369 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 11:59:39.671 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 12:01:39.875 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 12:03:40.086 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 12:05:40.254 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 12:17:41.100 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 12:19:06.673 LabApp] Starting buffering for 5905720c-dcbc-407d-acd9-e3e535378860:33d3baf4-9661-40db-ac0b-77ed4e3a86f8
+[I 12:19:06.675 LabApp] Starting buffering for e06fce5a-5298-45f3-99f7-3c929235c5b6:e9bab26b-244d-42fc-84f9-8dd2884de9d2
+[I 12:19:07.729 LabApp] Restoring connection for 5905720c-dcbc-407d-acd9-e3e535378860:33d3baf4-9661-40db-ac0b-77ed4e3a86f8
+[I 12:19:41.442 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[W 12:23:07.712 LabApp] WebSocket ping timeout after 119994 ms.
+[W 12:23:07.730 LabApp] WebSocket ping timeout after 119993 ms.
+[W 12:23:07.753 LabApp] WebSocket ping timeout after 119994 ms.
+[I 12:23:12.731 LabApp] Starting buffering for 5905720c-dcbc-407d-acd9-e3e535378860:33d3baf4-9661-40db-ac0b-77ed4e3a86f8
+[I 12:23:12.754 LabApp] Starting buffering for e06fce5a-5298-45f3-99f7-3c929235c5b6:e9bab26b-244d-42fc-84f9-8dd2884de9d2
+[W 14:19:17.494 LabApp] Could not determine jupyterlab build status without nodejs
+[I 14:21:18.748 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 14:26:35.854 LabApp] Starting buffering for e06fce5a-5298-45f3-99f7-3c929235c5b6:aa6c73a1-652a-453d-904b-1eeed7fce497
+[I 14:26:35.856 LabApp] Starting buffering for 5905720c-dcbc-407d-acd9-e3e535378860:98f03fb6-73e6-4f56-aa66-a6b71770f0be
+[W 14:26:40.187 LabApp] Could not determine jupyterlab build status without nodejs
+[I 14:36:43.172 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 14:38:43.384 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 14:40:43.602 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 14:42:43.820 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:02:24.900 LabApp] Kernel restarted: e06fce5a-5298-45f3-99f7-3c929235c5b6
+[I 15:02:46.333 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:03:18.710 LabApp] Kernel restarted: e06fce5a-5298-45f3-99f7-3c929235c5b6
+[I 15:04:46.632 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:06:53.109 LabApp] Kernel restarted: e06fce5a-5298-45f3-99f7-3c929235c5b6
+[I 15:08:20.203 LabApp] Kernel restarted: e06fce5a-5298-45f3-99f7-3c929235c5b6
+[I 15:08:46.952 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:09:40.773 LabApp] Kernel restarted: e06fce5a-5298-45f3-99f7-3c929235c5b6
+[I 15:10:47.129 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:14:24.124 LabApp] Kernel restarted: e06fce5a-5298-45f3-99f7-3c929235c5b6
+[I 15:14:47.393 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:16:47.623 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:16:53.281 LabApp] Starting buffering for e06fce5a-5298-45f3-99f7-3c929235c5b6:5ce1fe1d-30f0-4421-9c82-e5ca9ff11afa
+[I 15:16:53.281 LabApp] Starting buffering for 5905720c-dcbc-407d-acd9-e3e535378860:995fe3b6-23fe-4bef-82b6-d3935b271115
+[I 15:16:55.674 LabApp] Restoring connection for 5905720c-dcbc-407d-acd9-e3e535378860:995fe3b6-23fe-4bef-82b6-d3935b271115
+[I 15:16:55.707 LabApp] Restoring connection for e06fce5a-5298-45f3-99f7-3c929235c5b6:5ce1fe1d-30f0-4421-9c82-e5ca9ff11afa
+[I 15:18:47.945 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:20:48.169 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:24:48.485 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:25:05.450 LabApp] Kernel restarted: e06fce5a-5298-45f3-99f7-3c929235c5b6
+[I 15:26:48.688 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:28:49.229 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:29:33.256 LabApp] Kernel restarted: e06fce5a-5298-45f3-99f7-3c929235c5b6
+[I 15:30:49.455 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:32:49.772 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:34:50.095 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:36:50.456 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:40:50.739 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:42:50.989 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:44:51.348 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:45:05.779 LabApp] Kernel restarted: e06fce5a-5298-45f3-99f7-3c929235c5b6
+[I 15:46:52.685 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:48:54.259 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 15:50:28.449 LabApp] Starting buffering for 5905720c-dcbc-407d-acd9-e3e535378860:995fe3b6-23fe-4bef-82b6-d3935b271115
+[I 15:50:28.467 LabApp] Starting buffering for e06fce5a-5298-45f3-99f7-3c929235c5b6:5ce1fe1d-30f0-4421-9c82-e5ca9ff11afa
+[I 15:50:29.737 LabApp] Restoring connection for e06fce5a-5298-45f3-99f7-3c929235c5b6:5ce1fe1d-30f0-4421-9c82-e5ca9ff11afa
+[I 15:50:29.763 LabApp] Restoring connection for 5905720c-dcbc-407d-acd9-e3e535378860:995fe3b6-23fe-4bef-82b6-d3935b271115
+[I 15:50:55.952 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[W 15:52:59.739 LabApp] WebSocket ping timeout after 119935 ms.
+[W 15:52:59.763 LabApp] WebSocket ping timeout after 119956 ms.
+[I 15:53:04.755 LabApp] Starting buffering for e06fce5a-5298-45f3-99f7-3c929235c5b6:5ce1fe1d-30f0-4421-9c82-e5ca9ff11afa
+[I 15:53:04.764 LabApp] Starting buffering for 5905720c-dcbc-407d-acd9-e3e535378860:995fe3b6-23fe-4bef-82b6-d3935b271115
+[W 16:24:46.888 LabApp] Could not determine jupyterlab build status without nodejs
+[I 16:26:48.786 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 16:28:49.624 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[I 16:30:51.525 LabApp] Saving file at /home/lmb529/hypercluster/examples/local_no-snakemake/running_locally.ipynb
+[W 17:23:18.493 LabApp] WebSocket ping timeout after 119943 ms.
+[W 17:23:18.571 LabApp] WebSocket ping timeout after 119982 ms.
+[I 17:23:23.521 LabApp] Starting buffering for 5905720c-dcbc-407d-acd9-e3e535378860:c9dfa09f-3795-4e25-a45b-7a97fcdc6906
+[I 17:23:23.573 LabApp] Starting buffering for e06fce5a-5298-45f3-99f7-3c929235c5b6:2de51812-9e38-436b-a0e6-45ad9c32335a
+slurmstepd-fn-0002: error: *** JOB 5918844 ON fn-0002 CANCELLED AT 2020-01-07T21:42:49 DUE TO TIME LIMIT ***
