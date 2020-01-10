@@ -24,7 +24,7 @@ or with conda:
 ```
 conda install hypercluster
 # or
-conda create -c conda-forge -c bioconda hypercluster
+conda install -c conda-forge -c bioconda hypercluster
 ```
 If you are having problems installing with conda, try changing your channel priority. Priority of conda-forge > bioconda > defaults is recommended. 
 To check channel priority: `conda config --get channels`
