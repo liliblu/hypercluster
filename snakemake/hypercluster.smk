@@ -15,6 +15,8 @@ input_data_folder = config['input_data_folder']
 input_files = config['input_data_files']
 
 output_folder = config['output_folder']
+subprocess.run(['mkdir', '-p', output_folder])
+
 intermediates_folder = config['intermediates_folder']
 clustering_results = config['clustering_results']
 
