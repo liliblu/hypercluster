@@ -37,9 +37,6 @@ Line-by-line explanation of config.yml
      - | Name of the folder within the output_folder to put final results.
        | No need to change this usually.
      - ``clustering``
-   * - ``targets``
-     - Suffixes for files to generate. Not recommended to change these.
-     - ``['labels', 'evaluations']``
    * - ``clusterer_kwargs``
      - Additional static keyword arguments to pass to individual clusterers.
      - ``KMeans: {'random_state':8}}``
