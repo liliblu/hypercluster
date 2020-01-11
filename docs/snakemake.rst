@@ -38,11 +38,14 @@ Line-by-line explanation of config.yml
        | No need to change this usually.
      - ``clustering``
    * - ``clusterer_kwargs``
-     - Additional static keyword arguments to pass to individual clusterers.
+     - | Additional static keyword arguments to pass to individual clusterers. 
+       | Not to optimize. 
      - ``KMeans: {'random_state':8}}``
    * - ``generate_parameters_addtl_kwargs``
      - Additonal keyword arguments for the hypercluster.AutoClusterer class.
-     - ``random_search: false``
+     - | ``{'KMeans': ``
+       | ``{'random_search':true, 'param_weights': ``
+       | ``                         {'n_clusters': {5: 0.25, 6: 0.25, 7: 0.5}}}``
    * - ``evaluations``
      - | Names of evaluation metrics to use. See
        | hypercluster.constants.inherent_metrics or
@@ -52,26 +55,25 @@ Line-by-line explanation of config.yml
      - Additional kwargs per evaluation metric function.
      - ``{'silhouette_score': {'random_state': 8}}``
    * - ``metric_to_choose_best``
-     - If picking best labels, which metric to maximize to choose the labels.
+     - | If picking best labels, which metric to maximize to choose the labels. If not choosing 
+       | best labels, leave as empty string (''). 
      - ``silhouette_score``
    * - ``metric_to_compare_labels``
-     - If comparing labeling result pairwise similarity, which metric to use
+     - | If comparing labeling result pairwise similarity, which metric to use. To not generate 
+       | this comparison, leave blank/or empty string. 
      - ``adjusted_rand_score``
-   * - ``make_label_fig``
-     - Whether to made a figure of the labeling result pairwise similarity
+   * - ``compare_samples``
+     - | Whether to made a table and figure with counts of how often two samples are in the same 
+       | cluster.
      - ``true``
-   * - ``make_sample_fig``
-     - | Whether to made a figure of the sample pairwise similarity. Beware,
-       | with a lot of samples, this will be huge.
-     - ``false``
-   * - ``heatmap_kwargs``
-     - Additional kwargs for `seaborn.heatmap <https://seaborn.pydata.org/generated/seaborn.heatmap.html>`_ for visualizations.
-     - ``{'vmin':-2, 'vmax':2}``
    * - ``output_kwargs``
      - | pandas.to_csv and pandas.read_csv kwargs per output type. Generally,
        | don't need to change the evaluations kwargs, but labels index_col have to
        | match index_col like in the read_csv_kwargs.
      - ``{'evaluations': {'index_col':[0]},  'labels': {'index_col':[0]}}``
+   * - ``heatmap_kwargs``
+     - Additional kwargs for `seaborn.heatmap <https://seaborn.pydata.org/generated/seaborn.heatmap.html>`_ for visualizations.
+     - ``{'vmin':-2, 'vmax':2}``  
    * - ``optimization_parameters``
      - Fun part! This is where you put which hyperparameters per algorithm to try.
      - ``{'KMeans': {'n_clusters': [5, 6, 7]}}``
@@ -83,44 +85,40 @@ config.yml example from `scRNA-seq workflow <https://github.com/liliblu/hyperclu
 
 .. code-block:: yaml
 
-    input_data_folder:
-      'input_data'
-    input_data_files:
+    input_data_folder: 'input_data_folder'
+    input_data_files: 
       - test_input
-    gold_standard_file:
-      test_input: 'gold_standard_file.txt'
+    gold_standards:
+      test_input: ''
     read_csv_kwargs:
-      test_input: &id003
-        {'index_col':[0]}
-
-    output_folder: '.'
-    intermediates_folder:
-      'clustering_intermediates'
-    clustering_results:
-      'clustering'
-    targets:
-      - labels
-      - evaluations
-
-    clusterer_kwargs:
-      KMeans: {'random_state':8}}
-    generate_parameters_addtl_kwargs:
-      random_search: false
-
+      test_input: {'index_col':[0]}
+    
+    output_folder: 'hypercluster_results'
+    intermediates_folder: 'clustering_intermediates'
+    clustering_results: 'clustering'
+    
+    clusterer_kwargs: {}
+    generate_parameters_addtl_kwargs: {}
+    
     evaluations:
       - silhouette_score
+      - calinski_harabasz_score
+      - davies_bouldin_score
       - number_clustered
+      - smallest_largest_clusters_ratio
+      - smallest_cluster_ratio
     eval_kwargs: {}
+    
     metric_to_choose_best: silhouette_score
     metric_to_compare_labels: adjusted_rand_score
-    make_label_fig: true
-    make_sample_fig: false
-
-    heatmap_kwargs: {}
-
+    compare_samples: true
+    
     output_kwargs:
-      evaluations: {'index_col':[0]}
-      labels: *id003
+      evaluations:
+        index_col: [0]
+      labels:
+        index_col: [0]
+    heatmap_kwargs: {}
 
     optimization_parameters:
       HDBSCAN:
