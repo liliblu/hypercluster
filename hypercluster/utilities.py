@@ -34,8 +34,8 @@ def calculate_row_weights(
                     notweighted for notweighted in vars_to_optimize.get(param,  {}) 
                     if notweighted not in param_weights.get(param, {}).keys()
                 ])
-            )
-        } for param, vals in vars_to_optimize.items() for val in vals
+            ) for val in vals
+        } for param, vals in vars_to_optimize.items()
     })
 
     return np.prod([param_weights[param][val] for param, val in row.to_dict().items()])
