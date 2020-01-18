@@ -47,6 +47,7 @@ variables_to_optimize = {
     "AffinityPropagation": dict(damping=damping),
     "MeanShift": dict(cluster_all=[False]),
     "OPTICS": dict(min_samples=min_cluster_size),
+    "NMFCluster": dict(n_clusters=n_clusters)
 }
 
 
