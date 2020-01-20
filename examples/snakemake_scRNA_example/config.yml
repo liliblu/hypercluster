@@ -1,6 +1,20 @@
-clusterer_kwargs: {}
+input_data_folder: .
+input_data_files:
+- sc_data
+gold_standards:
+  sc_data: gold_standard.csv
+read_csv_kwargs:
+  sc_data:
+    index_col:
+    - 0
+
+output_folder: 'results'
 clustering_results: clustering
-eval_kwargs: {}
+intermediates_folder: clustering_intermediates
+
+clusterer_kwargs: {}
+generate_parameters_addtl_kwargs: {}
+
 evaluations:
 - adjusted_rand_score
 - adjusted_mutual_info_score
@@ -15,19 +29,21 @@ evaluations:
 - number_clustered
 - smallest_largest_clusters_ratio
 - smallest_cluster_ratio
-generate_parameters_addtl_kwargs:
-  random_search: false
-gold_standards:
-  sc_data: gold_standard.csv
+eval_kwargs: {}
+
+output_kwargs:
+  evaluations:
+    index_col:
+    - 0
+  labels:
+    index_col:
+    - 0
 heatmap_kwargs: {}
-input_data_files:
-- sc_data
-input_data_folder: /gpfs/data/ruggleslab/home/lmb529/hypercluster/examples/scRNA_seq
-intermediates_folder: clustering_intermediates
-make_label_fig: true
-make_sample_fig: false
+
 metric_to_choose_best: silhouette_score
 metric_to_compare_labels: adjusted_rand_score
+compare_samples: false
+
 optimization_parameters:
   AffinityPropagation:
     damping:
@@ -40,23 +56,6 @@ optimization_parameters:
     - 0.85
     - 0.9
     - 0.95
-  HDBSCAN:
-    min_cluster_size: &id002
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
-    - 7
-    - 8
-    - 9
-    - 10
-    - 11
-    - 12
-    - 13
-    - 14
-    - 15
-    - 16
   KMeans:
     n_clusters: &id001
     - 2
@@ -108,30 +107,24 @@ optimization_parameters:
     - 48
     - 49
     - 50
-    - 51
-    - 52
-    - 53
-    - 54
-    - 55
-    - 56
-    - 57
-    - 58
-    - 59
   MiniBatchKMeans:
     n_clusters: *id001
+  HDBSCAN:
+    min_cluster_size: &id002
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
   OPTICS:
     min_samples: *id002
-output_kwargs:
-  evaluations:
-    index_col:
-    - 0
-  labels:
-    index_col:
-    - 0
-read_csv_kwargs:
-  sc_data:
-    index_col:
-    - 0
-targets:
-- labels
-- evaluations

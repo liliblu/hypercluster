@@ -82,7 +82,7 @@ def get_target_files(config):
         input_file=input_files,
         targets=targets
     ) + expand(
-        
+
         "%s/{input_file}/%s/{labs}_{targets}.txt" % (output_folder, intermediates_folder),
         input_file=input_files,
         labs=config["param_sets_labels"],
@@ -91,7 +91,7 @@ def get_target_files(config):
             '%s/{input_file}/%s/evaluations.pdf' % (output_folder, clustering_results),
             input_file=input_files
     )
-    
+
     if config['metric_to_choose_best']:
         target_files.append(
             expand(
@@ -125,7 +125,7 @@ files_to_generate = get_target_files(config)
 rule all:
     input:
          files_to_generate
-        
+
 
 rule run_clusterer:
     input:
@@ -142,6 +142,7 @@ rule run_clusterer:
         clusterer = kwargs.pop('clusterer')
 
         kwargs.update(params.cluskwargs.get(clusterer, {}))
+        print(kwargs)
         cls = utilities.cluster(clusterer, df, kwargs)
 
         labs = pd.DataFrame(cls.labels_, index=df.index, columns=[wildcards.labs])
@@ -237,13 +238,13 @@ rule visualize_evaluations:
 
 rule pick_best_clusters:
     input:
-        evals = '%s/{input_file}/%s/evaluations.txt' % (output_folder, 
+        evals = '%s/{input_file}/%s/evaluations.txt' % (output_folder,
                                                                      clustering_results)
     output:
         "%s/{input_file}/%s/best_parameters.txt" % (output_folder, clustering_results)
     params:
         metric = config['metric_to_choose_best'],
-        sep = lambda wcs: config['read_csv_kwargs'].get(wcs.input_file, {}).get('sep', ',') 
+        sep = lambda wcs: config['read_csv_kwargs'].get(wcs.input_file, {}).get('sep', ',')
     run:
         df = pd.read_csv(input.evals, sep=params.sep, index_col=0).transpose()
         labs = list(df[df[params.metric]==df[params.metric].max()].index)
@@ -285,7 +286,7 @@ rule compare_labels:
             x, method=params.metric, gold_standard=y
         ))
         df.to_csv(output.table)
-        
+
         visualize.visualize_pairwise(
             df,
             savefig=True,
@@ -299,7 +300,7 @@ rule compare_samples:
     input:
          labels = '%s/{input_file}/%s/labels.txt' % (output_folder, clustering_results)
     output:
-          table = '%s/{input_file}/%s/sample_label_agreement.txt' % (output_folder, 
+          table = '%s/{input_file}/%s/sample_label_agreement.txt' % (output_folder,
                                                                      clustering_results)
     params:
           readkwargs = lambda wildcards: config['read_csv_kwargs'].get(wildcards.input_file, {})
@@ -312,9 +313,9 @@ rule compare_samples:
         df = df.corr(
             lambda x, y: sum(np.equal(x[((x != -1) | (y != -1))], y[((x != -1) | (y != -1))]))
         )
-        
+
         df.to_csv(output.table, sep = kwargs['sep'])
-        
+
         visualize.visualize_pairwise(
             df,
             savefig=True,

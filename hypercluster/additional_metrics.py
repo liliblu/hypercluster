@@ -1,5 +1,8 @@
-from typing import Iterable
+from typing import Iterable, Optional
 from collections import Counter
+from pandas import DataFrame
+from scipy.cluster.hierarchy import linkage, cophenet
+from scipy.spatial.distance import pdist
 
 __doc__ = (
     "More functions for evaluating clustering results. Additional metric evaluations can "
@@ -8,13 +11,13 @@ __doc__ = (
 
 
 def number_clustered(_, labels: Iterable) -> float:
-    """Returns the number of clustered samples.  
+    """Returns the number of clustered samples.
 
-    Args:  
-        _: Dummy, pass anything or None.  
+    Args:
+        _: Dummy, pass anything or None.
         labels (Iterable): Vector of sample labels.
 
-    Returns (int): 
+    Returns (int):
         The number of clustered labels.
 
     """
@@ -22,13 +25,13 @@ def number_clustered(_, labels: Iterable) -> float:
 
 
 def smallest_largest_clusters_ratio(_, labels: Iterable) -> float:
-    """Number in the smallest cluster over the number in the largest cluster.  
+    """Number in the smallest cluster over the number in the largest cluster.
 
-    Args: 
-        _: Dummy, pass anything or None.  
-        labels (Iterable): Vector of sample labels.  
+    Args:
+        _: Dummy, pass anything or None.
+        labels (Iterable): Vector of sample labels.
 
-    Returns (float):  
+    Returns (float):
         Ratio of number of members in smallest over largest cluster.
 
     """
@@ -38,13 +41,13 @@ def smallest_largest_clusters_ratio(_, labels: Iterable) -> float:
 
 
 def smallest_cluster_ratio(_, labels: Iterable) -> float:
-    """Number in the smallest cluster over the total samples.  
+    """Number in the smallest cluster over the total samples.
 
-    Args: 
-        _: Dummy, pass anything or None.   
-        labels (Iterable): Vector of sample labels.  
+    Args:
+        _: Dummy, pass anything or None.
+        labels (Iterable): Vector of sample labels.
 
-    Returns (float): 
+    Returns (float):
         Ratio of number of members in smallest over all samples.
 
     """
@@ -54,42 +57,42 @@ def smallest_cluster_ratio(_, labels: Iterable) -> float:
 
 
 def number_of_clusters(_, labels: Iterable) -> float:
-    """Number of total clusters.  
-    
-    Args: 
-        _: Dummy, pass anything or None
-        labels (Iterable): Vector of sample labels.  
+    """Number of total clusters.
 
-    Returns (int): 
-        Number of clusters.  
+    Args:
+        _: Dummy, pass anything or None
+        labels (Iterable): Vector of sample labels.
+
+    Returns (int):
+        Number of clusters.
 
     """
     return len(Counter(labels))
 
 
 def smallest_cluster_size(_, labels: Iterable) -> float:
-    """Number in smallest cluster  
+    """Number in smallest cluster
 
-    Args: 
+    Args:
         _: Dummy, pass anything or None
-        labels (Iterable): Vector of sample labels.  
+        labels (Iterable): Vector of sample labels.
 
-    Returns (int): 
-        Number of samples in smallest cluster.  
+    Returns (int):
+        Number of samples in smallest cluster.
 
     """
     return min(Counter(labels).values())
 
 
 def largest_cluster_size(_, labels: Iterable) -> float:
-    """Number in largest cluster  
+    """Number in largest cluster
 
-    Args: 
+    Args:
         _: Dummy, pass anything or None
-        labels (Iterable): Vector of sample labels.  
+        labels (Iterable): Vector of sample labels.
 
-    Returns (int): 
-        Number of samples in largest cluster.  
+    Returns (int):
+        Number of samples in largest cluster.
 
     """
     return max(Counter(labels).values())

@@ -43,9 +43,7 @@ Line-by-line explanation of config.yml
      - ``KMeans: {'random_state':8}}``
    * - ``generate_parameters_addtl_kwargs``
      - Additonal keyword arguments for the hypercluster.AutoClusterer class.
-     - | ``{'KMeans': ``
-       | ``{'random_search':true, 'param_weights': ``
-       | ``                         {'n_clusters': {5: 0.25, 6: 0.25, 7: 0.5}}}``
+     - ``{'KMeans': {'random_search':true, 'param_weights': {'n_clusters': {5: 0.25, 6:0.75}}}``
    * - ``evaluations``
      - | Names of evaluation metrics to use. See
        | hypercluster.constants.inherent_metrics or
