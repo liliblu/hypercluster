@@ -40,14 +40,16 @@ class NMFCluster:
         large as the original, but with positive values only and zeros and hence appropriate for
         NMF. Uses decomposed matrix H, which is nxk (with n=number of samples and k=number of
         components) to assign cluster membership. Each sample is assigned to the cluster for
-        which it has the highest membership score. See sklearn.decomposition.NMF
-        (https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.NMF.html)
+        which it has the highest membership score. See `sklearn.decomposition.NMF`_  
 
-        Args:
-            data (DataFrame): Data to fit with samples as rows and features as columns.
+        Args: 
+            data (DataFrame): Data to fit with samples as rows and features as columns.  
 
-        Returns:
-            self with labels_ attribute.
+        Returns: 
+            self with labels\_ attribute.  
+
+        .. _sklearn.decomposition.NMF: 
+            https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.NMF.html
         """
 
         if np.any(data<0):

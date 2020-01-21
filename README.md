@@ -42,7 +42,10 @@ conda config --add channels conda-forge
 ```
 
 ### Docs 
-https://hypercluster.readthedocs.io/en/latest/index.html   
+https://hypercluster.readthedocs.io/en/latest/index.html  
+
+It will also be useful to check out sklearn's page on [clustering](https://scikit-learn.org/stable/modules/clustering.html) 
+and [evaluation metrics](https://scikit-learn.org/stable/modules/clustering.html#clustering-performance-evaluation) 
 
 ### Examples
 https://github.com/liliblu/hypercluster/tree/dev/examples

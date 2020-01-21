@@ -32,13 +32,13 @@ cmap.set_bad("#DAE0E6")
 
 
 def zscore(df):
-    """Row zscores a DataFrame, ignores np.nan
+    """Row zscores a DataFrame, ignores np.nan 
 
-    Args:
-        df (DataFrame): DataFrame to z-score
+    Args: 
+        df (DataFrame): DataFrame to z-score 
 
-    Returns (DataFrame):
-        Row-zscored DataFrame.
+    Returns (DataFrame): 
+        Row-zscored DataFrame. 
     """
     return df.subtract(df.mean(axis=1), axis=0).divide(df.std(axis=1), axis=0)
 
@@ -48,15 +48,15 @@ def compute_order(
         dist_method: str = "euclidean",
         cluster_method: str = "average"
 ):
-    """Gives hierarchical clustering order for the rows of a DataFrame
+    """Gives hierarchical clustering order for the rows of a DataFrame 
 
-    Args:
-        df (DataFrame): DataFrame with rows to order.
-        dist_method (str):  Distance method to pass to scipy.cluster.hierarchy.linkage.
-        cluster_method (str): Clustering method to pass to scipy.spatial.distance.pdist.
+    Args: 
+        df (DataFrame): DataFrame with rows to order.  
+        dist_method (str):  Distance method to pass to scipy.cluster.hierarchy.linkage.  
+        cluster_method (str): Clustering method to pass to scipy.spatial.distance.pdist.  
 
-    Returns (pandas.Index):
-        Ordered row index.
+    Returns (pandas.Index): 
+        Ordered row index. 
 
     """
     dist_mat = pdist(df, metric=dist_method)
@@ -71,16 +71,16 @@ def visualize_evaluations(
     output_prefix: str = "evaluations",
     **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
-    """Makes a z-scored visualization of all evaluations.
+    """Makes a z-scored visualization of all evaluations. 
 
-    Args:
-        evaluations_df (DataFrame): Evaluations dataframe from clustering.optimize_clustering
-        output_prefix (str): If saving a figure, file prefix to use.
-        savefig (bool): Whether to save a pdf
-        **heatmap_kws: Additional keyword arguments to pass to seaborn.heatmap.
+    Args: 
+        evaluations_df (DataFrame): Evaluations dataframe from clustering.optimize_clustering  
+        output_prefix (str): If saving a figure, file prefix to use.  
+        savefig (bool): Whether to save a pdf  
+        **heatmap_kws: Additional keyword arguments to pass to seaborn.heatmap.  
 
-    Returns (List[matplotlib.axes.Axes]):
-        List of all matplotlib axes.
+    Returns (List[matplotlib.axes.Axes]): 
+        List of all matplotlib axes.  
 
     """
     clusterers = sorted(
@@ -150,17 +150,17 @@ def visualize_pairwise(
         method: Optional[str] = None,
         **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
-    """Visualize symmetrical square DataFrames.
+    """Visualize symmetrical square DataFrames. 
 
-    Args:
-        df (DataFrame): DataFrame to visualize.
-        savefig (bool): Whether to save a pdf.
-        output_prefix (str): If saving a pdf, file prefix to use.
-        method (str): Label for cbar, if relevant.
-        **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_
+    Args: 
+        df (DataFrame): DataFrame to visualize.  
+        savefig (bool): Whether to save a pdf.  
+        output_prefix (str): If saving a pdf, file prefix to use.  
+        method (str): Label for cbar, if relevant.  
+        **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_  
 
-    Returns (List[matplotlib.axes.Axes]):
-        List of matplotlib axes for figure.
+    Returns (List[matplotlib.axes.Axes]): 
+        List of matplotlib axes for figure. 
 
     .. _seaborn.heatmap:
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
@@ -222,19 +222,19 @@ def visualize_label_agreement(
         output_prefix: Optional[str] = None,
         **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
-    """Visualize similarity between clustering results given an evaluation metric.
+    """Visualize similarity between clustering results given an evaluation metric. 
 
-    Args:
-        labels (DataFrame): Labels DataFrame, e.g. from optimize_clustering or
-        AutoClusterer.labels_
-        method (str): Method with which to compare labels. Must be a metric like the ones in
-        constants.need_ground_truth, which takes two sets of labels.
-        savefig (bool): Whether to save a pdf.
-        output_prefix (str): If saving a pdf, file prefix to use.
-        **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_
+    Args: 
+        labels (DataFrame): Labels DataFrame, e.g. from optimize_clustering or \
+        AutoClusterer.labels_  
+        method (str): Method with which to compare labels. Must be a metric like the ones in \
+        constants.need_ground_truth, which takes two sets of labels.  
+        savefig (bool): Whether to save a pdf.  
+        output_prefix (str): If saving a pdf, file prefix to use.  
+        **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_  
 
-    Returns (List[matplotlib.axes.Axes]):
-        List of matplotlib axes
+    Returns (List[matplotlib.axes.Axes]): 
+        List of matplotlib axes  
 
     .. _seaborn.heatmap:
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
@@ -260,17 +260,17 @@ def visualize_sample_label_consistency(
     with care--if you use more conditions for some type of clusterers, e.g. more n_clusters for
     KMeans, those cluster more similarly across conditions than between clusterers. This means
     that more agreement in labeling could be due to the choice of clusterers rather than true
-    similarity between samples.
+    similarity between samples. 
 
-    Args:
-        labels (DataFrame): Labels DataFrame, e.g. from optimize_clustering or
-        AutoClusterer.labels_
-        savefig (bool): Whether to save a pdf.
-        output_prefix (str): If saving a pdf, file prefix to use.
-        **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_
+    Args: 
+        labels (DataFrame): Labels DataFrame, e.g. from optimize_clustering or \
+        AutoClusterer.labels_  
+        savefig (bool): Whether to save a pdf.  
+        output_prefix (str): If saving a pdf, file prefix to use.  
+        **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_  
 
-    Returns (List[matplotlib.axes.Axes]):
-        List of matplotlib axes
+    Returns (List[matplotlib.axes.Axes]): 
+        List of matplotlib axes  
 
     .. _seaborn.heatmap:
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
@@ -289,6 +289,18 @@ def visualize_for_picking_labels(
         method: Optional[str] = None,
         savefig_prefix: Optional[str] = None
 ):
+    """Generates graphs similar to a `scree graph`_ for PCA for each parameter and each clusterer. 
+
+    Args: 
+        evaluation_df (DataFrame): DataFrame of evaluations to visualize. Clusterer.evaluation_df.  
+        method (str): Which metric to visualize.  
+        savefig_prefix (str): If not None, save a figure with give prefix.  
+
+    Returns:
+        matplotlib axes.  
+    .. _scree graph:
+        https://en.wikipedia.org/wiki/Scree_plot
+    """
     if method is None:
         method = "silhouette_score"
     cluss = list(set([i.split(param_delim, 1)[0] for i in evaluation_df.columns]))

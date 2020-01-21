@@ -14,8 +14,13 @@ Attributes:
     variables_to_optimize: Some default hyperparameters to optimize and value ranges for a \
     selection of commonly used clustering algoirthms from sklearn. Used as deafults for \
     clustering.AutoClusterer and clustering.optimize_clustering.    
-    need_ground_truth: list of sklearn metrics that need ground truth labeling.  
-    inherent_metrics: list of sklearn metrics that need original data for calculation.  
+    need_ground_truth: list of sklearn metrics that need ground truth labeling. \
+    "adjusted_rand_score", "adjusted_mutual_info_score", "homogeneity_score", \
+    "completeness_score", "fowlkes_mallows_score", "mutual_info_score", "v_measure_score"    
+    inherent_metrics: list of sklearn metrics that need original data for calculation. \
+    "silhouette_score", "calinski_harabasz_score", "davies_bouldin_score", \
+    "smallest_largest_clusters_ratio", "number_of_clusters", "smallest_cluster_size", \
+    "largest_cluster_size"  
     min_or_max: establishing whether each sklearn metric is better when minimized or maximized for \
     clustering.pick_best_labels.  
 """
