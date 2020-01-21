@@ -1,15 +1,16 @@
+from typing import List, Optional
 from collections import Counter
-import pandas as pd
+from itertools import cycle
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pandas import DataFrame
-from typing import List, Optional
-from hypercluster.constants import param_delim, val_delim
 from scipy.cluster import hierarchy
 from scipy.spatial.distance import pdist
-from hypercluster import utilities
+import scipy.optimize
+from hypercluster.constants import param_delim
+from hypercluster.utilities import log, convert_to_multiind, evaluate_one
 
 matplotlib.rcParams["pdf.fonttype"] = 42
 matplotlib.rcParams["ps.fonttype"] = 42
@@ -31,13 +32,13 @@ cmap.set_bad("#DAE0E6")
 
 
 def zscore(df):
-    """Row zscores a DataFrame, ignores np.nan   
+    """Row zscores a DataFrame, ignores np.nan
 
-    Args: 
-        df (DataFrame): DataFrame to z-score  
+    Args:
+        df (DataFrame): DataFrame to z-score
 
-    Returns (DataFrame): 
-        Row-zscored DataFrame.  
+    Returns (DataFrame):
+        Row-zscored DataFrame.
     """
     return df.subtract(df.mean(axis=1), axis=0).divide(df.std(axis=1), axis=0)
 
@@ -47,15 +48,15 @@ def compute_order(
         dist_method: str = "euclidean",
         cluster_method: str = "average"
 ):
-    """Gives hierarchical clustering order for the rows of a DataFrame  
+    """Gives hierarchical clustering order for the rows of a DataFrame
 
-    Args: 
-        df (DataFrame): DataFrame with rows to order.  
-        dist_method (str):  Distance method to pass to scipy.cluster.hierarchy.linkage.    
-        cluster_method (str): Clustering method to pass to scipy.spatial.distance.pdist.  
+    Args:
+        df (DataFrame): DataFrame with rows to order.
+        dist_method (str):  Distance method to pass to scipy.cluster.hierarchy.linkage.
+        cluster_method (str): Clustering method to pass to scipy.spatial.distance.pdist.
 
-    Returns (pandas.Index): 
-        Ordered row index.  
+    Returns (pandas.Index):
+        Ordered row index.
 
     """
     dist_mat = pdist(df, metric=dist_method)
@@ -70,16 +71,16 @@ def visualize_evaluations(
     output_prefix: str = "evaluations",
     **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
-    """Makes a z-scored visualization of all evaluations.  
+    """Makes a z-scored visualization of all evaluations.
 
-    Args: 
-        evaluations_df (DataFrame): Evaluations dataframe from clustering.optimize_clustering  
-        output_prefix (str): If saving a figure, file prefix to use.  
+    Args:
+        evaluations_df (DataFrame): Evaluations dataframe from clustering.optimize_clustering
+        output_prefix (str): If saving a figure, file prefix to use.
         savefig (bool): Whether to save a pdf
-        **heatmap_kws: Additional keyword arguments to pass to seaborn.heatmap.  
+        **heatmap_kws: Additional keyword arguments to pass to seaborn.heatmap.
 
-    Returns (List[matplotlib.axes.Axes]): 
-        List of all matplotlib axes.  
+    Returns (List[matplotlib.axes.Axes]):
+        List of all matplotlib axes.
 
     """
     clusterers = sorted(
@@ -93,10 +94,6 @@ def visualize_evaluations(
             )[clus]
             for clus in clusterers
         ]
-    clus_cols = {
-        clus: [col for col in evaluations_df.columns if clus == col.split(param_delim, 1)[0]] 
-        for clus in clusterers
-    }
 
     evaluations_df = zscore(evaluations_df)
     width = 0.18 * (len(evaluations_df.columns) + 2 + (0.01 * (len(clusterers) - 1)))
@@ -123,23 +120,7 @@ def visualize_evaluations(
     heatmap_kws['vmax'] = heatmap_kws.get('vmax', vmax)
 
     for i, clus in enumerate(clusterers):
-        temp = evaluations_df[
-            clus_cols[clus]
-        ].transpose()
-
-        temp.index = pd.MultiIndex.from_frame(
-            pd.DataFrame(
-                [
-                    {
-                        kv.split(val_delim)[0]: kv.split(val_delim)[1]
-                        for kv in i.split(param_delim, 1)[1:]
-                    }
-                    for i in temp.index
-                ]
-            ).astype(float, errors='ignore')
-        )
-        temp = temp.sort_index()
-        temp = temp.transpose()
+        temp = convert_to_multiind(clus, evaluations_df)
 
         ax = axs[i]
         sns.heatmap(
@@ -166,20 +147,20 @@ def visualize_pairwise(
         df: DataFrame,
         savefig: bool = False,
         output_prefix: Optional[str] = None,
-        method: Optional[str] = None, 
+        method: Optional[str] = None,
         **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
-    """Visualize symmetrical square DataFrames.  
+    """Visualize symmetrical square DataFrames.
 
-    Args: 
-        df (DataFrame): DataFrame to visualize.    
-        savefig (bool): Whether to save a pdf.  
-        output_prefix (str): If saving a pdf, file prefix to use.  
-        method (str): Label for cbar, if relevant.   
-        **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_   
+    Args:
+        df (DataFrame): DataFrame to visualize.
+        savefig (bool): Whether to save a pdf.
+        output_prefix (str): If saving a pdf, file prefix to use.
+        method (str): Label for cbar, if relevant.
+        **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_
 
-    Returns (List[matplotlib.axes.Axes]): 
-        List of matplotlib axes for figure.  
+    Returns (List[matplotlib.axes.Axes]):
+        List of matplotlib axes for figure.
 
     .. _seaborn.heatmap:
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
@@ -241,19 +222,19 @@ def visualize_label_agreement(
         output_prefix: Optional[str] = None,
         **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
-    """Visualize similarity between clustering results given an evaluation metric.  
+    """Visualize similarity between clustering results given an evaluation metric.
 
-    Args: 
-        labels (DataFrame): Labels DataFrame, e.g. from optimize_clustering or 
-        AutoClusterer.labels_  
-        method (str): Method with which to compare labels. Must be a metric like the ones in 
-        constants.need_ground_truth, which takes two sets of labels.  
-        savefig (bool): Whether to save a pdf.  
-        output_prefix (str): If saving a pdf, file prefix to use.  
-        **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_   
+    Args:
+        labels (DataFrame): Labels DataFrame, e.g. from optimize_clustering or
+        AutoClusterer.labels_
+        method (str): Method with which to compare labels. Must be a metric like the ones in
+        constants.need_ground_truth, which takes two sets of labels.
+        savefig (bool): Whether to save a pdf.
+        output_prefix (str): If saving a pdf, file prefix to use.
+        **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_
 
-    Returns (List[matplotlib.axes.Axes]): 
-        List of matplotlib axes  
+    Returns (List[matplotlib.axes.Axes]):
+        List of matplotlib axes
 
     .. _seaborn.heatmap:
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
@@ -264,7 +245,7 @@ def visualize_label_agreement(
         method = 'adjusted_rand_score'
 
     labels = labels.corr(
-        lambda x, y: utilities.evaluate_one(x, method=method, gold_standard=y)
+        lambda x, y: evaluate_one(x, method=method, gold_standard=y)
     )
     return visualize_pairwise(labels, savefig, output_prefix, method=method, **heatmap_kws)
 
@@ -275,21 +256,21 @@ def visualize_sample_label_consistency(
         output_prefix: Optional[str] = None,
         **heatmap_kws
 ) -> List[matplotlib.axes.Axes]:
-    """Visualize how often two samples are labeled in the same group across conditions. Interpret 
-    with care--if you use more conditions for some type of clusterers, e.g. more n_clusters for 
-    KMeans, those cluster more similarly across conditions than between clusterers. This means 
-    that more agreement in labeling could be due to the choice of clusterers rather than true 
-    similarity between samples.  
+    """Visualize how often two samples are labeled in the same group across conditions. Interpret
+    with care--if you use more conditions for some type of clusterers, e.g. more n_clusters for
+    KMeans, those cluster more similarly across conditions than between clusterers. This means
+    that more agreement in labeling could be due to the choice of clusterers rather than true
+    similarity between samples.
 
-    Args: 
-        labels (DataFrame): Labels DataFrame, e.g. from optimize_clustering or 
-        AutoClusterer.labels_  
-        savefig (bool): Whether to save a pdf.  
-        output_prefix (str): If saving a pdf, file prefix to use.  
-        **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_  
+    Args:
+        labels (DataFrame): Labels DataFrame, e.g. from optimize_clustering or
+        AutoClusterer.labels_
+        savefig (bool): Whether to save a pdf.
+        output_prefix (str): If saving a pdf, file prefix to use.
+        **heatmap_kws: Additional keywords to pass to `seaborn.heatmap`_
 
-    Returns (List[matplotlib.axes.Axes]): 
-        List of matplotlib axes  
+    Returns (List[matplotlib.axes.Axes]):
+        List of matplotlib axes
 
     .. _seaborn.heatmap:
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
@@ -301,3 +282,71 @@ def visualize_sample_label_consistency(
         np.equal(x[((x != -1) | (y != -1))], y[((x != -1) | (y != -1))])
     ))
     return visualize_pairwise(labels, savefig, output_prefix, method='# same label', **heatmap_kws)
+
+
+def visualize_for_picking_labels(
+        evaluation_df: DataFrame,
+        method: Optional[str] = None,
+        savefig_prefix: Optional[str] = None
+):
+    if method is None:
+        method = "silhouette_score"
+    cluss = list(set([i.split(param_delim, 1)[0] for i in evaluation_df.columns]))
+    # get figure dimensions
+    ncols = 0
+    for ploti, clus in enumerate(cluss):
+        scores = convert_to_multiind(
+            clus, evaluation_df.loc[[method], :]
+        ).transpose().dropna(how='any')
+        if scores.index.nlevels > ncols:
+            ncols = scores.index.nlevels
+
+    colors = cycle(sns.color_palette('twilight', n_colors=len(cluss) * ncols))
+    fig = plt.figure(figsize=(5 * (ncols), 5 * len(cluss)))
+    gs = plt.GridSpec(nrows=len(cluss), ncols=ncols)
+
+    ybuff = np.quantile(evaluation_df.loc[method], 0.05)
+    ylim = (evaluation_df.loc[method].min() - ybuff, evaluation_df.loc[method].max() + ybuff)
+    for ploti, clus in enumerate(cluss):
+        scores = convert_to_multiind(
+            clus, evaluation_df.loc[[method], :]
+        ).transpose().dropna(how='any')
+        indep = scores.index.to_frame().reset_index(drop=True)
+
+        params = scipy.optimize.curve_fit(
+            log, indep, scores[method].values, p0=np.ones(indep.shape[1])
+        )[0]
+
+        for whcol, col in enumerate(indep.columns):
+            if whcol == 0:
+                saveax = plt.subplot(gs[ploti, whcol])
+                ax = saveax
+                ax.set_ylim(ylim)
+                ax.set_ylabel(clus)
+            else:
+                ax = plt.subplot(gs[ploti, whcol], sharey=saveax)
+            color = next(colors)
+
+            # plot eval results
+            sns.scatterplot(
+                indep[col],
+                scores[method].values,
+                color=color,
+                marker='o',
+                label=col,
+                linewidth=0,
+                ax=ax
+            )
+            # plot fit curve
+            sns.lineplot(
+                indep[col],
+                log(indep[[col]], params[whcol]).values + scores[method].max(),
+                color=color,
+                label='%s fit' % (col),
+                ax=ax
+            )
+            ax.legend(loc='best', labelspacing=0, frameon=False)
+    fig.suptitle('%s results per parameter' % method)
+    if savefig_prefix:
+        plt.savefig('%s.pdf' % savefig_prefix)
+    return fig.get_axes()

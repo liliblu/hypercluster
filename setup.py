@@ -2,10 +2,10 @@ import setuptools
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-files = ['hypercluster.smk', 'config.yml', 'hypercluster/tests/test_input.txt']
+files = ['snakemake/hypercluster.smk', 'snakemake/config.yml']
 setuptools.setup(
     name="hypercluster",
-    version="0.1.3",
+    version="0.1.5",
     author="Lili Blumenberg, Ruggles Lab",
     author_email="lili.blumenberg@gmail.com",
     description="A package for automatic clustering hyperparameter optmization",
@@ -29,9 +29,5 @@ setuptools.setup(
         "snakemake >= 5.8.2"
     ],
     package_data={"hypercluster": files},
-    packages=setuptools.find_packages(
-        exclude=[
-            # "examples", "manuscript", "test_input", "bioconda-recipe"
-        ]
-    )
+    packages=setuptools.find_packages()
 )
