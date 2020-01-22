@@ -81,9 +81,6 @@ def evaluate_one(
     if isinstance(labels, pd.Series) is False:
         labels = pd.Series(labels)
     if len(labels[labels != -1].unique()) < 2:
-        logging.error(
-            "Condition %s does not have at least two clusters, skipping" % labels.name
-        )
         return np.nan
 
     if metric_kwargs is None:

@@ -26,7 +26,9 @@ setuptools.setup(
         "seaborn >= 0.9.0",
         "scikit-learn >= 0.22.0",
         "hdbscan >= 0.8.24",
-        "snakemake >= 5.8.2"
+        "snakemake >= 5.8.2",
+        "networkx >= 2.4",
+        "python-louvain >= 0.13"
     ],
     package_data={"hypercluster": files},
     packages=setuptools.find_packages()
