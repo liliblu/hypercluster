@@ -69,6 +69,27 @@ class NMFCluster:
 
 
 class LouvainCluster:
+    """Louvain clustering using a specified adjacency graph, including shared nearest neighbor \
+    (SNN) and `python-louvain`_ package
+
+    Args: 
+        adjacency_method (str): Method to use for adjacency matrix. To match seurat, specify \
+        "SNN" otherwise choose a metric that can be passed to `scipy.spatial.distance.pdist`_  
+        k (int): Number of nearest neighbors to use for shared nearest neighbors adjacency matrix.  
+        resolution (float): Resolution to use in louvain clustering.  
+        adjacency_kwargs (dict): Additional kwargs for either \
+        `sklearn.neighbors.NearestNeighbors`_ or `scipy.spatial.distance.pdist`_  
+        **louvain_kwargs: Additional kwargs for python-louvain `community.best_partition`_  
+
+    .. _python-louvain:
+        https://python-louvain.readthedocs.io/en/latest/
+    .. _sklearn.neighbors.NearestNeighbors:
+        https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html
+    .. _scipy.spatial.distance.pdist:
+        https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.pdist.html
+    .. _community.best_partition:
+        https://python-louvain.readthedocs.io/en/latest/api.html#community.best_partition
+    """
     def __init__(
             self,
             adjacency_method: str = 'SNN',
@@ -76,19 +97,27 @@ class LouvainCluster:
             resolution: float = 0.8,
             adjacency_kwargs: Optional[dict] = None,
             louvain_kwargs: Optional[dict] = None,
-            labels_: Optional[Iterable] = None
     ):
+
         self.adjacency_method = adjacency_method
         self.k = int(k)
         self.resolution = resolution
         self.adjacency_kwargs = adjacency_kwargs
         self.louvain_kwargs = louvain_kwargs
-        self.labels_ = labels_
 
     def fit(
             self,
-            data,
+            data: pd.DataFrame,
     ):
+        """Fits louvain clustering to data
+        
+        Args: 
+            data (DataFrame): Data to fit with louvain clustering.  
+
+        Returns: 
+            self with .labels\_ assigned.  
+
+        """
         adjacency_method = self.adjacency_method
         k = self.k
         resolution = self.resolution
