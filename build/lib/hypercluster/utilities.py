@@ -14,16 +14,16 @@ from hypercluster.constants import param_delim, val_delim
 def calculate_row_weights(
     row: Iterable, param_weights: dict, vars_to_optimize: dict
 ) -> float:
-    """Used to select random rows of parameter combinations using individual parameter weights.
+    """Used to select random rows of parameter combinations using individual parameter weights.  
 
-    Args:
-        row (Iterable):  Series of parameters, with parameter names as index.
+    Args: 
+        row (Iterable):  Series of parameters, with parameter names as index.  
         param_weights (dict): Dictionary of str: dictionaries. Ex format - {'parameter_name':{ \
-        'param_option_1':0.5, 'param_option_2':0.5}}.
+        'param_option_1':0.5, 'param_option_2':0.5}}.  
         vars_to_optimize (Iterable): Dictionary with possibilities for different parameters. Ex \
-        format - {'parameter_name':[1, 2, 3, 4, 5]}.
+        format - {'parameter_name':[1, 2, 3, 4, 5]}.  
 
-    Returns (float):
+    Returns (float): 
         Float representing the probability of seeing that combination of parameters, given their \
         individual weights.
 
@@ -45,12 +45,12 @@ def calculate_row_weights(
 def cluster(clusterer_name: str, data: DataFrame, params: dict = {}):
     """Runs a given clusterer with a given set of parameters.
 
-    Args:
+    Args: 
         clusterer_name (str): String name of clusterer.
         data (DataFrame): Dataframe with elements to cluster as index and examples as columns.
         params (dict): Dictionary of parameter names and values to feed into clusterer. Default {}
 
-    Returns:
+    Returns: 
         Instance of the clusterer fit with the data provided.
     """
     clusterer = eval(clusterer_name)(**params)
@@ -66,7 +66,7 @@ def evaluate_one(
 ) -> dict:
     """Uses a given metric to evaluate clustering results.
 
-    Args:
+    Args: 
         labels (Iterable): Series of labels.
         method (str): Str of name of evaluation to use. Default is silhouette.
         data (DataFrame): If using an inherent metric, must provide DataFrame with which to \
@@ -75,15 +75,12 @@ def evaluate_one(
         set of gold standard labels.
         metric_kwargs (dict): Additional kwargs to use in evaluation.
 
-    Returns (float):
+    Returns (float): 
         Metric value
     """
     if isinstance(labels, pd.Series) is False:
         labels = pd.Series(labels)
     if len(labels[labels != -1].unique()) < 2:
-        logging.error(
-            "Condition %s does not have at least two clusters, skipping" % labels.name
-        )
         return np.nan
 
     if metric_kwargs is None:
@@ -112,13 +109,14 @@ def evaluate_one(
 
 
 def generate_flattened_df(df_dict: Dict[str, DataFrame]) -> DataFrame:
-    """Takes dictionary of results from many clusterers and makes 1 dataframe.
+    """Takes dictionary of results from many clusterers and makes 1 DataFrame. Opposite of \
+    convert_to_multiind.
 
-    Args:
+    Args: 
         df_dict (Dict[str, DataFrame]): Dictionary of dataframes to flatten. Can be .labels_ or \
         .evaluations_ from MultiAutoClusterer.
 
-    Returns:
+    Returns: 
         Flattened DataFrame with all data.
     """
     merged_df = pd.DataFrame()
@@ -140,7 +138,19 @@ def generate_flattened_df(df_dict: Dict[str, DataFrame]) -> DataFrame:
     return merged_df
 
 
-def convert_to_multiind(key, df):
+def convert_to_multiind(key: str, df: DataFrame) -> DataFrame:
+    """Takes columns from a single clusterer from Clusterer.labels_df or .evaluation_df and
+    converts to a multiindexed rather than collapsed into string. Equivalent to grabbing
+    Clusterer.labels[clusterer] or .evaluations[clusterer]. Opposite of generate_flattened_df.
+
+    Args: 
+        key (str): Name of clusterer, must match beginning of columns to convert.  
+        df (DataFrame): Dataframe to grab chunk from.  
+
+    Returns: 
+        Subset DataFrame with multiindex.
+
+    """
     clus_cols = [col for col in df.columns if col.split(param_delim, 1)[0] == key]
     temp = df[clus_cols].transpose()
     temp.index = pd.MultiIndex.from_frame(
@@ -151,7 +161,17 @@ def convert_to_multiind(key, df):
     return temp.sort_index().transpose()
 
 
-def log(df, m):
+def log(df: DataFrame, m: Iterable):
+    """Curve to fit for visualize_for_picking_labels()
+
+    Args: 
+        df (DataFrame): A DataFrame where each row is an x value to log, then add together.  
+        m (Iterable): A vector of constants to multiply log(x) by. len of m must be equal to \
+        number of columns in df.
+
+    Returns: 
+        A vector of floats, summed m*log(x) for each row of the input.
+    """
     return (m*np.log(df)).sum(axis=1)
 
 
@@ -161,14 +181,15 @@ def pick_best_labels(
         method: Optional[str] = None,
         min_or_max: Optional[str] = None
 ) -> Iterable:
-    """From evaluations and a metric to minimize or maximize, return all labels with top pick.
-    Args:
-        evaluation_results_df (DataFrame): Evaluations DataFrame from optimize_clustering.
-        clustering_labels_df (DataFrame: Labels DataFrame from optimize_clustering.
-        method (str): Method with which to choose the best labels.
-        min_or_max (str): Whether to minimize or maximize the metric. Must be 'min' or 'max'
-    Returns (DataFrame):
-        DataFrame of all top labels.
+    """From evaluations and a metric to minimize or maximize, return all labels with top pick.  
+
+    Args: 
+        evaluation_results_df (DataFrame): Evaluations DataFrame from optimize_clustering.  
+        clustering_labels_df (DataFrame): Labels DataFrame from optimize_clustering.  
+        method (str): Method with which to choose the best labels.  
+        min_or_max (str): Whether to minimize or maximize the metric. Must be 'min' or 'max'.  
+    Returns (DataFrame): 
+        DataFrame of all top labels.  
     """
     if method is None:
         method = "silhouette_score"

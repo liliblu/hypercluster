@@ -1,5 +1,4 @@
-import matplotlib
-import seaborn as sns
+import numpy as np
 
 
 __doc__ = """
@@ -14,8 +13,13 @@ Attributes:
     variables_to_optimize: Some default hyperparameters to optimize and value ranges for a \
     selection of commonly used clustering algoirthms from sklearn. Used as deafults for \
     clustering.AutoClusterer and clustering.optimize_clustering.    
-    need_ground_truth: list of sklearn metrics that need ground truth labeling.  
-    inherent_metrics: list of sklearn metrics that need original data for calculation.  
+    need_ground_truth: list of sklearn metrics that need ground truth labeling. \
+    "adjusted_rand_score", "adjusted_mutual_info_score", "homogeneity_score", \
+    "completeness_score", "fowlkes_mallows_score", "mutual_info_score", "v_measure_score"    
+    inherent_metrics: list of sklearn metrics that need original data for calculation. \
+    "silhouette_score", "calinski_harabasz_score", "davies_bouldin_score", \
+    "smallest_largest_clusters_ratio", "number_of_clusters", "smallest_cluster_size", \
+    "largest_cluster_size"  
     min_or_max: establishing whether each sklearn metric is better when minimized or maximized for \
     clustering.pick_best_labels.  
 """
@@ -38,6 +42,8 @@ categories = {
 min_cluster_size = [i for i in range(2, 17, 2)]
 n_clusters = [i for i in range(2, 41)]
 damping = [i / 100 for i in range(55, 95, 5)]
+resolutions = [0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6]
+k_snn = [20, 30, 60]
 
 
 variables_to_optimize = {
@@ -47,7 +53,8 @@ variables_to_optimize = {
     "AffinityPropagation": dict(damping=damping),
     "MeanShift": dict(cluster_all=[False]),
     "OPTICS": dict(min_samples=min_cluster_size),
-    "NMFCluster": dict(n_clusters=n_clusters)
+    "NMFCluster": dict(n_clusters=n_clusters),
+    "LouvainCluster": dict(resolution=resolutions, k=k_snn)
 }
 
 
@@ -84,20 +91,28 @@ min_or_max = {
     "v_measure_score": 'max',
 }
 
-matplotlib.rcParams["pdf.fonttype"] = 42
-matplotlib.rcParams["ps.fonttype"] = 42
-sns.set(font="arial", style="white", color_codes=True, font_scale=1.3)
-matplotlib.rcParams.update({"savefig.bbox": "tight"})
-cmap = sns.cubehelix_palette(
-    start=0,
-    rot=0.4,
-    gamma=1.0,
-    hue=0.82,
-    light=1,
-    dark=0,
-    reverse=False,
-    as_cmap=True
-)
-cmap.set_over('black')
-cmap.set_under('white')
-cmap.set_bad("#DAE0E6")
+pdist_adjacency_methods = [
+    'braycurtis',
+    'canberra',
+    'chebyshev',
+    'cityblock',
+    'correlation',
+    'cosine',
+    'dice',
+    'euclidean',
+    'hamming',
+    'jaccard',
+    'jensenshannon',
+    'kulsinski',
+    'mahalanobis',
+    'matching',
+    'minkowski',
+    'rogerstanimoto',
+    'russellrao',
+    'seuclidean',
+    'sokalmichener',
+    'sokalsneath',
+    'sqeuclidean',
+    'yule'
+]
+
