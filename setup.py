@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 files = ['snakemake/hypercluster.smk', 'snakemake/config.yml']
 setuptools.setup(
     name="hypercluster",
-    version="0.1.7",
+    version="0.1.8",
     author="Lili Blumenberg, Ruggles Lab",
     author_email="lili.blumenberg@gmail.com",
     description="A package for automatic clustering hyperparameter optmization",
