@@ -113,3 +113,22 @@ optimization_parameters:
     n_clusters: *id001
   OPTICS:
     min_samples: *id002
+  NMFCluster:
+    n_clusters: *id001
+  LouvainCluster:
+    resolution:
+    - 0.2
+    - 0.4
+    - 0.6
+    - 0.8
+    - 1.0
+    - 1.2
+    - 1.4
+    - 1.6
+    k:
+    - 10
+    - 15
+    - 20
+    - 40
+    - 80
+    - 120
