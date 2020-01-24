@@ -116,3 +116,12 @@ pdist_adjacency_methods = [
     'yule'
 ]
 
+
+valid_partition_types = [
+    'RBConfigurationVertexPartition',
+    'ModularityVertexPartition',
+    'RBERVertexPartition',
+    'CPMVertexPartition',
+    'SignificanceVertexPartition',
+    'SurpriseVertexPartition'
+]

@@ -16,10 +16,10 @@ from scipy.spatial.distance import pdist
 from sklearn.decomposition import NMF
 from sklearn.neighbors import NearestNeighbors
 from hdbscan import HDBSCAN
-import networkx as nx
-import community
-from .constants import pdist_adjacency_methods
-from itertools import product
+from .constants import pdist_adjacency_methods, valid_partition_types
+import igraph as ig
+import louvain
+import leidenalg
 
 
 class NMFCluster:
@@ -70,28 +70,6 @@ class NMFCluster:
 
 
 class LouvainCluster:
-    """Louvain clustering using a specified adjacency graph, including shared nearest neighbor \
-    (SNN) and `python-louvain`_ package
-
-    Args: 
-        adjacency_method (str): Method to use for adjacency matrix. To match seurat, specify \
-        "SNN" otherwise choose a metric that can be passed to `scipy.spatial.distance.pdist`_  
-        k (int): Number of nearest neighbors to use for shared nearest neighbors adjacency matrix.  
-        resolution (float): Resolution to use in louvain clustering.  
-        adjacency_kwargs (dict): Additional kwargs for either \
-        `sklearn.neighbors.NearestNeighbors`_ or `scipy.spatial.distance.pdist`_  
-        **louvain_kwargs: Additional kwargs for python-louvain `community.best_partition`_  
-
-    .. _python-louvain:
-        https://python-louvain.readthedocs.io/en/latest/
-    .. _sklearn.neighbors.NearestNeighbors:
-        https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html
-    .. _scipy.spatial.distance.pdist:
-        https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.pdist.html
-    .. _community.best_partition:
-        https://python-louvain.readthedocs.io/en/latest/api.html#community.best_partition
-    """
-
     def __init__(
             self,
             adjacency_method: str = 'SNN',
@@ -99,58 +77,66 @@ class LouvainCluster:
             resolution: float = 0.8,
             adjacency_kwargs: Optional[dict] = None,
             louvain_kwargs: Optional[dict] = None,
+            partition_type: str = 'RBConfigurationVertexPartition'
     ):
-
+        if adjacency_method not in ['SNN', 'CNN'] + pdist_adjacency_methods:
+            raise ValueError(
+                'Adjacency method %s invalid. Must be "SNN", "CNN" or a valid metric for '
+                'scipy.spatial.distance.pdist.' % adjacency_method
+            )
+        if partition_type not in valid_partition_types:
+            raise ValueError(
+                'Partition type %s not valid, must be in constants.valid_partition_types' %
+                partition_type
+            )
         self.adjacency_method = adjacency_method
         self.k = int(k)
         self.resolution = resolution
         self.adjacency_kwargs = adjacency_kwargs
         self.louvain_kwargs = louvain_kwargs
+        self.partition_type = partition_type
 
     def fit(
             self,
             data: pd.DataFrame,
     ):
-
         adjacency_method = self.adjacency_method
         k = self.k
         resolution = self.resolution
         adjacency_kwargs = self.adjacency_kwargs
         louvain_kwargs = self.louvain_kwargs
+        partition_type = self.partition_type
         if k >= len(data):
             logging.warning(
                 'k was set to %s, with only %s samples. Changing to k to %s-1'
                 % (k, len(data), len(data))
             )
             k = len(data) - 1
-        if adjacency_method == 'SNN':
+        if (adjacency_method == 'SNN') | (adjacency_method == 'CNN'):
             if adjacency_kwargs is None:
                 adjacency_kwargs = {}
             adjacency_kwargs['n_neighbors'] = adjacency_kwargs.get('n_neighbors', k)
-            nns = NearestNeighbors(**adjacency_kwargs)
+            nns = NearestNeighbors(algorithm='ball_tree', **adjacency_kwargs)
             nns.fit(data)
-            adjacency_mat = nns.kneighbors_graph(data).toarray()
-            adjacency_mat = {
-                (i, j): sum((row1+row2) == 2) for i, row1 in enumerate(list(adjacency_mat))
-                for j, row2 in enumerate(list(adjacency_mat))
-            }
-            adjacency_mat = pd.Series(adjacency_mat)
-            adjacency_mat.index = pd.MultiIndex.from_tuples(adjacency_mat.index)
-            adjacency_mat = adjacency_mat.unstack().values
+            adjacency_mat = nns.kneighbors_graph(data)
+            if adjacency_method == 'SNN':
+                adjacency_mat = adjacency_mat.multiply(adjacency_mat.transpose())
+            if adjacency_method == 'CNN':
+                adjacency_mat = adjacency_mat*adjacency_mat.transpose()
         elif adjacency_method in pdist_adjacency_methods:
             adjacency_mat = pdist(data, metric=adjacency_method, **adjacency_kwargs)
-        else:
-            raise ValueError(
-                'Adjacency method %s invalid. Must be "SNN" or a valid metric for '
-                'scipy.spatial.distance.pdist.' % adjacency_method
-            )
+
         if louvain_kwargs is None:
             louvain_kwargs = {}
-        g = nx.from_numpy_array(adjacency_mat)
-        print('starting louvain')
-        louvain_kwargs['resolution'] = louvain_kwargs.get('resolution', resolution)
-        labels = pd.Series(community.best_partition(g, **louvain_kwargs)).sort_index()
-        print('louvain done')
+        g = ig.Graph.Adjacency(adjacency_mat.toarray().tolist())
+
+        if partition_type in ['RBConfigurationVertexPartition', 'CPMVertexPartition']:
+            louvain_kwargs['resolution_parameter'] = louvain_kwargs.get(
+                'resolution_parameter', resolution
+            )
+
+        labels = eval('louvain.find_partition(g, louvain.%s, **louvain_kwargs)' % partition_type)
+        labels = pd.Series({v: i for i in range(len(labels)) for v in labels[i]}).sort_index()
         if labels.is_unique or (len(labels.unique()) == 1):
             labels = pd.Series([-1 for i in range(len(labels))])
         labels = labels.values

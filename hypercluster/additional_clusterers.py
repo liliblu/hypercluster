@@ -128,7 +128,7 @@ class LouvainCluster:
 
         if louvain_kwargs is None:
             louvain_kwargs = {}
-        g = ig.Graph.Adjacency(adjacency_mat.toarray().tolist())
+        g = ig.Graph.Weighted_Adjacency(adjacency_mat.toarray().tolist())
 
         if partition_type in ['RBConfigurationVertexPartition', 'CPMVertexPartition']:
             louvain_kwargs['resolution_parameter'] = louvain_kwargs.get(
