@@ -19,6 +19,7 @@ from hdbscan import HDBSCAN
 import networkx as nx
 import community
 from .constants import pdist_adjacency_methods
+from itertools import product
 
 
 class NMFCluster:
@@ -90,6 +91,7 @@ class LouvainCluster:
     .. _community.best_partition:
         https://python-louvain.readthedocs.io/en/latest/api.html#community.best_partition
     """
+
     def __init__(
             self,
             adjacency_method: str = 'SNN',
@@ -109,15 +111,7 @@ class LouvainCluster:
             self,
             data: pd.DataFrame,
     ):
-        """Fits louvain clustering to data
-        
-        Args: 
-            data (DataFrame): Data to fit with louvain clustering.  
 
-        Returns: 
-            self with .labels\_ assigned.  
-
-        """
         adjacency_method = self.adjacency_method
         k = self.k
         resolution = self.resolution
@@ -135,11 +129,14 @@ class LouvainCluster:
             adjacency_kwargs['n_neighbors'] = adjacency_kwargs.get('n_neighbors', k)
             nns = NearestNeighbors(**adjacency_kwargs)
             nns.fit(data)
-            adjacency_mat = pd.DataFrame(nns.kneighbors_graph(data).toarray())
-
-            adjacency_mat = adjacency_mat.corr(
-                method=lambda x, y: sum(np.logical_and(np.equal(x, 1), np.equal(y, 1)))
-            ).values
+            adjacency_mat = nns.kneighbors_graph(data).toarray()
+            adjacency_mat = {
+                (i, j): sum((row1+row2) == 2) for i, row1 in enumerate(list(adjacency_mat))
+                for j, row2 in enumerate(list(adjacency_mat))
+            }
+            adjacency_mat = pd.Series(adjacency_mat)
+            adjacency_mat.index = pd.MultiIndex.from_tuples(adjacency_mat.index)
+            adjacency_mat = adjacency_mat.unstack().values
         elif adjacency_method in pdist_adjacency_methods:
             adjacency_mat = pdist(data, metric=adjacency_method, **adjacency_kwargs)
         else:
@@ -147,15 +144,16 @@ class LouvainCluster:
                 'Adjacency method %s invalid. Must be "SNN" or a valid metric for '
                 'scipy.spatial.distance.pdist.' % adjacency_method
             )
-        g = nx.from_numpy_array(adjacency_mat)
         if louvain_kwargs is None:
             louvain_kwargs = {}
-
+        g = nx.from_numpy_array(adjacency_mat)
+        print('starting louvain')
         louvain_kwargs['resolution'] = louvain_kwargs.get('resolution', resolution)
         labels = pd.Series(community.best_partition(g, **louvain_kwargs)).sort_index()
-
+        print('louvain done')
         if labels.is_unique or (len(labels.unique()) == 1):
             labels = pd.Series([-1 for i in range(len(labels))])
         labels = labels.values
         self.labels_ = labels
         return self
+
