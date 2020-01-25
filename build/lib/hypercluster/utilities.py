@@ -161,20 +161,6 @@ def convert_to_multiind(key: str, df: DataFrame) -> DataFrame:
     return temp.sort_index().transpose()
 
 
-def log(df: DataFrame, m: Iterable):
-    """Curve to fit for visualize_for_picking_labels()
-
-    Args: 
-        df (DataFrame): A DataFrame where each row is an x value to log, then add together.  
-        m (Iterable): A vector of constants to multiply log(x) by. len of m must be equal to \
-        number of columns in df.
-
-    Returns: 
-        A vector of floats, summed m*log(x) for each row of the input.
-    """
-    return (m*np.log(df)).sum(axis=1)
-
-
 def pick_best_labels(
         evaluation_results_df: DataFrame,
         clustering_labels_df: DataFrame,

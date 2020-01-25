@@ -311,22 +311,30 @@ def visualize_for_picking_labels(
         scores = convert_to_multiind(
             clus, evaluation_df.loc[[method], :]
         ).transpose().dropna(how='any')
+        if len(scores) == 0:
+            logging.error(
+                'Score %s is missing for clusterer %s, skipping visualization' % (method, clus)
+            )
+            continue
         indep = scores.index.to_frame().reset_index(drop=True)
         try:
-            indep.astype(float)
-            cluss.append(clus)
-        except ValueError:
+            indep.astype(float)         
+        except ValueError or AssertionError:
             logging.error('Cannot convert %s data to floats, skipping visualization' % clus)
             continue
+        cluss.append(clus)
         if scores.index.nlevels > ncols:
             ncols = scores.index.nlevels
+    if not cluss:
+        logging.error('No valid clusterers, cannot visualize. ')
+        return None
     cluss.sort()
-    colors = cycle(sns.color_palette('twilight', n_colors=len(cluss) * ncols))
-    fig = plt.figure(figsize=(5 * (ncols), 5 * len(cluss)))
-    gs = plt.GridSpec(nrows=len(cluss), ncols=ncols, wspace=0.25, hspace=0.25)
 
     ybuff = np.abs(np.nanquantile(evaluation_df.loc[method], 0.05))
     ylim = (evaluation_df.loc[method].min() - ybuff, evaluation_df.loc[method].max() + ybuff)
+    colors = cycle(sns.color_palette('twilight', n_colors=len(cluss) * ncols))
+    fig = plt.figure(figsize=(5 * (ncols), 5 * len(cluss)))
+    gs = plt.GridSpec(nrows=len(cluss), ncols=ncols, wspace=0.25, hspace=0.25)
     for ploti, clus in enumerate(cluss):
         scores = convert_to_multiind(
             clus, evaluation_df.loc[[method], :]
