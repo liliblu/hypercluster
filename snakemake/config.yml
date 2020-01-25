@@ -13,6 +13,21 @@ clusterer_kwargs: {}
 generate_parameters_addtl_kwargs: {}
 
 evaluations:
+#  - adjusted_rand_score
+#  - adjusted_mutual_info_score
+#  - homogeneity_score
+#  - completeness_score
+#  - fowlkes_mallows_score
+#  - mutual_info_score
+#  - v_measure_score
+  - silhouette_score
+  - calinski_harabasz_score
+  - davies_bouldin_score
+  - number_clustered
+  - smallest_largest_clusters_ratio
+  - smallest_cluster_ratio
+eval_kwargs: {}
+screeplot_evals:
   - adjusted_rand_score
   - adjusted_mutual_info_score
   - homogeneity_score
@@ -26,7 +41,6 @@ evaluations:
   - number_clustered
   - smallest_largest_clusters_ratio
   - smallest_cluster_ratio
-eval_kwargs: {}
 
 metric_to_choose_best: silhouette_score
 metric_to_compare_labels: adjusted_rand_score
@@ -115,8 +129,8 @@ optimization_parameters:
     min_samples: *id002
   NMFCluster:
     n_clusters: *id001
-  LouvainCluster:
-    resolution:
+  LouvainCluster: &id003
+    resolution: 
     - 0.2
     - 0.4
     - 0.6
@@ -132,3 +146,4 @@ optimization_parameters:
     - 40
     - 80
     - 120
+  LeidenCluster: *id003

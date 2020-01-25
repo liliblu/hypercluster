@@ -115,6 +115,14 @@ def get_target_files(config):
                 input_file=input_files
             )
         )
+    if config['screeplot_evals']:
+        target_files.append(
+            expand(
+                '%s/{input_file}/%s/scree_plots.{eval}.pdf' % (output_folder, clustering_results),
+                input_file=input_files,
+                eval=config['screeplot_evals']
+            )
+        )
 
     return target_files
 
@@ -235,13 +243,11 @@ rule visualize_evaluations:
         )
 
 
-
 rule pick_best_clusters:
     input:
-        evals = '%s/{input_file}/%s/evaluations.txt' % (output_folder,
-                                                                     clustering_results)
+        evals = '%s/{input_file}/%s/evaluations.txt' % (output_folder, clustering_results)
     output:
-        "%s/{input_file}/%s/best_parameters.txt" % (output_folder, clustering_results)
+        "%s/{input_file}/%s/best_parameters.txt" % (output_folder, clustering_results),
     params:
         metric = config['metric_to_choose_best'],
         sep = lambda wcs: config['read_csv_kwargs'].get(wcs.input_file, {}).get('sep', ',')
@@ -265,6 +271,14 @@ rule pick_best_clusters:
             )
             with open(output[0], 'a') as fh:
                 fh.write('%s\n' % lab)
+
+        visualize.visualize_for_picking_labels(
+            df.transpose(),
+            method=params.metric,
+            savefig_prefix='%s/scree_plots.%s' % (
+                output.output_file.rsplit('/', 1)[0], params.metric
+            )
+        )
 
 rule compare_labels:
     input:
@@ -300,7 +314,7 @@ rule compare_samples:
     input:
          labels = '%s/{input_file}/%s/labels.txt' % (output_folder, clustering_results)
     output:
-          table = '%s/{input_file}/%s/sample_label_agreement.txt' % (output_folder,
+         table = '%s/{input_file}/%s/sample_label_agreement.txt' % (output_folder,
                                                                      clustering_results)
     params:
           readkwargs = lambda wildcards: config['read_csv_kwargs'].get(wildcards.input_file, {})
@@ -323,3 +337,25 @@ rule compare_samples:
             method = '# same label',
             **config['heatmap_kwargs']
         )
+
+
+rule draw_scree_plots:
+    input:
+         eval_df = '%s/{input_file}/%s/evaluations.txt' % (output_folder, clustering_results)
+    output:
+         pdfs = expand(
+             '%s/{{input_file}}/%s/scree_plots.{eval}.pdf' % (output_folder, clustering_results),
+             eval=config['screeplot_evals']
+         )
+    params:
+        sep = lambda wcs: config['read_csv_kwargs'].get(wcs.input_file, {}).get('sep', ',')
+    run:
+        df = pd.read_csv(input.evals, sep=params.sep, index_col=0)
+        for metric in config['screeplot_evals']:
+            visualize.visualize_for_picking_labels(
+                df.transpose(),
+                method=metric,
+                savefig_prefix='scree_plots.%s' % metric
+            )
+
+
