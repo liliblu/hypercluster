@@ -89,6 +89,10 @@ Quick reference for clustering and evaluation
      - Clusterer
    * - NMF
      - Partitioner
+   * - LouvainCluster
+     - Partitioner
+   * - LeidenCluster
+     - Partitioner
 
 
 .. list-table:: Evaluations

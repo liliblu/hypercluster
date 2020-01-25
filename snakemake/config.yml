@@ -28,13 +28,13 @@ evaluations:
   - smallest_cluster_ratio
 eval_kwargs: {}
 screeplot_evals:
-  - adjusted_rand_score
-  - adjusted_mutual_info_score
-  - homogeneity_score
-  - completeness_score
-  - fowlkes_mallows_score
-  - mutual_info_score
-  - v_measure_score
+#  - adjusted_rand_score
+#  - adjusted_mutual_info_score
+#  - homogeneity_score
+#  - completeness_score
+#  - fowlkes_mallows_score
+#  - mutual_info_score
+#  - v_measure_score
   - silhouette_score
   - calinski_harabasz_score
   - davies_bouldin_score

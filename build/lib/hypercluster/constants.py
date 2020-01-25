@@ -43,7 +43,7 @@ min_cluster_size = [i for i in range(2, 17, 2)]
 n_clusters = [i for i in range(2, 41)]
 damping = [i / 100 for i in range(55, 95, 5)]
 resolutions = [0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6]
-k_snn = [20, 30, 60]
+knn = [20, 30, 60]
 
 
 variables_to_optimize = {
@@ -54,7 +54,8 @@ variables_to_optimize = {
     "MeanShift": dict(cluster_all=[False]),
     "OPTICS": dict(min_samples=min_cluster_size),
     "NMFCluster": dict(n_clusters=n_clusters),
-    "LouvainCluster": dict(resolution=resolutions, k=k_snn)
+    "LouvainCluster": dict(resolution=resolutions, k=knn),
+    "LeidenCluster": dict(resolution=resolutions, k=knn),
 }
 
 

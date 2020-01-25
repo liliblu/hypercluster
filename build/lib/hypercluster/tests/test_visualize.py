@@ -39,7 +39,7 @@ def test_vis_eval():
     clusterer = hypercluster.MultiAutoClusterer().fit(test_data).evaluate()
     visualize.visualize_evaluations(clusterer.evaluation_df)
     clusterer.visualize_evaluations(savefig=True)
-# 
+    clusterer.visualize_for_picking_labels(savefig_prefix='test_visualize_for_picking')
     clusterer = hypercluster.AutoClusterer().fit(test_data).evaluate()
     visualize.visualize_evaluations(clusterer.evaluation_df)
     clusterer.visualize_evaluations()

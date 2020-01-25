@@ -36,7 +36,6 @@ class NMFCluster:
 
         self.NMF = NMF(**nmf_kwargs)
         self.n_clusters = n_clusters
-        self.labels_ = None
 
     def fit(self, data):
         """If negative numbers are present, creates one data matrix with all negative numbers
@@ -65,7 +64,7 @@ class NMFCluster:
             negative = -negative
             data = pd.concat([positive, negative], axis=1, join='outer')
 
-        self.labels_ = pd.DataFrame(self.NMF.fit_transform(data)).idxmax(axis=1)
+        self.labels_ = pd.DataFrame(self.NMF.fit_transform(data)).idxmax(axis=1).values
         return self
 
 

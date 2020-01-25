@@ -276,7 +276,7 @@ rule pick_best_clusters:
             df.transpose(),
             method=params.metric,
             savefig_prefix='%s/scree_plots.%s' % (
-                output.output_file.rsplit('/', 1)[0], params.metric
+                output[0].rsplit('/', 1)[0], params.metric
             )
         )
 
@@ -350,12 +350,14 @@ rule draw_scree_plots:
     params:
         sep = lambda wcs: config['read_csv_kwargs'].get(wcs.input_file, {}).get('sep', ',')
     run:
-        df = pd.read_csv(input.evals, sep=params.sep, index_col=0)
+        df = pd.read_csv(input.eval_df, sep=params.sep, index_col=0)
         for metric in config['screeplot_evals']:
             visualize.visualize_for_picking_labels(
-                df.transpose(),
+                df,
                 method=metric,
-                savefig_prefix='scree_plots.%s' % metric
+                savefig_prefix='%s/%s/%s/scree_plots.%s' % (
+                    output_folder, wildcards.input_file, clustering_results, metric
+                )
             )
 
 

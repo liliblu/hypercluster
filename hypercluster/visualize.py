@@ -1,4 +1,5 @@
 from typing import List, Optional
+import logging
 from collections import Counter
 from itertools import cycle
 import numpy as np
@@ -8,9 +9,8 @@ import seaborn as sns
 from pandas import DataFrame
 from scipy.cluster import hierarchy
 from scipy.spatial.distance import pdist
-import scipy.optimize
 from hypercluster.constants import param_delim
-from hypercluster.utilities import log, convert_to_multiind, evaluate_one
+from hypercluster.utilities import convert_to_multiind, evaluate_one
 
 matplotlib.rcParams["pdf.fonttype"] = 42
 matplotlib.rcParams["ps.fonttype"] = 42
@@ -303,31 +303,35 @@ def visualize_for_picking_labels(
     """
     if method is None:
         method = "silhouette_score"
-    cluss = list(set([i.split(param_delim, 1)[0] for i in evaluation_df.columns]))
+    cluss_temp = list(set([i.split(param_delim, 1)[0] for i in evaluation_df.columns]))
     # get figure dimensions
     ncols = 0
-    for ploti, clus in enumerate(cluss):
+    cluss = []
+    for ploti, clus in enumerate(cluss_temp):
         scores = convert_to_multiind(
             clus, evaluation_df.loc[[method], :]
         ).transpose().dropna(how='any')
+        indep = scores.index.to_frame().reset_index(drop=True)
+        try:
+            indep.astype(float)
+            cluss.append(clus)
+        except ValueError:
+            logging.error('Cannot convert %s data to floats, skipping visualization' % clus)
+            continue
         if scores.index.nlevels > ncols:
             ncols = scores.index.nlevels
-
+    cluss.sort()
     colors = cycle(sns.color_palette('twilight', n_colors=len(cluss) * ncols))
     fig = plt.figure(figsize=(5 * (ncols), 5 * len(cluss)))
-    gs = plt.GridSpec(nrows=len(cluss), ncols=ncols)
+    gs = plt.GridSpec(nrows=len(cluss), ncols=ncols, wspace=0.25, hspace=0.25)
 
-    ybuff = np.quantile(evaluation_df.loc[method], 0.05)
+    ybuff = np.abs(np.nanquantile(evaluation_df.loc[method], 0.05))
     ylim = (evaluation_df.loc[method].min() - ybuff, evaluation_df.loc[method].max() + ybuff)
     for ploti, clus in enumerate(cluss):
         scores = convert_to_multiind(
             clus, evaluation_df.loc[[method], :]
         ).transpose().dropna(how='any')
         indep = scores.index.to_frame().reset_index(drop=True)
-
-        params = scipy.optimize.curve_fit(
-            log, indep, scores[method].values, p0=np.ones(indep.shape[1])
-        )[0]
 
         for whcol, col in enumerate(indep.columns):
             if whcol == 0:
@@ -340,25 +344,16 @@ def visualize_for_picking_labels(
             color = next(colors)
 
             # plot eval results
-            sns.scatterplot(
+            sns.regplot(
                 indep[col],
                 scores[method].values,
                 color=color,
-                marker='o',
-                label=col,
-                linewidth=0,
-                ax=ax
+                ax=ax,
+                logistic=True, 
             )
-            # plot fit curve
-            sns.lineplot(
-                indep[col],
-                log(indep[[col]], params[whcol]).values + scores[method].max(),
-                color=color,
-                label='%s fit' % (col),
-                ax=ax
-            )
-            ax.legend(loc='best', labelspacing=0, frameon=False)
-    fig.suptitle('%s results per parameter' % method)
+
+    axs = fig.get_axes()
+    axs[0].set_title('%s results per parameter' % method, ha='left')
     if savefig_prefix:
         plt.savefig('%s.pdf' % savefig_prefix)
-    return fig.get_axes()
+    return axs
