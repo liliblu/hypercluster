@@ -53,8 +53,7 @@ Line-by-line explanation of config.yml
      - Additional kwargs per evaluation metric function.
      - ``{'silhouette_score': {'random_state': 8}}``
    * - ``screeplot_evals``
-     - Metrics for which to generate scree plots. Must be a subset of the metrics used to 
-evaluate. 
+     - Metrics for which to draw scree plots. Must be a subset of metrics used to evaluate. 
      - ``['silhouette_score', 'smallest_largest_clusters_ratio']
    * - ``metric_to_choose_best``
      - | If picking best labels, which metric to maximize to choose the labels. If not choosing
@@ -141,7 +140,7 @@ config.yml example from `scRNA-seq workflow <https://github.com/liliblu/hyperclu
       NMFCluster:
         n_clusters: *id001
       LouvainCluster: &id003
-        resolution: 
+        resolution:
         - 0.2
         - 0.4
         - 0.6
