@@ -1,32 +1,33 @@
 clusterer_kwargs: {}
 clustering_results: clustering
+compare_samples: false
 eval_kwargs: {}
 evaluations:
-- adjusted_rand_score
 - adjusted_mutual_info_score
-- homogeneity_score
-- completeness_score
-- fowlkes_mallows_score
-- mutual_info_score
-- v_measure_score
-- silhouette_score
+- adjusted_rand_score
 - calinski_harabasz_score
+- completeness_score
 - davies_bouldin_score
+- fowlkes_mallows_score
+- homogeneity_score
+- largest_cluster_size
+- mutual_info_score
 - number_clustered
-- smallest_largest_clusters_ratio
+- number_of_clusters
+- silhouette_score
 - smallest_cluster_ratio
-generate_parameters_addtl_kwargs:
-  random_search: false
+- smallest_cluster_size
+- smallest_largest_clusters_ratio
+- v_measure_score
+generate_parameters_addtl_kwargs: {}
 gold_standards:
   sc_data: gold_standard.csv
 heatmap_kwargs: {}
 input_data_files:
 - sc_data
-input_data_folder: /gpfs/data/ruggleslab/home/lmb529/hypercluster/examples/scRNA_seq
+input_data_folder: /gpfs/data/ruggleslab/home/lmb529/hypercluster/examples/snakemake_scRNA_example
 intermediates_folder: clustering_intermediates
-make_label_fig: true
-make_sample_fig: false
-metric_to_choose_best: silhouette_score
+metric_to_choose_best: adjusted_rand_score
 metric_to_compare_labels: adjusted_rand_score
 optimization_parameters:
   AffinityPropagation:
@@ -87,40 +88,11 @@ optimization_parameters:
     - 27
     - 28
     - 29
-    - 30
-    - 31
-    - 32
-    - 33
-    - 34
-    - 35
-    - 36
-    - 37
-    - 38
-    - 39
-    - 40
-    - 41
-    - 42
-    - 43
-    - 44
-    - 45
-    - 46
-    - 47
-    - 48
-    - 49
-    - 50
-    - 51
-    - 52
-    - 53
-    - 54
-    - 55
-    - 56
-    - 57
-    - 58
-    - 59
   MiniBatchKMeans:
     n_clusters: *id001
   OPTICS:
     min_samples: *id002
+output_folder: results
 output_kwargs:
   evaluations:
     index_col:
@@ -132,6 +104,3 @@ read_csv_kwargs:
   sc_data:
     index_col:
     - 0
-targets:
-- labels
-- evaluations
