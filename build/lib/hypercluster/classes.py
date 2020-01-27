@@ -6,7 +6,9 @@ from itertools import product
 from .constants import *
 
 
-class _PickPredictVisualize:
+class Clusterer:
+    """Meta class for shared methods for both AutoClusterer and MultiAutoClusterer.  
+    """
     def pick_best_labels(self, method: Optional[str] = None, min_or_max: Optional[str] = None):
         return pick_best_labels(self.evaluation_df, self.labels_df, method, min_or_max)
 
@@ -19,38 +21,45 @@ class _PickPredictVisualize:
         return visualize_evaluations(self.evaluation_df, savefig, output_prefix, **heatmap_kws)
 
     def visualize_sample_label_consistency(
-            self, 
+            self,
             savefig: bool = False,
             output_prefix: Optional[str] = None,
             **heatmap_kws
     ) -> List[matplotlib.axes.Axes]:
         return visualize_sample_label_consistency(
-            self.labels_df, 
-            savefig, 
+            self.labels_df,
+            savefig,
             output_prefix,
             **heatmap_kws
         )
 
     def visualize_label_agreement(
-            self, 
+            self,
             method: Optional[str] = None,
             savefig: bool = False,
             output_prefix: Optional[str] = None,
             **heatmap_kws
     ) -> List[matplotlib.axes.Axes]:
         return visualize_label_agreement(
-            self.labels_df, 
-            method, 
-            savefig, 
-            output_prefix, 
+            self.labels_df,
+            method,
+            savefig,
+            output_prefix,
             **heatmap_kws
         )
+
+    def visualize_for_picking_labels(
+            self,
+            method: Optional[str] = None,
+            savefig_prefix: Optional[str] = None
+    ):
+        return visualize_for_picking_labels(self.evaluation_df, method, savefig_prefix)
 
     def fit_predict(self, data: Optional[DataFrame], parameter_set_name, method, min_of_max):
         pass
 
 
-class AutoClusterer (_PickPredictVisualize):
+class AutoClusterer (Clusterer):
     """Main hypercluster object.  
 
     Attributes: 
@@ -66,9 +75,9 @@ class AutoClusterer (_PickPredictVisualize):
         'parameter_name':{'param_option_1':0.5, 'param_option_2':0.5}}.  
         clus_kwargs (dict): Additional kwargs to pass into given clusterer, but not to be \
         optimized. Default None.  
-        labels_ (Optional[DataFrame]): If already fit, labels DataFrame fit to data. 
-        evaluation_ (Optional[DataFrame]): If already fit and evalute, evaluations per label. 
-        data (Optional[DataFrame]): Data to fit, will not fit by default even if passed data. 
+        labels_ (Optional[DataFrame]): If already fit, labels DataFrame fit to data.  
+        evaluation_ (Optional[DataFrame]): If already fit and evalute, evaluations per label.  
+        data (Optional[DataFrame]): Data to fit, will not fit by default even if passed data.  
     """
 
     def __init__(
@@ -116,10 +125,10 @@ class AutoClusterer (_PickPredictVisualize):
         self.generate_param_sets()
 
     def generate_param_sets(self):
-        """Uses info from init to make a Dataframe of all parameter sets that will be tried.  
+        """Uses info from init to make a Dataframe of all parameter sets that will be tried. 
 
         Returns (AutoClusterer): 
-            self  
+            self
         """
         conditions = 1
         vars_to_optimize = {}
@@ -175,12 +184,12 @@ class AutoClusterer (_PickPredictVisualize):
         return self
 
     def fit(self, data: DataFrame):
-        """Fits clusterer to data with each parameter set.  
+        """Fits clusterer to data with each parameter set. 
 
         Args: 
             data (DataFrame): DataFrame with elements to cluster as index and features as columns.  
 
-        Returns: (AutoClusterer) 
+        Returns (AutoClusterer):  
             self
         """
         self.data = data
@@ -217,22 +226,22 @@ class AutoClusterer (_PickPredictVisualize):
         return self
 
     def evaluate(
-            self, 
+            self,
             methods: Optional[Iterable[str]] = None,
             metric_kwargs: Optional[dict] = None,
             gold_standard: Optional[Iterable] = None
     ):
-        """Evaluate labels with given metrics.
+        """Evaluate labels with given metrics. 
 
         Args: 
             methods (Optional[Iterable[str]]): List of evaluation methods to use.  
-            metric_kwargs (Optional[dict]): Additional kwargs per evaluation metric. Structure of \ 
+            metric_kwargs (Optional[dict]): Additional kwargs per evaluation metric. Structure of \
             {'metric_name':{'param1':value, 'param2':val2}.  
             gold_standard (Optional[Iterable]): Gold standard labels, if available. Only needed \
             if using a metric that needs ground truth.  
 
-        Returns (AutoClusterer): 
-            self with attribute .evaluation_; a DataFrame with all eval values per labels.   
+        Returns (AutoClusterer):  
+            self with attribute .evaluation_; a DataFrame with all eval values per labels.  
 
         """
         if self.labels_ is None:
@@ -261,8 +270,8 @@ class AutoClusterer (_PickPredictVisualize):
         return self
 
 
-class MultiAutoClusterer (_PickPredictVisualize):
-    """Object for training multiple clustering algorithms  
+class MultiAutoClusterer (Clusterer):
+    """Object for training multiple clustering algorithms.  
 
     Attributes: 
         algorithm_names (Optional[Union[Iterable, str]]): List of algorithm names to test OR \
@@ -274,9 +283,9 @@ class MultiAutoClusterer (_PickPredictVisualize):
         random_search_fraction (float): If random_search, what fraction of conditions to search.  
         algorithm_param_weights (Dict[str, Dict[str, dict]]): If random_search, and you want to \
         give probability weights to certain parameters, dictionary of probability weights. \
-        Example format: {'clusterer1': {'hyperparam1':{val1:probability1, val2:probability2}}}.   
+        Example format: {'clusterer1': {'hyperparam1':{val1:probability1, val2:probability2}}}.  
         algorithm_clus_kwargs (Dict[str, dict]): Dictionary of additional keyword args for any \
-        clusterer. Example format: {'clusterer1':{'param1':val1}}.   
+        clusterer. Example format: {'clusterer1':{'param1':val1}}.  
         data (Optional[DataFrame]): Optional, data to fit. Will not fit even if passed, \
         need to call fit method.  
         evaluation_methods (Optional[List[str]]): List of metrics with which to evaluate. If \
@@ -286,14 +295,14 @@ class MultiAutoClusterer (_PickPredictVisualize):
         gold_standard (Optional[Iterable]): If using methods that need ground truth, vector of \
         correct labels. Can also pass in during evaluate.  
         autoclusterers (Iterable[AutoClusterer]): If building from initialized AutoClusterer \
-        objects, can give a list of them here. If these are given, it will override anything 
+        objects, can give a list of them here. If these are given, it will override anything
         passed to labels\_ and evaluation\_.  
         labels_ (Optional[Dict[str, DataFrame]]): Dictionary of label DataFrames per clusterer, \
         if already fit.  Example format: {'clusterer1': labels_df}.  
         evaluation_ (Optional[Dict[str, DataFrame]]): Dictionary of evaluation DataFrames per \
         clusterer, if already fit and evaluated.  Example format: {'clusterer1': evaluation_df}.  
         labels_df (Optional[DataFrame]): Combined DataFrame of all labeling results.  
-        evaluation_df (Optional[DataFrame]): Combined DataFrame of all evaluation results. 
+        evaluation_df (Optional[DataFrame]): Combined DataFrame of all evaluation results.  
     """
     def __init__(
             self,
@@ -355,7 +364,7 @@ class MultiAutoClusterer (_PickPredictVisualize):
             autoclusterers = []
             for clus_name in self.algorithm_names:
                 autoclusterers.append(AutoClusterer(
-                    clus_name, 
+                    clus_name,
                     params_to_optimize=self.algorithm_parameters.get(clus_name, {}),
                     random_search = self.random_search,
                     random_search_fraction = self.random_search_fraction,
@@ -379,7 +388,7 @@ class MultiAutoClusterer (_PickPredictVisualize):
                 ac.clusterer_name: ac.labels_ for ac in autoclusterers if ac.labels_ is not None
             }
             self.evaluation_ = {
-                ac.clusterer_name: ac.evaluation_ 
+                ac.clusterer_name: ac.evaluation_
                 for ac in autoclusterers if ac.evaluation_ is not None
             }
 
@@ -410,7 +419,7 @@ class MultiAutoClusterer (_PickPredictVisualize):
         return self
 
     def evaluate(
-            self, 
+            self,
             evaluation_methods: Optional[list] = None,
             metric_kwargs: Optional[dict] = None,
             gold_standard: Optional[Iterable] = None

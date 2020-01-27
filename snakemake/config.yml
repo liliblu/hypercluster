@@ -13,6 +13,13 @@ clusterer_kwargs: {}
 generate_parameters_addtl_kwargs: {}
 
 evaluations:
+#  - adjusted_rand_score
+#  - adjusted_mutual_info_score
+#  - homogeneity_score
+#  - completeness_score
+#  - fowlkes_mallows_score
+#  - mutual_info_score
+#  - v_measure_score
   - silhouette_score
   - calinski_harabasz_score
   - davies_bouldin_score
@@ -20,6 +27,20 @@ evaluations:
   - smallest_largest_clusters_ratio
   - smallest_cluster_ratio
 eval_kwargs: {}
+screeplot_evals:
+#  - adjusted_rand_score
+#  - adjusted_mutual_info_score
+#  - homogeneity_score
+#  - completeness_score
+#  - fowlkes_mallows_score
+#  - mutual_info_score
+#  - v_measure_score
+  - silhouette_score
+  - calinski_harabasz_score
+  - davies_bouldin_score
+  - number_clustered
+  - smallest_largest_clusters_ratio
+  - smallest_cluster_ratio
 
 metric_to_choose_best: silhouette_score
 metric_to_compare_labels: adjusted_rand_score
@@ -35,74 +56,94 @@ heatmap_kwargs: {}
 optimization_parameters:
   AffinityPropagation:
     damping:
-#    - 0.55
+    - 0.55
     - 0.6
     - 0.65
-#    - 0.7
-#    - 0.75
-#    - 0.8
-#    - 0.85
-#    - 0.9
+    - 0.7
+    - 0.75
+    - 0.8
+    - 0.85
+    - 0.9
     - 0.95
   HDBSCAN:
     min_cluster_size: &id002
     - 2
     - 3
-#    - 4
-#    - 5
-#    - 6
-#    - 7
-#    - 8
-#    - 9
-#    - 10
-#    - 11
-#    - 12
-#    - 13
-#    - 14
-#    - 15
-#    - 16
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
   KMeans:
     n_clusters: &id001
     - 2
     - 3
-#    - 4
-#    - 5
-#    - 6
-#    - 7
-#    - 8
-#    - 9
-#    - 10
-#    - 11
-#    - 12
-#    - 13
-#    - 14
-#    - 15
-#    - 16
-#    - 17
-#    - 18
-#    - 19
-#    - 20
-#    - 21
-#    - 22
-#    - 23
-#    - 24
-#    - 25
-#    - 26
-#    - 27
-#    - 28
-#    - 29
-#    - 30
-#    - 31
-#    - 32
-#    - 33
-#    - 34
-#    - 35
-#    - 36
-#    - 37
-#    - 38
-#    - 39
-#    - 40
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    - 17
+    - 18
+    - 19
+    - 20
+    - 21
+    - 22
+    - 23
+    - 24
+    - 25
+    - 26
+    - 27
+    - 28
+    - 29
+    - 30
+    - 31
+    - 32
+    - 33
+    - 34
+    - 35
+    - 36
+    - 37
+    - 38
+    - 39
+    - 40
   MiniBatchKMeans:
     n_clusters: *id001
   OPTICS:
     min_samples: *id002
+  NMFCluster:
+    n_clusters: *id001
+  LouvainCluster: &id003
+    resolution: 
+    - 0.2
+    - 0.4
+    - 0.6
+    - 0.8
+    - 1.0
+    - 1.2
+    - 1.4
+    - 1.6
+    k:
+    - 10
+    - 15
+    - 20
+    - 40
+    - 80
+    - 120
+  LeidenCluster: *id003

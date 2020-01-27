@@ -38,8 +38,13 @@ test_ground_truth = pd.Series(
 def test_vis_eval():
     clusterer = hypercluster.MultiAutoClusterer().fit(test_data).evaluate()
     visualize.visualize_evaluations(clusterer.evaluation_df)
-    clusterer.visualize_evaluations()
-# 
+    clusterer.visualize_evaluations(
+        # savefig=True
+    )
+    visualize.visualize_for_picking_labels(
+        clusterer.evaluation_df, savefig_prefix='test_visualize_for_picking'
+    )
+
     clusterer = hypercluster.AutoClusterer().fit(test_data).evaluate()
     visualize.visualize_evaluations(clusterer.evaluation_df)
     clusterer.visualize_evaluations()
@@ -59,13 +64,9 @@ def test_vis_labels():
     clusterer = hypercluster.MultiAutoClusterer().fit(test_data).evaluate()
     visualize.visualize_label_agreement(clusterer.labels_df)
     clusterer.visualize_label_agreement(
-        # savefig=True, 
-        # output_prefix='test_input/test_label_agreement_multi'
+        savefig=True,
     )
 
     clusterer = hypercluster.AutoClusterer().fit(test_data).evaluate()
     visualize.visualize_label_agreement(clusterer.labels_df)
-    clusterer.visualize_label_agreement(
-        # savefig=True, 
-        # output_prefix='test_input/test_label_agreement_auto'
-    )
+    clusterer.visualize_label_agreement()

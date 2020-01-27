@@ -38,14 +38,12 @@ Line-by-line explanation of config.yml
        | No need to change this usually.
      - ``clustering``
    * - ``clusterer_kwargs``
-     - | Additional static keyword arguments to pass to individual clusterers. 
-       | Not to optimize. 
+     - | Additional static keyword arguments to pass to individual clusterers.
+       | Not to optimize.
      - ``KMeans: {'random_state':8}}``
    * - ``generate_parameters_addtl_kwargs``
      - Additonal keyword arguments for the hypercluster.AutoClusterer class.
-     - | ``{'KMeans': ``
-       | ``{'random_search':true, 'param_weights': ``
-       | ``                         {'n_clusters': {5: 0.25, 6: 0.25, 7: 0.5}}}``
+     - ``{'KMeans': {'random_search':true, 'param_weights': {'n_clusters': {5: 0.25, 6:0.75}}}``
    * - ``evaluations``
      - | Names of evaluation metrics to use. See
        | hypercluster.constants.inherent_metrics or
@@ -54,16 +52,19 @@ Line-by-line explanation of config.yml
    * - ``eval_kwargs``
      - Additional kwargs per evaluation metric function.
      - ``{'silhouette_score': {'random_state': 8}}``
+   * - ``screeplot_evals``
+     - Metrics for which to draw scree plots. Must be a subset of metrics used to evaluate. 
+     - ``['silhouette_score', 'smallest_largest_clusters_ratio']
    * - ``metric_to_choose_best``
-     - | If picking best labels, which metric to maximize to choose the labels. If not choosing 
-       | best labels, leave as empty string (''). 
+     - | If picking best labels, which metric to maximize to choose the labels. If not choosing
+       | best labels, leave as empty string ('').
      - ``silhouette_score``
    * - ``metric_to_compare_labels``
-     - | If comparing labeling result pairwise similarity, which metric to use. To not generate 
-       | this comparison, leave blank/or empty string. 
+     - | If comparing labeling result pairwise similarity, which metric to use. To not generate
+       | this comparison, leave blank/or empty string.
      - ``adjusted_rand_score``
    * - ``compare_samples``
-     - | Whether to made a table and figure with counts of how often two samples are in the same 
+     - | Whether to made a table and figure with counts of how often two samples are in the same
        | cluster.
      - ``true``
    * - ``output_kwargs``
@@ -73,7 +74,7 @@ Line-by-line explanation of config.yml
      - ``{'evaluations': {'index_col':[0]},  'labels': {'index_col':[0]}}``
    * - ``heatmap_kwargs``
      - Additional kwargs for `seaborn.heatmap <https://seaborn.pydata.org/generated/seaborn.heatmap.html>`_ for visualizations.
-     - ``{'vmin':-2, 'vmax':2}``  
+     - ``{'vmin':-2, 'vmax':2}``
    * - ``optimization_parameters``
      - Fun part! This is where you put which hyperparameters per algorithm to try.
      - ``{'KMeans': {'n_clusters': [5, 6, 7]}}``
@@ -85,21 +86,21 @@ config.yml example from `scRNA-seq workflow <https://github.com/liliblu/hyperclu
 
 .. code-block:: yaml
 
-    input_data_folder: 'input_data_folder'
-    input_data_files: 
-      - test_input
+    input_data_folder: '.'
+    input_data_files:
+      - sc_data
     gold_standards:
-      test_input: ''
+      test_input: 'gold_standard.csv'
     read_csv_kwargs:
       test_input: {'index_col':[0]}
-    
-    output_folder: 'hypercluster_results'
+
+    output_folder: 'results'
     intermediates_folder: 'clustering_intermediates'
     clustering_results: 'clustering'
-    
+
     clusterer_kwargs: {}
     generate_parameters_addtl_kwargs: {}
-    
+
     evaluations:
       - silhouette_score
       - calinski_harabasz_score
@@ -108,11 +109,11 @@ config.yml example from `scRNA-seq workflow <https://github.com/liliblu/hyperclu
       - smallest_largest_clusters_ratio
       - smallest_cluster_ratio
     eval_kwargs: {}
-    
+
     metric_to_choose_best: silhouette_score
     metric_to_compare_labels: adjusted_rand_score
     compare_samples: true
-    
+
     output_kwargs:
       evaluations:
         index_col: [0]
@@ -136,3 +137,23 @@ config.yml example from `scRNA-seq workflow <https://github.com/liliblu/hyperclu
         n_clusters: *id001
       OPTICS:
         min_samples: *id002
+      NMFCluster:
+        n_clusters: *id001
+      LouvainCluster: &id003
+        resolution:
+        - 0.2
+        - 0.4
+        - 0.6
+        - 0.8
+        - 1.0
+        - 1.2
+        - 1.4
+        - 1.6
+        k:
+        - 10
+        - 15
+        - 20
+        - 40
+        - 80
+        - 120
+      LeidenCluster: *id003
