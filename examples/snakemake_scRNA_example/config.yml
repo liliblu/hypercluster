@@ -1,49 +1,32 @@
-input_data_folder: .
-input_data_files:
-- sc_data
+clusterer_kwargs: {}
+clustering_results: clustering
+compare_samples: false
+eval_kwargs: {}
+evaluations:
+- adjusted_mutual_info_score
+- adjusted_rand_score
+- calinski_harabasz_score
+- completeness_score
+- davies_bouldin_score
+- fowlkes_mallows_score
+- homogeneity_score
+- largest_cluster_size
+- mutual_info_score
+- number_of_clusters
+- silhouette_score
+- smallest_cluster_size
+- smallest_largest_clusters_ratio
+- v_measure_score
+generate_parameters_addtl_kwargs: {}
 gold_standards:
   sc_data: gold_standard.csv
-read_csv_kwargs:
-  sc_data:
-    index_col:
-    - 0
-
-output_folder: 'results'
-clustering_results: clustering
-intermediates_folder: clustering_intermediates
-
-clusterer_kwargs: {}
-generate_parameters_addtl_kwargs: {}
-
-evaluations:
-- adjusted_rand_score
-- adjusted_mutual_info_score
-- homogeneity_score
-- completeness_score
-- fowlkes_mallows_score
-- mutual_info_score
-- v_measure_score
-- silhouette_score
-- calinski_harabasz_score
-- davies_bouldin_score
-- number_clustered
-- smallest_largest_clusters_ratio
-- smallest_cluster_ratio
-eval_kwargs: {}
-
-output_kwargs:
-  evaluations:
-    index_col:
-    - 0
-  labels:
-    index_col:
-    - 0
 heatmap_kwargs: {}
-
-metric_to_choose_best: silhouette_score
+input_data_files:
+- sc_data
+input_data_folder: /gpfs/data/ruggleslab/home/lmb529/hypercluster/examples/snakemake_scRNA_example
+intermediates_folder: clustering_intermediates
+metric_to_choose_best: adjusted_rand_score
 metric_to_compare_labels: adjusted_rand_score
-compare_samples: false
-
 optimization_parameters:
   AffinityPropagation:
     damping:
@@ -56,9 +39,25 @@ optimization_parameters:
     - 0.85
     - 0.9
     - 0.95
-  KMeans:
-    n_clusters: &id001
+  HDBSCAN:
+    min_cluster_size: &id003
     - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+  KMeans:
+    n_clusters: &id002
     - 3
     - 4
     - 5
@@ -96,35 +95,58 @@ optimization_parameters:
     - 37
     - 38
     - 39
+  LeidenCluster: &id001
+    k:
+    - 20
+    - 30
     - 40
-    - 41
-    - 42
-    - 43
-    - 44
-    - 45
-    - 46
-    - 47
-    - 48
-    - 49
-    - 50
+    - 80
+    - 120
+    resolution:
+    - 0.1
+    - 0.2
+    - 0.3
+    - 0.4
+    - 0.5
+    - 0.6
+    - 0.7
+    - 0.8
+    - 0.9
+    - 1.0
+    - 1.2
+    - 1.4
+    - 1.6
+  LouvainCluster: *id001
   MiniBatchKMeans:
-    n_clusters: *id001
-  HDBSCAN:
-    min_cluster_size: &id002
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
-    - 7
-    - 8
-    - 9
-    - 10
-    - 11
-    - 12
-    - 13
-    - 14
-    - 15
-    - 16
+    n_clusters: *id002
+  NMFCluster:
+    n_clusters: *id002
   OPTICS:
-    min_samples: *id002
+    min_samples: *id003
+output_folder: results
+output_kwargs:
+  evaluations:
+    index_col:
+    - 0
+  labels:
+    index_col:
+    - 0
+read_csv_kwargs:
+  sc_data:
+    index_col:
+    - 0
+screeplot_evals:
+- adjusted_mutual_info_score
+- adjusted_rand_score
+- calinski_harabasz_score
+- completeness_score
+- davies_bouldin_score
+- fowlkes_mallows_score
+- homogeneity_score
+- largest_cluster_size
+- mutual_info_score
+- number_of_clusters
+- silhouette_score
+- smallest_cluster_size
+- smallest_largest_clusters_ratio
+- v_measure_score

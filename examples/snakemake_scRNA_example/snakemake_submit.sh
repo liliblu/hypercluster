@@ -10,12 +10,13 @@
 
 module purge
 module add slurm
-source activate hypercluster
+source activate hc_test
 cd /gpfs/home/lmb529/ruggleslabHome/hypercluster/examples/scRNA_seq
 mkdir -p logs/slurm/
 
 snakemake -j 999 -p --verbose \
--s ../../hypercluster.smk \
+-s ../../snakemake/hypercluster.smk \
+--configfile config.yml \
 --keep-going \
 --cluster-config cluster.json \
 --cluster "sbatch --mem={cluster.mem} -t {cluster.time} -o {cluster.output} -p {cluster.partition}"
