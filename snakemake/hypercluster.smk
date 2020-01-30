@@ -9,8 +9,6 @@ import yaml
 subprocess.run(['mkdir', '-p', 'logs'])
 targets = ['labels', 'evaluations']
 
-configfile: 'config.yml'
-
 input_data_folder = config['input_data_folder']
 input_files = config['input_data_files']
 

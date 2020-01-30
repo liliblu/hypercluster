@@ -196,7 +196,7 @@ class LeidenCluster:
     """
     def __init__(
             self,
-            adjacency_method: str = 'SNN',
+            adjacency_method: str = 'MNN',
             k: int = 20,
             resolution: float = 0.8,
             adjacency_kwargs: Optional[dict] = None,
@@ -228,14 +228,14 @@ class LeidenCluster:
                 % (k, len(data), len(data))
             )
             k = len(data) - 1
-        if (adjacency_method == 'SNN') | (adjacency_method == 'CNN'):
+        if (adjacency_method == 'MNN') | (adjacency_method == 'CNN'):
             if adjacency_kwargs is None:
                 adjacency_kwargs = {}
             adjacency_kwargs['n_neighbors'] = adjacency_kwargs.get('n_neighbors', k)
             nns = NearestNeighbors(**adjacency_kwargs)
             nns.fit(data)
             adjacency_mat = nns.kneighbors_graph(data)
-            if adjacency_method == 'SNN':
+            if adjacency_method == 'MNN':
                 adjacency_mat = adjacency_mat.multiply(adjacency_mat.transpose())
             if adjacency_method == 'CNN':
                 adjacency_mat = adjacency_mat * adjacency_mat.transpose()
