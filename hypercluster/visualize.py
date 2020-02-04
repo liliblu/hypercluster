@@ -244,7 +244,7 @@ def visualize_label_agreement(
     if method is None:
         method = 'adjusted_rand_score'
 
-    labels = labels.corr(
+    labels = labels.astype(float).corr(
         lambda x, y: evaluate_one(x, method=method, gold_standard=y)
     )
     return visualize_pairwise(labels, savefig, output_prefix, method=method, **heatmap_kws)
@@ -278,7 +278,7 @@ def visualize_sample_label_consistency(
     """
     if savefig and output_prefix is None:
         output_prefix = "heatmap.sample.pairwise"
-    labels = labels.transpose().corr(lambda x, y: sum(
+    labels = labels.transpose().astype(float).corr(lambda x, y: sum(
         np.equal(x[((x != -1) | (y != -1))], y[((x != -1) | (y != -1))])
     ))
     return visualize_pairwise(labels, savefig, output_prefix, method='# same label', **heatmap_kws)
