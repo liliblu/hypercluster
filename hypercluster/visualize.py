@@ -278,6 +278,7 @@ def visualize_sample_label_consistency(
     """
     if savefig and output_prefix is None:
         output_prefix = "heatmap.sample.pairwise"
+    #TODO change this to much faster matmult
     labels = labels.transpose().astype(float).corr(lambda x, y: sum(
         np.equal(x[((x != -1) | (y != -1))], y[((x != -1) | (y != -1))])
     ))

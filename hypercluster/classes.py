@@ -108,7 +108,7 @@ class AutoClusterer (Clusterer):
             self.clus_kwargs = {}
 
         if labels_df is None and labels_ is not None:
-            labels_df = generate_flattened_df(labels_)
+            labels_df = generate_flattened_df({clusterer_name: labels_})
         self.labels_df = labels_df
 
         if evaluation_df is None and evaluation_ is not None:
@@ -368,11 +368,14 @@ class MultiAutoClusterer (Clusterer):
                     params_to_optimize=self.algorithm_parameters.get(clus_name, {}),
                     random_search = self.random_search,
                     random_search_fraction = self.random_search_fraction,
+                    data=data,
                     param_weights=self.algorithm_param_weights.get(clus_name, {}),
                     clus_kwargs=self.algorithm_clus_kwargs.get(clus_name, {}),
                     labels_=self.labels_.get(clus_name, None),
                     evaluation_=self.evaluation_.get(clus_name, None)
                 ))
+            self.autoclusterers = autoclusterers
+
         else:
             self.algorithm_names = [ac.clusterer_name for ac in autoclusterers]
             self.algorithm_parameters = {
@@ -411,6 +414,7 @@ class MultiAutoClusterer (Clusterer):
         fitted_clusterers = []
         for clusterer in self.autoclusterers:
             fitted_clusterers.append(clusterer.fit(data))
+        #TODO right now each AC is storing it's own copy of the data.
         self.autoclusterers = fitted_clusterers
         self.labels_ = {
             ac.clusterer_name: ac.labels_ for ac in self.autoclusterers
