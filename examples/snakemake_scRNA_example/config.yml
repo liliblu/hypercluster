@@ -20,9 +20,11 @@ evaluations:
 generate_parameters_addtl_kwargs: {}
 gold_standards:
   sc_data: gold_standard.csv
+  sc_data_pca: gold_standard.csv
 heatmap_kwargs: {}
 input_data_files:
 - sc_data
+- sc_data_pca
 input_data_folder: /gpfs/data/ruggleslab/home/lmb529/hypercluster/examples/snakemake_scRNA_example
 intermediates_folder: clustering_intermediates
 metric_to_choose_best: adjusted_rand_score
@@ -39,25 +41,50 @@ optimization_parameters:
     - 0.85
     - 0.9
     - 0.95
-  HDBSCAN:
-    min_cluster_size: &id003
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
-    - 7
-    - 8
-    - 9
-    - 10
-    - 11
-    - 12
-    - 13
-    - 14
-    - 15
-    - 16
-  KMeans:
-    n_clusters: &id002
+  LeidenCluster:
+    adjacency_method:
+    - SNN
+    - CNN
+    k:
+    - 20
+    - 30
+    - 40
+    - 80
+    - 120
+    resolution:
+    - 0.3
+    - 0.4
+    - 0.5
+    - 0.6
+    - 0.7
+    - 0.8
+    - 0.9
+    - 1.0
+    - 1.2
+    - 1.4
+  LouvainCluster:
+    adjacency_method:
+    - MNN
+    - CNN
+    k:
+    - 20
+    - 30
+    - 40
+    - 80
+    - 120
+    resolution:
+    - 0.3
+    - 0.4
+    - 0.5
+    - 0.6
+    - 0.7
+    - 0.8
+    - 0.9
+    - 1.0
+    - 1.2
+    - 1.4
+  NMFCluster:
+    n_clusters:
     - 3
     - 4
     - 5
@@ -95,35 +122,7 @@ optimization_parameters:
     - 37
     - 38
     - 39
-  LeidenCluster: &id001
-    k:
-    - 20
-    - 30
-    - 40
-    - 80
-    - 120
-    resolution:
-    - 0.1
-    - 0.2
-    - 0.3
-    - 0.4
-    - 0.5
-    - 0.6
-    - 0.7
-    - 0.8
-    - 0.9
-    - 1.0
-    - 1.2
-    - 1.4
-    - 1.6
-  LouvainCluster: *id001
-  MiniBatchKMeans:
-    n_clusters: *id002
-  NMFCluster:
-    n_clusters: *id002
-  OPTICS:
-    min_samples: *id003
-output_folder: results
+output_folder: results_NN_test
 output_kwargs:
   evaluations:
     index_col:
@@ -133,6 +132,9 @@ output_kwargs:
     - 0
 read_csv_kwargs:
   sc_data:
+    index_col:
+    - 0
+  sc_data_pca:
     index_col:
     - 0
 screeplot_evals:
